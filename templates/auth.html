@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Login / Registrazione</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/static/js/auth.js" defer></script>
+    <style>
+        .fade-enter {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        .fade-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 300ms ease-in-out;
+        }
+        .fade-exit {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .fade-exit-active {
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 300ms ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-100 to-indigo-200 text-gray-900 p-8 flex flex-col items-center justify-center min-h-screen">
+    <h1 class="text-4xl font-bold mb-6">📚 Accedi alla tua libreria</h1>
+
+    <div id="login-container" class="bg-white/90 backdrop-blur p-8 rounded-xl shadow-xl w-full max-w-md">
+        
+        <!-- Tabs -->
+        <div class="flex justify-center mb-6">
+            <button id="loginTab" class="px-6 py-2 rounded-tl-xl border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-100">Accedi</button>
+            <button id="registerTab" class="px-6 py-2 rounded-tr-xl border-b-2 border-transparent font-semibold text-gray-600">Registrati</button>
+        </div>
+
+        <!-- Error message -->
+        {% if error %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <!-- Auth Form -->
+        <form method="post" action="/auth" class="space-y-4" id="authForm">
+            <input type="hidden" name="authAction" id="authAction" value="login">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            
+            <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Username"
+                required
+                autocomplete="username"
+                value="{{ username }}"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Password"
+                required
+                class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+
+            <!-- Conferma Password -->
+            <div id="confirmPasswordGroup" class="hidden">
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    placeholder="Conferma password"
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                >
+                <p id="passwordMismatch" class="text-red-600 text-sm mt-1 hidden">
+                    Le password non coincidono.
+                </p>
+            </div>
+
+            <button
+                type="submit"
+                id="submitButton"
+                class="w-full py-3 rounded-lg text-white font-semibold transition duration-300 ease-in-out"
+                style="background-color: #2563eb;"
+            >
+                Accedi
+            </button>
+        </form>
+    </div>
+</body>
+</html>
