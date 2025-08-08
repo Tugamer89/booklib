@@ -10,3 +10,4 @@ isbnlib
 python-magic
 requests
 Jinja2
+securecookies
