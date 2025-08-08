@@ -29,8 +29,7 @@ Thumbs.db
 *.pyd
 
 # FastAPI specific / uploads
-static/covers/
-!static/covers/default.jpg
+
 
 # SQLite / DB
 *.sqlite3
