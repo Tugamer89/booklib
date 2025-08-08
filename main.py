@@ -1,18 +1,18 @@
-# TODO:
-# sistemazione readme, .gitignore e requirements.txt
-# sistemazione per github
-
-from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import RedirectResponse, FileResponse
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.exception_handlers import http_exception_handler
+from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
+
 from securecookies import SecureCookiesMiddleware
-from fastapi.exception_handlers import http_exception_handler
+
 from core.config import settings
-from routes import books, auth
 from core.templates import templates
+from routes import auth, books
+
 
 app = FastAPI()
+
 
 # Middleware per sessioni
 app.add_middleware(
