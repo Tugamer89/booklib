@@ -126,7 +126,6 @@ def add_book(
 
 @router.post("/delete", response_class=HTMLResponse)
 def delete_book(
-    request: Request,
     book_id: int = Form(...),
     user: User = Depends(get_authenticated_user),
     db: Session = Depends(get_db)
@@ -135,9 +134,8 @@ def delete_book(
     if not book:
         raise HTTPException(status_code=404, detail="Libro non trovato")
 
-    # Rimuove immagine se non default
     if book.cover_path != "static/covers/default.jpg":
-        if book.cover_path.startswith("http://") or book.cover_path.startswith("https://"):
+        if book.cover_path.startswith("https://res.cloudinary.com/"):
             delete_cover_from_cloudinary(book.cover_path)
         elif os.path.exists(book.cover_path):
             os.remove(book.cover_path)

@@ -3,6 +3,7 @@ import magic
 import requests
 import cloudinary.uploader
 from fastapi import HTTPException
+from urllib.parse import urlparse
 from core.config import settings
 
 def validate_and_save_cover(cover):
@@ -45,11 +46,12 @@ def validate_cover_url(cover_url: str) -> str:
     return cover_path
 
 def extract_public_id(url: str) -> str:
-    parts = url.split("/")
-    filename = parts[-1]
-    folder = parts[-2]
-    public_id = f"{folder}/{filename.rsplit('.', 1)[0]}"
+    path = urlparse(url).path
+    parts = path.split('/')
+    public_id_with_ext = '/'.join(parts[5:])
+    public_id = public_id_with_ext.rsplit('.', 1)[0]
     return public_id
+
 
 def delete_cover_from_cloudinary(url: str):
     public_id = extract_public_id(url)
