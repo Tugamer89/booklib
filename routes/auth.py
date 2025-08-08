@@ -1,18 +1,20 @@
-from fastapi import APIRouter, Depends, Request, Form, HTTPException, Query
-from fastapi.responses import RedirectResponse, HTMLResponse
-from fastapi.templating import Jinja2Templates
-from sqlalchemy.orm import Session
-from core.auth import get_authenticated_user
-from db.database import get_db
-from db.crud import get_user_by_username
-from core.security import validate_credentials
-from passlib.hash import bcrypt
-from core.csrf import CsrfProtect
-from fastapi_csrf_protect.exceptions import TokenValidationError
-from db.models import User
 import secrets
 from datetime import datetime, timedelta, timezone
+
+from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi_csrf_protect.exceptions import TokenValidationError
+from passlib.hash import bcrypt
+from sqlalchemy.orm import Session
+
+from core.auth import get_authenticated_user
+from core.csrf import CsrfProtect
+from core.security import validate_credentials
 from core.templates import templates
+from db.crud import get_user_by_username
+from db.database import get_db
+from db.models import User
+
 
 router = APIRouter()
 

@@ -1,19 +1,20 @@
-from fastapi import APIRouter, Depends, Request, Form, UploadFile, HTTPException, Query, File
-from sqlalchemy.orm import Session
-from core.auth import get_authenticated_user
-from db.database import get_db
-from db.crud import add_book as crud_add_book, delete_book as crud_delete_book
-from utils.file_utils import validate_and_save_cover, validate_cover_url
-from utils.validators import format_isbn13
-from isbnlib import canonical, is_isbn10, is_isbn13
-from db.models import Book, User
-from fastapi.responses import RedirectResponse, HTMLResponse
-from fastapi.templating import Jinja2Templates
-from sqlalchemy import asc, desc, case, null, func, cast
-from sqlalchemy.types import BigInteger
-from core.templates import templates
 import os
 import re
+
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Request, UploadFile
+from fastapi.responses import HTMLResponse, RedirectResponse
+from isbnlib import canonical, is_isbn10, is_isbn13
+from sqlalchemy import asc, case, cast, desc, func, null
+from sqlalchemy.orm import Session
+from sqlalchemy.types import BigInteger
+
+from core.auth import get_authenticated_user
+from core.templates import templates
+from db.crud import add_book as crud_add_book, delete_book as crud_delete_book
+from db.database import get_db
+from db.models import Book, User
+from utils.file_utils import validate_and_save_cover, validate_cover_url
+
 
 router = APIRouter()
 
