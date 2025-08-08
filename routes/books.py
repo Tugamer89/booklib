@@ -13,7 +13,7 @@ from core.templates import templates
 from db.crud import add_book as crud_add_book, delete_book as crud_delete_book
 from db.database import get_db
 from db.models import Book, User
-from utils.file_utils import validate_and_save_cover, validate_cover_url
+from utils.file_utils import validate_and_save_cover, validate_cover_url, delete_cover_from_cloudinary
 
 
 router = APIRouter()
@@ -136,8 +136,11 @@ def delete_book(
         raise HTTPException(status_code=404, detail="Libro non trovato")
 
     # Rimuove immagine se non default
-    if book.cover_path != "static/covers/default.jpg" and os.path.exists(book.cover_path):
-        os.remove(book.cover_path)
+    if book.cover_path != "static/covers/default.jpg":
+        if book.cover_path.startswith("http://") or book.cover_path.startswith("https://"):
+            delete_cover_from_cloudinary(book.cover_path)
+        elif os.path.exists(book.cover_path):
+            os.remove(book.cover_path)
 
     crud_delete_book(db, book)
     return RedirectResponse("/", status_code=303)

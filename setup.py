@@ -14,13 +14,18 @@ def create_env_file():
 
     session_secret = generate_base64_key()
     csrf_secret = generate_base64_key()
-    # Cambia user, password, dbname se vuoi
     database_url = "postgresql://bookuser:password@localhost:5432/booklib"
+    cloudinary_cloud_name = "your_cloud_name"
+    cloudinary_api_key = "your_api_key"
+    cloudinary_api_secret = "your_api"
 
     with open(ENV_FILE, "w") as f:
         f.write(f"SESSION_SECRET='{session_secret}'\n")
         f.write(f"CSRF_SECRET='{csrf_secret}'\n")
         f.write(f"DATABASE_URL='{database_url}'\n")
+        f.write(f"CLOUDINARY_CLOUD_NAME='{cloudinary_cloud_name}'\n")
+        f.write(f"CLOUDINARY_API_KEY='{cloudinary_api_key}'\n")
+        f.write(f"CLOUDINARY_API_SECRET='{cloudinary_api_secret}'\n")
 
     print(f"File {ENV_FILE} creato con chiavi generate automaticamente.")
 

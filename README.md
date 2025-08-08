@@ -56,7 +56,8 @@ GRANT ALL PRIVILEGES ON DATABASE booklib TO bookuser;
 
 ### 5️⃣ Configura e inizializza il progetto
 
-Esegui lo script `setup.py` che crea il file `.env` con le chiavi segrete e crea le tabelle nel database:
+* Apri lo script `setup.py` e modifica le variabili `database_url`, `cloudinary_cloud_name`, `cloudinary_api_key` e `cloudinary_api_secret`.
+* Esegui lo script `setup.py` che crea il file `.env` con le chiavi segrete e crea le tabelle nel database:
 
 ```bash
 python setup.py

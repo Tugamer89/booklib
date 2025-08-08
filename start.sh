@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Avvio servizio PostgreSQL..."
-sudo systemctl start postgresql
+sudo service postgresql start
 
 echo "Avvio server FastAPI con uvicorn..."
 source venv/bin/activate

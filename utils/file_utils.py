@@ -1,12 +1,18 @@
 import os
-import shutil
-import uuid
 import magic
 import requests
+import cloudinary.uploader
 from fastapi import HTTPException
 from core.config import settings
 
 def validate_and_save_cover(cover):
+    cover.file.seek(0, 2)
+    size = cover.file.tell()
+    if size > 10 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File troppo grande, massimo 10 MB")
+
+    cover.file.seek(0)
+    
     ext = os.path.splitext(cover.filename)[-1].lower()
     if ext not in settings.allowed_extensions:
         raise HTTPException(status_code=400, detail=f"Estensione file non valida: {ext}")
@@ -17,11 +23,9 @@ def validate_and_save_cover(cover):
         raise HTTPException(status_code=400, detail=f"Tipo MIME non valido: {mime_type}")
 
     cover.file.seek(0)
-    os.makedirs("static/covers", exist_ok=True)
-    cover_path = f"static/covers/{uuid.uuid4().hex}{ext}"
-    with open(cover_path, "wb") as buffer:
-        shutil.copyfileobj(cover.file, buffer)
-    return cover_path
+    
+    result = cloudinary.uploader.upload(cover.file, folder="booklib/covers")
+    return result['secure_url']
 
 def validate_cover_url(cover_url: str) -> str:
     cover_path = cover_url.strip()
@@ -39,3 +43,15 @@ def validate_cover_url(cover_url: str) -> str:
         raise HTTPException(status_code=400, detail=f"URL non valido: tipo MIME non valido ({content_type}).")
     
     return cover_path
+
+def extract_public_id(url: str) -> str:
+    parts = url.split("/")
+    filename = parts[-1]
+    folder = parts[-2]
+    public_id = f"{folder}/{filename.rsplit('.', 1)[0]}"
+    return public_id
+
+def delete_cover_from_cloudinary(url: str):
+    public_id = extract_public_id(url)
+    result = cloudinary.uploader.destroy(public_id)
+    return result
