@@ -124,6 +124,51 @@ def add_book(
     return RedirectResponse(url="/", status_code=303)
 
 
+@router.post("/edit", response_class=HTMLResponse)
+def edit_book(
+    book_id: int = Form(...),
+    title: str = Form(...),
+    author: str = Form(...),
+    isbn: str = Form(...),
+    publisher: str = Form(None),
+    location: str = Form(...),
+    cover: UploadFile = File(None),
+    user: User = Depends(get_authenticated_user),
+    db: Session = Depends(get_db)
+):
+    book = db.query(Book).filter(Book.id == book_id, Book.user_id == user.id).first()
+    if not book:
+        raise HTTPException(status_code=404, detail="Libro non trovato")
+
+    # Validazione ISBN
+    isbn_canonical = canonical(isbn.strip())
+    if isbn_canonical and not (is_isbn13(isbn_canonical) or is_isbn10(isbn_canonical)):
+        raise HTTPException(status_code=400, detail="ISBN non valido. Deve essere un ISBN-13 corretto.")
+
+    # Validazione location
+    if not re.fullmatch(r'[A-Z]+[0-9]+', location):
+        raise HTTPException(status_code=400, detail="Formato location non valido. Deve essere lettere maiuscole seguite da cifre, es. A5")
+
+
+    book.title = title
+    book.author = author
+    book.isbn = isbn_canonical
+    book.publisher = publisher
+    book.location = location
+
+    if cover and cover.filename:
+        if book.cover_path != "static/covers/default.jpg":
+            if book.cover_path.startswith("https://res.cloudinary.com/"):
+                delete_cover_from_cloudinary(book.cover_path)
+            elif os.path.exists(book.cover_path):
+                os.remove(book.cover_path)
+
+        book.cover_path = validate_and_save_cover(cover)
+
+    db.commit()
+    return RedirectResponse("/", status_code=303)
+
+
 @router.post("/delete", response_class=HTMLResponse)
 def delete_book(
     book_id: int = Form(...),

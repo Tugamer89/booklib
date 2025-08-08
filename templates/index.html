@@ -58,7 +58,7 @@
             <div class="bg-white w-full max-w-3xl max-h-[80vh] shadow-lg relative flex flex-col rounded-xl overflow-hidden">
                 <div class="sticky top-0 bg-white z-10 flex items-center justify-between p-4 border-b rounded-t-xl">
                     <h2 class="text-xl font-bold">Seleziona un libro</h2>
-                    <button id="closePopup" class="text-gray-700 hover:text-black text-2xl font-bold">&times;</button>
+                    <button id="closePopup" class="text-gray-500 hover:text-gray-800 text-2xl font-bold">&times;</button>
                 </div>
 
                 <div id="booksList" class="overflow-y-auto p-4 space-y-4 flex-1 rounded-b-xl bg-white" style="padding-bottom: 1.5rem;">
@@ -211,19 +211,99 @@
                             <td class="p-2 break-words ">{{ book.isbn | format_isbn }}</td>
                             <td class="p-2 break-words max-w-xs">{{ book.publisher }}</td>
                             <td class="p-2 break-words [text-indent:15%]">{{ book.location }}</td>
-                            <td class="p-2 text-center relative">
-                                <form method="post" action="/delete">
-                                    <input type="hidden" name="book_id" value="{{ book.id }}">
-                                    <button type="submit"
-                                            class="delete-btn absolute right-1/2 top-1/2 -translate-y-1/2 text-red-600 hover:text-red-800 text-2xl font-bold opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                                        &times;
+                            <td class="p-2 text-center space-x-2 group">
+                                <div class="flex items-center justify-center space-x-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                                    <!-- Bottone Modifica -->
+                                    <button type="button" 
+                                        onclick='openEditModal({
+                                                    id: {{ book.id }},
+                                                    title: "{{ book.title|escape }}",
+                                                    author: "{{ book.author|escape }}",
+                                                    isbn: "{{ book.isbn|escape }}",
+                                                    publisher: "{{ book.publisher|escape }}",
+                                                    location: "{{ book.location|escape }}"
+                                                })'
+                                        class="edit-btn text-indigo-600 hover:text-indigo-900 text-xl font-bold">
+                                        ✎
                                     </button>
-                                </form>
+
+                                    <!-- Form elimina -->
+                                    <form method="post" action="/delete">
+                                        <input type="hidden" name="book_id" value="{{ book.id }}">
+                                        <button type="submit"
+                                                class="delete-btn text-red-600 hover:text-red-800 text-2xl font-bold">
+                                            &times;
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+
+
+        <!-- Popup modifica -->
+        <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative">
+                
+                <!-- Titolo + Pulsante chiusura -->
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold">Modifica libro</h2>
+                    <button onclick="closeEditModal()" class="font-bold text-2xl text-gray-500 hover:text-gray-800">&times;</button>
+                </div>
+                
+                <form id="editModalForm" method="post" action="/edit" enctype="multipart/form-data" onsubmit="return validateEditModalForm()">
+                    <input type="hidden" name="book_id" id="modalBookId">
+
+                    <!-- Titolo -->
+                    <div class="mb-3">
+                        <label class="block text-sm font-medium">Titolo</label>
+                        <input type="text" name="title" id="modalTitle" placeholder="Titolo" required class="w-full border p-2 rounded">
+                    </div>
+
+                    <!-- Autore -->
+                    <div class="mb-3">
+                        <label class="block text-sm font-medium">Autore</label>
+                        <input type="text" name="author" id="modalAuthor" placeholder="Autore" required class="w-full border p-2 rounded">
+                    </div>
+
+                    <!-- ISBN -->
+                    <div class="mb-3">
+                        <label class="block text-sm font-medium">ISBN</label>
+                        <input type="text" name="isbn" id="modalIsbn" placeholder="ISBN" maxlength="17" oninput="formatISBN(event)" class="w-full border p-2 rounded">
+                    </div>
+
+                    <!-- Casa editrice -->
+                    <div class="mb-3">
+                        <label class="block text-sm font-medium">Casa editrice</label>
+                        <input type="text" name="publisher" id="modalPublisher" placeholder="Casa editrice" class="w-full border p-2 rounded">
+                    </div>
+
+                    <!-- Location -->
+                    <div class="mb-3">
+                        <label class="block text-sm font-medium">Posizione</label>
+                        <input type="text" name="location" id="modalLocation" placeholder="Posizione"
+                               oninput="formatLocation(this)" 
+                               onkeypress="return onlyLettersNumbers(event)" 
+                               class="w-full border p-2 rounded">
+                        <span id="modalLocationError" class="hidden text-red-500 text-sm">Formato non valido (Es. A5)</span>
+                    </div>
+
+                    <!-- Copertina -->
+                    <div class="mb-3">
+                        <label class="block text-sm font-medium">Copertina</label>
+                        <input type="file" name="cover" accept="image/*" class="w-full border p-2 rounded">
+                    </div>
+
+                    <!-- Pulsanti -->
+                    <div class="flex justify-end space-x-2">
+                        <button type="button" onclick="closeEditModal()" class="px-3 py-2 bg-gray-300 rounded">Annulla</button>
+                        <button type="submit" class="px-3 py-2 bg-indigo-600 text-white rounded">Salva</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </body>

@@ -103,6 +103,28 @@ function previewCover(event) {
     }
 }
 
+function openEditModal(book) {
+    document.getElementById('modalBookId').value = book.id;
+    document.getElementById('modalTitle').value = book.title;
+    document.getElementById('modalAuthor').value = book.author;
+    document.getElementById('modalIsbn').value = formatISBN(book.isbn);
+    document.getElementById('modalPublisher').value = book.publisher;
+    document.getElementById('modalLocation').value = book.location;
+
+    document.getElementById('editModal').classList.remove('hidden');
+    document.getElementById('editModal').classList.add('flex');
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').classList.add('hidden');
+    document.getElementById('editModal').classList.remove('flex');
+}
+
+function validateEditModalForm() {
+    const locationInput = document.getElementById('modalLocation');
+    return validateLocation(locationInput, 'modalLocationError');
+}
+
 window.addEventListener("load", updateImageHeight);
 window.addEventListener("resize", updateImageHeight);
 
