@@ -26,14 +26,17 @@ def auth_page(
     error: str = Query(None),
     username: str = Query(None),
     csrf_protect: CsrfProtect = Depends()
-):
+):    
     try:
         get_authenticated_user(request, db)
         return RedirectResponse("/", status_code=302)
     except HTTPException:
         pass
 
+    if username:
+        username = username.strip()
     raw_token, signed_token = csrf_protect.generate_csrf_tokens()
+    
     response = templates.TemplateResponse("auth.html", {
         "request": request,
         "error": error,
@@ -62,6 +65,8 @@ async def auth_action(
 ):
     error = None
     user = None
+    if username:
+        username = username.strip()
 
     try:
         await csrf_protect.validate_csrf(request)
