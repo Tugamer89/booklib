@@ -12,6 +12,5 @@ python-magic
 requests
 Jinja2
 starlette-securecookies
-psycopg2
 python-multipart
 cloudinary
