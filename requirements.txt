@@ -5,7 +5,8 @@ pydantic
 pydantic-settings
 python-dotenv
 fastapi-csrf-protect
-passlib[bcrypt]
+passlib[bcrypt]>=1.7.4
+bcrypt<4.0.0
 isbnlib
 python-magic
 requests
