@@ -107,5 +107,5 @@ MIT License — sentiti libero di usare e modificare.
 
 ## 📋 TODO list
 
-* Aggiungere azione modifica
 * Aggiungere compatibiltà per mobile
+* Aggiungere azione modifica
