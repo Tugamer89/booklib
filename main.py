@@ -1,4 +1,3 @@
-from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exception_handlers import http_exception_handler
 from fastapi.responses import FileResponse, RedirectResponse
@@ -13,15 +12,7 @@ from core.templates import templates
 from routes import auth, books
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # startup
-    Base.metadata.create_all(bind=engine)
-    yield
-    # shutdown
-
-
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 
 # Middleware per sessioni
@@ -45,6 +36,9 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(auth.router)
 app.include_router(books.router)
 
+@app.on_event("startup")
+async def on_startup():
+    Base.metadata.create_all(bind=engine)
 
 # Gestione globale errori HTTPException
 @app.exception_handler(HTTPException)
