@@ -1,4 +1,5 @@
 let currentQuery = '';
+let language = '';
 let currentStartIndex = 0;
 let totalItems = 0;
 let isLoading = false;
@@ -8,9 +9,9 @@ function getInput(name) {
 }
 
 function validateSearchInputs() {
-    const fields = ['title', 'author', 'isbn', 'publisher'];
+    const fields = ['titleAdd', 'authorAdd', 'isbnAdd', 'publisherAdd'];
     return fields.some(name => {
-        const el = getInput(name);
+        const el = document.getElementById(name);
         return el && el.value.trim() !== '';
     });
 }
@@ -19,8 +20,9 @@ function showError(message) {
     alert(message);
 }
 
-async function fetchBooksFromGoogle(query, startIndex = 0) {
-    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=10&startIndex=${startIndex}`;
+async function fetchBooksFromGoogle(query, startIndex = 0, language = '') {
+    let url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=10&startIndex=${startIndex}`;
+    if (language && /^[a-zA-Z]{2,3}$/i.test(language)) url += `&langRestrict=${language.toLowerCase()}`;
     const response = await fetch(url);
     if (!response.ok) throw new Error('Errore nel fetch di Google Books');
     const data = await response.json();
@@ -36,6 +38,7 @@ function createBookItem(book) {
     const publisher = info.publisher || '';
     const publishedDate = info.publishedDate || '';
     const description = info.description || '';
+    const language = info.language || '';
 
     const thumbnail = volumeId
         ? `https://books.google.com/books/publisher/content/images/frontcover/${volumeId}?fife=w500&source=gbs_api`
@@ -59,34 +62,45 @@ function createBookItem(book) {
             <p class="text-sm">${publisher} ${publishedDate}</p>
             <p class="text-xs mt-1 line-clamp-3">${description}</p>
             <p class="text-xs mt-1 font-mono">ISBN: ${isbn}</p>
+            <p class="text-xs mt-1 font-mono">Lingua: ${language.toUpperCase()}</p>
         </div>
         <button class="selectBookBtn px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded">Seleziona</button>
     `;
 
     div.querySelector('.selectBookBtn').addEventListener('click', () => {
-        populateFormWithBook({title, authors, publisher, isbn, thumbnail});
+        populateFormWithBook({
+            title,
+            authors,
+            publisher,
+            isbn,
+            thumbnail,
+            description,
+            language
+        });
         closePopup();
     });
 
     return div;
 }
 
-function populateFormWithBook({title, authors, publisher, isbn, thumbnail}) {
-    const titleInput = getInput("title");
-    const authorInput = getInput("author");
-    const publisherInput = getInput("publisher");
-    const isbnInput = getInput("isbn");
-    const locationInput = getInput("location");
-    const cover_urlInput = getInput("cover_url");
+function populateFormWithBook({title, authors, publisher, isbn, thumbnail, description, language}) {
+    const titleInput = document.getElementById("titleAdd");
+    const authorInput = document.getElementById("authorAdd");
+    const publisherInput = document.getElementById("publisherAdd");
+    const isbnInput = document.getElementById("isbnAdd");
+    const cover_urlInput = document.getElementById("cover_url");
+    const descriptionInput = document.querySelector('textarea[name="description"]');
+    const languageInput = document.getElementById("languageAdd");
 
-    if (!titleInput || !authorInput || !publisherInput || !isbnInput || !locationInput || !cover_urlInput) return;
+    if (!titleInput || !authorInput || !publisherInput || !isbnInput || !cover_urlInput || !descriptionInput || !languageInput) return;
 
     titleInput.value = title || '';
     authorInput.value = authors || '';
     publisherInput.value = publisher || '';
     isbnInput.value = formatISBN(isbn || '');
-    locationInput.value = '';
     cover_urlInput.value = thumbnail || '';
+    descriptionInput.value = description || '';
+    languageInput.value = validateLanguage(language || '');
 
     const coverPreview = document.getElementById('coverPreview');
     if (thumbnail) {
@@ -111,6 +125,7 @@ function closePopup() {
     document.getElementById('booksList').innerHTML = '';
 
     currentQuery = '';
+    language = '';
     currentStartIndex = 0;
     totalItems = 0;
 }
@@ -122,17 +137,20 @@ async function onSearchButtonClick() {
     }
 
     const fieldMap = {
-        title: 'intitle',
-        author: 'inauthor',
-        isbn: 'isbn',
-        publisher: 'inpublisher'
+        titleAdd: 'intitle',
+        authorAdd: 'inauthor',
+        isbnAdd: 'isbn',
+        publisherAdd: 'inpublisher'
     };
 
     currentQuery = Object.entries(fieldMap).map(([name, prefix]) => {
-        const el = document.querySelector(`input[name="${name}"]`);
+        const el = document.getElementById(name);
         const value = el ? el.value.trim() : '';
         return value ? `${prefix}:${value}` : '';
     }).filter(Boolean).join(' ');
+
+    const langInput = document.getElementById('languageAdd');
+    language = (langInput && /^[A-Za-z]{2,3}$/.test(langInput.value.trim())) ? langInput.value.trim().toLowerCase() : '';
 
     currentStartIndex = 0;
     totalItems = 0;
@@ -144,7 +162,7 @@ async function onSearchButtonClick() {
 
     try {
         isLoading = true;
-        const data = await fetchBooksFromGoogle(currentQuery, currentStartIndex);
+        const data = await fetchBooksFromGoogle(currentQuery, currentStartIndex, language);
         totalItems = data.totalItems || 0;
         booksList.innerHTML = '';
 
@@ -181,7 +199,7 @@ async function scrollerLoading() {
         el.appendChild(loadingIndicator);
 
         try {
-            const data = await fetchBooksFromGoogle(currentQuery, currentStartIndex);
+            const data = await fetchBooksFromGoogle(currentQuery, currentStartIndex, language);
             if (data.items && data.items.length > 0) {
                 data.items.forEach(book => {
                     const item = createBookItem(book);

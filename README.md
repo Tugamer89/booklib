@@ -107,6 +107,4 @@ MIT License — sentiti libero di usare e modificare.
 
 ## 📋 TODO list
 
-* Pagina popup dettagliata per ogni libro
-* Aggiungere commento per ogni libro
 * Aggiungere compatibiltà per mobile

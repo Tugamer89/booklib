@@ -89,6 +89,9 @@ def add_book(
     isbn: str = Form(...),
     publisher: str = Form(...),
     location: str = Form(...),
+    description: str = Form(None),
+    language: str = Form(None),
+    personal_comment: str = Form(None),
     cover: UploadFile = File(None),
     cover_url: str = Form(None),
 ):
@@ -98,8 +101,14 @@ def add_book(
         raise HTTPException(status_code=400, detail="ISBN non valido. Deve essere un ISBN-13 corretto.")
 
     # Validazione location
-    if not re.fullmatch(r'[A-Z]+[0-9]+', location):
-        raise HTTPException(status_code=400, detail="Formato location non valido. Deve essere lettere maiuscole seguite da cifre, es. A5")
+    if not re.fullmatch(r'[A-Z]+[0-9]+', location.strip()):
+        raise HTTPException(status_code=400, detail="Formato location non valido. Deve essere lettere maiuscole seguite da cifre (es. A5, AB30, LIBRERIA1)")
+
+    # Validazione language
+    if language:
+        language = language.strip().upper()
+        if not re.fullmatch(r'[A-Z]{2,3}', language):
+            raise HTTPException(status_code=400, detail="Lingua non valida. Deve essere 2-3 lettere maiuscole (es. IT, EN)")
 
     # Validazione e gestione cover
     if cover_url:
@@ -111,12 +120,15 @@ def add_book(
 
     # Creazione libro
     book = Book(
-        title=title,
-        author=author,
+        title=title.strip(),
+        author=author.strip(),
         isbn=isbn_canonical,
-        publisher=publisher,
+        publisher=publisher.strip(),
         location=location,
         cover_path=cover_path,
+        description=description.strip(),
+        language=language,
+        personal_comment=personal_comment.strip(),
         owner=user
     )
 
@@ -130,8 +142,11 @@ def edit_book(
     title: str = Form(...),
     author: str = Form(...),
     isbn: str = Form(...),
-    publisher: str = Form(None),
+    publisher: str = Form(...),
     location: str = Form(...),
+    description: str = Form(...),
+    language: str = Form(...),
+    personal_comment: str = Form(...),
     cover: UploadFile = File(None),
     user: User = Depends(get_authenticated_user),
     db: Session = Depends(get_db)
@@ -146,15 +161,24 @@ def edit_book(
         raise HTTPException(status_code=400, detail="ISBN non valido. Deve essere un ISBN-13 corretto.")
 
     # Validazione location
+    location = location.strip()
     if not re.fullmatch(r'[A-Z]+[0-9]+', location):
         raise HTTPException(status_code=400, detail="Formato location non valido. Deve essere lettere maiuscole seguite da cifre, es. A5")
 
+    # Validazione language
+    if language:
+        language = language.strip().upper()
+        if not re.fullmatch(r'[A-Z]{2,3}', language):
+            raise HTTPException(status_code=400, detail="Lingua non valida. Deve essere 2-3 lettere maiuscole (es. IT, EN)")
 
-    book.title = title
-    book.author = author
+    book.title = title.strip()
+    book.author = author.strip()
     book.isbn = isbn_canonical
-    book.publisher = publisher
+    book.publisher = publisher.strip()
     book.location = location
+    book.description = description.strip()
+    book.language = language
+    book.personal_comment = personal_comment.strip()
 
     if cover and cover.filename:
         if book.cover_path != "static/covers/default.jpg":

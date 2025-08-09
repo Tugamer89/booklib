@@ -22,6 +22,9 @@ class Book(Base):
     publisher = Column(String)
     location = Column(String)
     cover_path = Column(String)
+    description = Column(String)
+    language = Column(String)
+    personal_comment = Column(String)
 
     user_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User", back_populates="books")

@@ -44,7 +44,6 @@ function toggleVisibility(id, btn) {
     if (arrow) arrow.textContent = isHidden ? "▲" : "▼";
 
     localStorage.setItem(id, isHidden);
-    console.log(`Visibilità di ${id} impostata su ${isHidden}`);
 
     if (id === 'addForm' && isHidden) setTimeout(updateImageHeight, 50);
 }
@@ -110,19 +109,66 @@ function openEditModal(book) {
     document.getElementById('modalIsbn').value = formatISBN(book.isbn);
     document.getElementById('modalPublisher').value = book.publisher;
     document.getElementById('modalLocation').value = book.location;
+    document.getElementById('modalDescription').value = book.description;
+    document.getElementById('modalLanguage').value = book.language;
+    document.getElementById('modalComment').value = book.personal_comment;
 
     document.getElementById('editModal').classList.remove('hidden');
     document.getElementById('editModal').classList.add('flex');
+    document.body.style.overflow = 'hidden';
 }
 
 function closeEditModal() {
     document.getElementById('editModal').classList.add('hidden');
     document.getElementById('editModal').classList.remove('flex');
+    document.body.style.overflow = '';
 }
 
 function validateEditModalForm() {
     const locationInput = document.getElementById('modalLocation');
     return validateLocation(locationInput, 'modalLocationError');
+}
+
+function openDetailModal(book) {
+    document.getElementById('detailCover').src = book.cover;
+    document.getElementById('detailTitle').textContent = book.title;
+    document.getElementById('detailAuthor').textContent = book.author;
+    document.getElementById('detailIsbn').textContent = book.isbn || 'Non disponibile';
+    document.getElementById('detailPublisher').textContent = book.publisher || 'Non disponibile'; 
+    document.getElementById('detailLanguage').textContent = book.language || 'Non disponibile';
+    document.getElementById('detailLocation').textContent = book.location;
+    document.getElementById('detailDescription').textContent = book.description || 'Nessuna descrizione disponibile.';
+    document.getElementById('detailComment').textContent = book.personal_comment || 'Nessun commento personale.';
+
+    document.getElementById('detailModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDetailModal() {
+    document.getElementById('detailModal').classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
+function validateLanguage(inputOrEvent) {
+    let raw;
+
+    if (typeof inputOrEvent === 'string') {
+        raw = inputOrEvent;
+    } else if (inputOrEvent instanceof Event) {
+        raw = inputOrEvent.target.value;
+    } else if (inputOrEvent && typeof inputOrEvent.value === 'string') {
+        raw = inputOrEvent.value;
+    } else {
+        console.error('validateLanguage: input non valido');
+        return '';
+    }
+    
+    let value = raw.replace(/[^a-zA-Z]/gi, '').toUpperCase();
+
+    if (inputOrEvent instanceof Event) inputOrEvent.target.value = value;
+    else if (inputOrEvent && typeof inputOrEvent.value === 'string') inputOrEvent.value = value;
+
+    return value;
 }
 
 window.addEventListener("load", updateImageHeight);
