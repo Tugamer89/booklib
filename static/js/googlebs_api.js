@@ -89,7 +89,7 @@ function populateFormWithBook({title, authors, publisher, isbn, thumbnail, descr
     const publisherInput = document.getElementById("publisherAdd");
     const isbnInput = document.getElementById("isbnAdd");
     const cover_urlInput = document.getElementById("cover_url");
-    const descriptionInput = document.querySelector('textarea[name="description"]');
+    const descriptionInput = document.getElementById("descriptionAdd");
     const languageInput = document.getElementById("languageAdd");
 
     if (!titleInput || !authorInput || !publisherInput || !isbnInput || !cover_urlInput || !descriptionInput || !languageInput) return;
