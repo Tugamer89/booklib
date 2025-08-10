@@ -82,6 +82,7 @@ def read_books(
 
 @router.post("/add", response_class=HTMLResponse)
 def add_book(
+    request: Request,
     user: User = Depends(get_authenticated_user),
     db: Session = Depends(get_db),
     title: str = Form(...),
@@ -133,11 +134,16 @@ def add_book(
     )
 
     crud_add_book(db, book)
+
+    referer = request.headers.get("referer")
+    if referer:
+        return RedirectResponse(url=referer, status_code=303)
     return RedirectResponse(url="/", status_code=303)
 
 
 @router.post("/edit", response_class=HTMLResponse)
 def edit_book(
+    request: Request,
     book_id: int = Form(...),
     title: str = Form(...),
     author: str = Form(...),
@@ -190,11 +196,16 @@ def edit_book(
         book.cover_path = validate_and_save_cover(cover)
 
     db.commit()
-    return RedirectResponse("/", status_code=303)
+    
+    referer = request.headers.get("referer")
+    if referer:
+        return RedirectResponse(url=referer, status_code=303)
+    return RedirectResponse(url="/", status_code=303)
 
 
 @router.post("/delete", response_class=HTMLResponse)
 def delete_book(
+    request: Request,
     book_id: int = Form(...),
     user: User = Depends(get_authenticated_user),
     db: Session = Depends(get_db)
@@ -210,4 +221,8 @@ def delete_book(
             os.remove(book.cover_path)
 
     crud_delete_book(db, book)
-    return RedirectResponse("/", status_code=303)
+    
+    referer = request.headers.get("referer")
+    if referer:
+        return RedirectResponse(url=referer, status_code=303)
+    return RedirectResponse(url="/", status_code=303)

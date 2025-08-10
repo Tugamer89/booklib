@@ -110,7 +110,7 @@ async def auth_action(
 
     request.session["user_id"] = user.id
     request.session["session_token"] = token
-    return RedirectResponse("/", status_code=302)
+    return RedirectResponse(url="/", status_code=302)
 
 
 @router.get("/logout")
@@ -123,4 +123,4 @@ def logout(
     user.session_expiry = None
     db.commit()
     request.session.clear()
-    return RedirectResponse("/auth", status_code=302)
+    return RedirectResponse(url="/auth", status_code=302)
