@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     }
     username_regex: str = r"^[a-zA-Z0-9_.-]{3,20}$"
     password_regex: str = r"^.{8,100}$"
+    DEBUG: bool = os.getenv("DEBUG", "false").lower() == "true"
     
     cloudinary.config(
         cloud_name=cloudinary_cloud_name,
