@@ -47,9 +47,22 @@
     <div class="max-w-7xl mx-auto">
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-4xl font-bold text-indigo-700">📚 La tua libreria</h1>
-            <form action="/logout" method="get">
-                <button class="px-4 py-2 text-white font-semibold bg-red-500 hover:bg-red-600 rounded shadow transition">Esci</button>
-            </form>
+
+            <div class="flex space-x-4">
+                {% if is_admin %}
+                <form action="/admin/users" method="get">
+                    <button class="px-4 py-2 text-white font-semibold bg-gray-500 hover:bg-gray-600 rounded shadow transition">
+                        Pannello di controllo
+                    </button>
+                </form>
+                {% endif %}
+                
+                <form action="/logout" method="get">
+                    <button class="px-4 py-2 text-white font-semibold bg-red-500 hover:bg-red-600 rounded shadow transition">
+                        Esci
+                    </button>
+                </form>
+            </div>
         </div>
 
 

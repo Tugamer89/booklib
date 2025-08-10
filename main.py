@@ -7,7 +7,7 @@ from securecookies import SecureCookiesMiddleware
 
 from db.database import engine, Base
 from core.config import settings
-from routes import auth, books, debug, errors
+from routes import admin, auth, books, debug, errors
 
 
 app = FastAPI()
@@ -32,12 +32,14 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.add_exception_handler(errors.HTTPException, errors.http_exception_redirect)
+app.add_exception_handler(errors.StarletteHTTPException, errors.http_exception_redirect)
 app.add_exception_handler(errors.RequestValidationError, errors.validation_exception_handler)
 app.add_exception_handler(errors.OperationalError, errors.operational_error_handler)
 app.add_exception_handler(Exception, errors.generic_exception_handler)
 
 app.include_router(auth.router)
 app.include_router(books.router)
+app.include_router(admin.router)
 if settings.DEBUG:
     app.include_router(debug.router)
 

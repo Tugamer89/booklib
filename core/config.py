@@ -1,5 +1,7 @@
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
+from pydantic_settings.sources import PydanticBaseSettingsSource
+from pydantic import Field
 import cloudinary
 import os
 
@@ -23,11 +25,32 @@ class Settings(BaseSettings):
     db_max_retries: int = 3
     db_retry_delay: int = 1 # seconds
     DEBUG: bool = os.getenv("DEBUG", "false").lower() == "true"
-    
-    cloudinary.config(
-        cloud_name=cloudinary_cloud_name,
-        api_key=cloudinary_api_key,
-        api_secret=cloudinary_api_secret
-    )
+    admin_users_env: str = Field(default=os.getenv("ADMIN_USERS", ""), repr=False)
+    admin_users: set[str] = set()
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        self.admin_users = {
+            u.strip()
+            for u in self.admin_users_env.split(",")
+            if u.strip()
+        }
+
+    @classmethod
+    def settings_customise_sources(
+        cls,
+        settings_cls: type[BaseSettings],
+        init_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,
+        dotenv_settings: PydanticBaseSettingsSource,
+        file_secret_settings: PydanticBaseSettingsSource,
+    ) -> tuple[PydanticBaseSettingsSource, ...]:
+        return init_settings, file_secret_settings
+
 
 settings = Settings()
+cloudinary.config(
+    cloud_name=settings.cloudinary_cloud_name,
+    api_key=settings.cloudinary_api_key,
+    api_secret=settings.cloudinary_api_secret
+)

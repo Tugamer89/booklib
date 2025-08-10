@@ -24,6 +24,15 @@
             transform: translateY(-10px);
             transition: all 300ms ease-in-out;
         }
+        .toggle-password {
+            cursor: pointer;
+            user-select: none;
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #2563eb; /* blue-600 */
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-blue-100 to-indigo-200 text-gray-900 p-8 flex flex-col items-center justify-center min-h-screen">
@@ -60,23 +69,28 @@
                 class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
 
-            <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Password"
-                required
-                class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
+            <div class="relative">
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Password"
+                    minlength="8"
+                    required
+                    class="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                <span class="toggle-password" onclick="togglePassword(this)" title="Mostra/Nascondi password">👁️</span>
+            </div>
 
             <!-- Conferma Password -->
-            <div id="confirmPasswordGroup" class="hidden">
+            <div id="confirmPasswordGroup" class="hidden relative">
                 <input
                     type="password"
                     id="confirmPassword"
                     placeholder="Conferma password"
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    class="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
+                <span class="toggle-password" onclick="togglePassword(this)" title="Mostra/Nascondi password">👁️</span>
                 <p id="passwordMismatch" class="text-red-600 text-sm mt-1 hidden">
                     Le password non coincidono.
                 </p>
@@ -92,5 +106,18 @@
             </button>
         </form>
     </div>
+
+    <script>
+        function togglePassword(span) {
+            const input = span.previousElementSibling;
+            if (input.type === "password") {
+                input.type = "text";
+                span.textContent = "🙈";
+            } else {
+                input.type = "password";
+                span.textContent = "👁️";
+            }
+        }
+    </script>
 </body>
 </html>

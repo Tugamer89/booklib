@@ -18,6 +18,7 @@ def create_env_file():
     cloudinary_cloud_name = "your_cloud_name"
     cloudinary_api_key = "your_api_key"
     cloudinary_api_secret = "your_api"
+    admin_user = {"admin1", "admin2"}
 
     with open(ENV_FILE, "w") as f:
         f.write(f"SESSION_SECRET='{session_secret}'\n")
@@ -26,6 +27,7 @@ def create_env_file():
         f.write(f"CLOUDINARY_CLOUD_NAME='{cloudinary_cloud_name}'\n")
         f.write(f"CLOUDINARY_API_KEY='{cloudinary_api_key}'\n")
         f.write(f"CLOUDINARY_API_SECRET='{cloudinary_api_secret}'\n")
+        f.write(f"ADMIN_USERS='{','.join(admin_user)}'\n")
 
     print(f"File {ENV_FILE} creato con chiavi generate automaticamente.")
 

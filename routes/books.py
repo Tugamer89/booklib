@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.types import BigInteger
 
 from core.auth import get_authenticated_user
+from core.config import settings
 from core.templates import templates
 from db.crud import add_book as crud_add_book, delete_book as crud_delete_book
 from db.database import get_db
@@ -76,7 +77,8 @@ def read_books(
         "books": books,
         "sort_by": sort_by,
         "sort_order": sort_order,
-        "is_logged_in": True
+        "is_logged_in": True,
+        "is_admin": user.username in settings.admin_users
     })
 
 

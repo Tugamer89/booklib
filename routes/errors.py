@@ -1,4 +1,5 @@
 from fastapi import HTTPException, Request, status
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import RedirectResponse
 from sqlalchemy.exc import OperationalError
@@ -6,11 +7,14 @@ from sqlalchemy.exc import OperationalError
 from core.templates import templates
 
 # Gestione HTTPException
-async def http_exception_redirect(request: Request, exc: HTTPException):
+async def http_exception_redirect(request: Request, exc: HTTPException | StarletteHTTPException):
     if exc.status_code == status.HTTP_401_UNAUTHORIZED:
         return RedirectResponse(url="/auth", status_code=status.HTTP_302_FOUND)
     
     referer = request.headers.get("referer")
+    if request.url.path.startswith("/admin/users"):
+        referer = "/admin/users"
+    
     return templates.TemplateResponse(
         "error.html",
         {

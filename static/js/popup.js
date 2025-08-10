@@ -11,8 +11,9 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (!cancelBtn || !confirmBtn) return;
 
-    document.querySelectorAll("form[action='/delete']").forEach(form => {
+    document.querySelectorAll("form[action$='/delete']").forEach(form => {
         form.addEventListener("submit", (e) => {
+            document.body.style.overflow = 'hidden';
             e.preventDefault();
             deleteForm = form;
             showConfirmDialog();
@@ -22,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cancelBtn.addEventListener("click", () => {
         document.getElementById("confirmOverlay").classList.add("hidden");
         deleteForm = null;
+        document.body.style.overflow = '';
     });
 
     confirmBtn.addEventListener("click", () => {

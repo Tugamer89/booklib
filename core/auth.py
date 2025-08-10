@@ -1,8 +1,12 @@
+from datetime import datetime
 from fastapi import Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
+
+from core.config import settings
 from db.crud import get_user_by_id
 from db.database import get_db
-from datetime import datetime
+from db.models import User
+
 
 def get_authenticated_user(request: Request, db: Session = Depends(get_db)):
     user_id = request.session.get("user_id")
@@ -21,4 +25,9 @@ def get_authenticated_user(request: Request, db: Session = Depends(get_db)):
         db.commit()
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Sessione scaduta")
 
+    return user
+
+def admin_required(user: User = Depends(get_authenticated_user)):
+    if user.username not in settings.admin_users:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Accesso negato")
     return user
