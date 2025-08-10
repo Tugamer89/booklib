@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     }
     username_regex: str = r"^[a-zA-Z0-9_.-]{3,20}$"
     password_regex: str = r"^.{8,100}$"
+    db_max_retries: int = 3
+    db_retry_delay: int = 1 # seconds
     DEBUG: bool = os.getenv("DEBUG", "false").lower() == "true"
     
     cloudinary.config(

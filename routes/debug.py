@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from sqlalchemy.exc import OperationalError
 
 router = APIRouter()
 
@@ -17,6 +18,10 @@ async def test_500():
 @router.get("/test-validation")
 async def test_validation(parametro: int):
     return {"ok": True}
+
+@router.get("/test-operational-error")
+async def test_operational_error():
+    raise OperationalError("Simulated operational error", params=None, orig=None)
 
 @router.get("/test-generic")
 async def test_generic():
