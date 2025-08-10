@@ -31,7 +31,7 @@ app.add_middleware(
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-app.add_exception_handler(errors.StarletteHTTPException, errors.http_exception_redirect)
+app.add_exception_handler(errors.HTTPException, errors.http_exception_redirect)
 app.add_exception_handler(errors.RequestValidationError, errors.validation_exception_handler)
 app.add_exception_handler(errors.OperationalError, errors.operational_error_handler)
 app.add_exception_handler(Exception, errors.generic_exception_handler)

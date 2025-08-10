@@ -1,7 +1,7 @@
 import os
 import re
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Request, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Request, status, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse
 from isbnlib import canonical, is_isbn10, is_isbn13
 from sqlalchemy import asc, case, cast, desc, func, null
@@ -99,17 +99,17 @@ def add_book(
     # Validazione ISBN
     isbn_canonical = canonical(isbn.strip())
     if isbn_canonical and not (is_isbn13(isbn_canonical) or is_isbn10(isbn_canonical)):
-        raise HTTPException(status_code=400, detail="ISBN non valido. Deve essere un ISBN-13 corretto.")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="ISBN non valido. Deve essere un ISBN-13 corretto.")
 
     # Validazione location
     if not re.fullmatch(r'[A-Z]+[0-9]+', location.strip()):
-        raise HTTPException(status_code=400, detail="Formato location non valido. Deve essere lettere maiuscole seguite da cifre (es. A5, AB30, LIBRERIA1)")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Formato location non valido. Deve essere lettere maiuscole seguite da cifre (es. A5, AB30, LIBRERIA1)")
 
     # Validazione language
     if language:
         language = language.strip().upper()
         if not re.fullmatch(r'[A-Z]{2,3}', language):
-            raise HTTPException(status_code=400, detail="Lingua non valida. Deve essere 2-3 lettere maiuscole (es. IT, EN)")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Lingua non valida. Deve essere 2-3 lettere maiuscole (es. IT, EN)")
 
     # Validazione e gestione cover
     if cover_url:
@@ -137,8 +137,8 @@ def add_book(
 
     referer = request.headers.get("referer")
     if referer:
-        return RedirectResponse(url=referer, status_code=303)
-    return RedirectResponse(url="/", status_code=303)
+        return RedirectResponse(url=referer, status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.post("/edit", response_class=HTMLResponse)
@@ -159,23 +159,23 @@ def edit_book(
 ):
     book = db.query(Book).filter(Book.id == book_id, Book.user_id == user.id).first()
     if not book:
-        raise HTTPException(status_code=404, detail="Libro non trovato")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Libro non trovato")
 
     # Validazione ISBN
     isbn_canonical = canonical(isbn.strip())
     if isbn_canonical and not (is_isbn13(isbn_canonical) or is_isbn10(isbn_canonical)):
-        raise HTTPException(status_code=400, detail="ISBN non valido. Deve essere un ISBN-13 corretto.")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="ISBN non valido. Deve essere un ISBN-13 corretto.")
 
     # Validazione location
     location = location.strip()
     if not re.fullmatch(r'[A-Z]+[0-9]+', location):
-        raise HTTPException(status_code=400, detail="Formato location non valido. Deve essere lettere maiuscole seguite da cifre, es. A5")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Formato location non valido. Deve essere lettere maiuscole seguite da cifre, es. A5")
 
     # Validazione language
     if language:
         language = language.strip().upper()
         if not re.fullmatch(r'[A-Z]{2,3}', language):
-            raise HTTPException(status_code=400, detail="Lingua non valida. Deve essere 2-3 lettere maiuscole (es. IT, EN)")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Lingua non valida. Deve essere 2-3 lettere maiuscole (es. IT, EN)")
 
     book.title = title.strip()
     book.author = author.strip()
@@ -199,8 +199,8 @@ def edit_book(
     
     referer = request.headers.get("referer")
     if referer:
-        return RedirectResponse(url=referer, status_code=303)
-    return RedirectResponse(url="/", status_code=303)
+        return RedirectResponse(url=referer, status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.post("/delete", response_class=HTMLResponse)
@@ -212,7 +212,7 @@ def delete_book(
 ):
     book = db.query(Book).filter(Book.id == book_id, Book.user_id == user.id).first()
     if not book:
-        raise HTTPException(status_code=404, detail="Libro non trovato")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Libro non trovato")
 
     if book.cover_path != "static/covers/default.jpg":
         if book.cover_path.startswith("https://res.cloudinary.com/"):
@@ -224,5 +224,5 @@ def delete_book(
     
     referer = request.headers.get("referer")
     if referer:
-        return RedirectResponse(url=referer, status_code=303)
-    return RedirectResponse(url="/", status_code=303)
+        return RedirectResponse(url=referer, status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)

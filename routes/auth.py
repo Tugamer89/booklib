@@ -1,7 +1,7 @@
 import secrets
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi_csrf_protect.exceptions import TokenValidationError
 from passlib.hash import bcrypt
@@ -29,7 +29,7 @@ def auth_page(
 ):    
     try:
         get_authenticated_user(request, db)
-        return RedirectResponse("/", status_code=302)
+        return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
     except HTTPException:
         pass
 
@@ -110,7 +110,7 @@ async def auth_action(
 
     request.session["user_id"] = user.id
     request.session["session_token"] = token
-    return RedirectResponse(url="/", status_code=302)
+    return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
 
 
 @router.get("/logout")
@@ -123,4 +123,4 @@ def logout(
     user.session_expiry = None
     db.commit()
     request.session.clear()
-    return RedirectResponse(url="/auth", status_code=302)
+    return RedirectResponse(url="/auth", status_code=status.HTTP_302_FOUND)
