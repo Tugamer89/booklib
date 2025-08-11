@@ -57,7 +57,7 @@ async def admin_reset_password(
         db=db,
         admin=admin,
         msg="Password aggiornata",
-        error=''
+        error=""
     )
 
 @router.post("/admin/users/delete")
