@@ -49,6 +49,8 @@ async def admin_reset_password(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Utente non trovato")
     
     user.password = bcrypt.hash(new_password)
+    user.session_token = None
+    user.session_expiry = None
     db.commit()
     return admin_users_list(
         request=request,
