@@ -107,4 +107,5 @@ MIT License — sentiti libero di usare e modificare.
 
 ## 📋 TODO list
 
+* Big fix: ISBN scan non funziona almeno su mobile forse con Isbn10
 * Aggiungere compatibiltà per mobile
