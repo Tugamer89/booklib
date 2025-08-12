@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     password_regex: str = r"^.{8,100}$"
     db_max_retries: int = 3
     db_retry_delay: int = 1 # seconds
+    max_sessions_per_user: int = 5
     DEBUG: bool = os.getenv("DEBUG", "false").lower() == "true"
     admin_users_env: str = Field(default=os.getenv("ADMIN_USERS", ""), repr=False)
     admin_users: set[str] = set()

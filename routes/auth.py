@@ -1,17 +1,14 @@
-import secrets
-from datetime import datetime, timedelta, timezone
-
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi_csrf_protect.exceptions import TokenValidationError
 from passlib.hash import bcrypt
 from sqlalchemy.orm import Session
 
-from core.auth import get_authenticated_user
+from core.auth import get_authenticated_user, create_session
 from core.csrf import CsrfProtect
 from core.security import validate_credentials
 from core.templates import templates
-from db.crud import get_user_by_username
+from db.crud import get_user_by_username, logout_current
 from db.database import get_db
 from db.models import User
 
@@ -102,12 +99,7 @@ async def auth_action(
         )
 
 
-    token = secrets.token_hex(32)
-    expiry = datetime.now(timezone.utc) + timedelta(days=7)
-    user.session_token = token
-    user.session_expiry = expiry
-    db.commit()
-
+    token = create_session(db, user.id)
     request.session["user_id"] = user.id
     request.session["session_token"] = token
     return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
@@ -119,8 +111,7 @@ def logout(
     user: User = Depends(get_authenticated_user),
     db: Session = Depends(get_db)
 ):
-    user.session_token = None
-    user.session_expiry = None
-    db.commit()
+    token = request.session["session_token"]
+    logout_current(db, token)
     request.session.clear()
     return RedirectResponse(url="/auth", status_code=status.HTTP_302_FOUND)

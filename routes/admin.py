@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, status
-from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from passlib.hash import bcrypt
 
 from core.auth import admin_required
 from core.config import settings
 from core.templates import templates
+from db.crud import logout_all
 from db.database import get_db
 from db.models import User
 
@@ -49,9 +49,7 @@ async def admin_reset_password(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Utente non trovato")
     
     user.password = bcrypt.hash(new_password)
-    user.session_token = None
-    user.session_expiry = None
-    db.commit()
+    logout_all(db, user_id)
     return admin_users_list(
         request=request,
         db=db,

@@ -1,6 +1,5 @@
 import os
 import base64
-from db.database import engine, Base
 
 ENV_FILE = ".env"
 
@@ -38,4 +37,5 @@ def create_tables():
 
 if __name__ == "__main__":
     create_env_file()
+    from db.database import engine, Base
     create_tables()
