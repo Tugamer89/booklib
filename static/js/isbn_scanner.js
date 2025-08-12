@@ -20,12 +20,12 @@ function toggleScanner() {
         html5QrCode.start(
             { facingMode: "environment" },
             {
-                fps: 10,
+                fps: 30,
                 qrbox: 250,
                 formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13]
             },
             (decodedText) => {
-                const input = document.querySelector('input[name="isbn"]');
+                const input = document.getElememtById("isbnAdd");
                 if (input) input.value = formatISBN(decodedText);
                 stopScanner();
             },
