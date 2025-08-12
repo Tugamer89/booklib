@@ -85,10 +85,10 @@ L'app sarà disponibile su:
 ```
 .
 ├── main.py                # Entry point FastAPI
-├── core/                  # 
-├── db/                    # 
-├── routes/                # 
-├── utils/                 # 
+├── core/                  # Programma principale
+├── db/                    # Database
+├── routes/                # Route FastAPI
+├── utils/                 # File di utiliy
 ├── static/                # File statici (JS, immagini)
 ├── templates/             # Template HTML Jinja2
 ├── requirements.txt       # Dipendenze Python
@@ -107,5 +107,4 @@ MIT License — sentiti libero di usare e modificare.
 
 ## 📋 TODO list
 
-* Big fix: ISBN scan non funziona almeno su mobile forse con Isbn10
 * Aggiungere compatibiltà per mobile
