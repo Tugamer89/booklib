@@ -20,7 +20,7 @@ function toggleScanner() {
         html5QrCode.start(
             { facingMode: "environment" },
             {
-                fps: 30,
+                fps: 10,
                 qrbox: 250,
                 formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13]
             },
