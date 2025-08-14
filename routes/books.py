@@ -189,13 +189,13 @@ def edit_book(
     book.personal_comment = personal_comment.strip()
 
     if cover and cover.filename:
+        new_cover = validate_and_save_cover(cover)
         if book.cover_path != "static/covers/default.jpg":
             if book.cover_path.startswith("https://res.cloudinary.com/"):
                 delete_cover_from_cloudinary(book.cover_path)
             elif os.path.exists(book.cover_path):
                 os.remove(book.cover_path)
-
-        book.cover_path = validate_and_save_cover(cover)
+        book.cover_path = new_cover
 
     db.commit()
     
