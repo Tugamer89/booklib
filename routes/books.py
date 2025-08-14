@@ -55,7 +55,7 @@ def read_books(
     if sort_by == "isbn":
         isbn_clean_col = case(
             ((Book.isbn == 'N/A') | (Book.isbn == ''), null()),
-            else_=Book.isbn
+            else_=func.regexp_replace(Book.isbn, r'X$', '')
         )
         numeric_isbn = cast(isbn_clean_col, BigInteger)
         order_criteria.append(numeric_isbn)
