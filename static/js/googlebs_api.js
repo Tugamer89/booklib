@@ -48,7 +48,7 @@ function createBookItem(book) {
     if (info.industryIdentifiers) {
         const isbn13 = info.industryIdentifiers.find(id => id.type === 'ISBN_13');
         const isbn10 = info.industryIdentifiers.find(id => id.type === 'ISBN_10');
-        isbn = (isbn13 || isbn10)?.identifier || '';
+        isbn = (isbn10 || isbn13)?.identifier || '';
     }
 
     const div = document.createElement('div');
