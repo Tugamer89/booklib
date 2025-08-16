@@ -1,5 +1,5 @@
 function formatISBN10(value) {
-    return value.replace(/^(\d{0,1})(\d{0,3})(\d{0,5})(\d{0,1})$/, function(_, a, b, c, d) {
+    return value.replace(/^(\d{0,1})(\d{0,3})(\d{0,5})(\d{0,1}|X)$/, function(_, a, b, c, d) {
         return [a, b, c, d].filter(Boolean).join('-');
     });
 }
