@@ -48,7 +48,15 @@ function createBookItem(book) {
     if (info.industryIdentifiers) {
         const isbn13 = info.industryIdentifiers.find(id => id.type === 'ISBN_13');
         const isbn10 = info.industryIdentifiers.find(id => id.type === 'ISBN_10');
-        isbn = (isbn10 || isbn13)?.identifier || '';
+
+        const userInput = document.getElementById('isbnAdd')?.value.trim() || '';
+        const cleaned = userInput.replace(/[-\s]/g, '');
+
+        if (/^\d{9}[\dX]$/.test(cleaned)) {
+            isbn = isbn10?.identifier || isbn13?.identifier || '';
+        } else {
+            isbn = isbn13?.identifier || isbn10?.identifier || '';
+        }
     }
 
     const div = document.createElement('div');
