@@ -133,7 +133,7 @@ function openDetailModal(book) {
     document.getElementById('detailCover').src = book.cover;
     document.getElementById('detailTitle').textContent = book.title;
     document.getElementById('detailAuthor').textContent = book.author;
-    document.getElementById('detailIsbn').textContent = book.isbn || 'Non disponibile';
+    document.getElementById('detailIsbn').textContent = formatISBN(book.isbn) || 'Non disponibile';
     document.getElementById('detailPublisher').textContent = book.publisher || 'Non disponibile'; 
     document.getElementById('detailLanguage').textContent = book.language || 'Non disponibile';
     document.getElementById('detailLocation').textContent = book.location;

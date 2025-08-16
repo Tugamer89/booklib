@@ -330,14 +330,14 @@
                                     <button type="button" 
                                         onclick='event.stopPropagation(); openEditModal({
                                                     id: {{ book.id }},
-                                                    title: "{{ book.title|tojson }}",
-                                                    author: "{{ book.author|tojson }}",
-                                                    isbn: "{{ book.isbn|format_isbn|tojson }}",
-                                                    publisher: "{{ book.publisher|tojson }}",
-                                                    location: "{{ book.location|tojson }}",
-                                                    description: "{{ book.description|tojson }}",
-                                                    language: "{{ book.language|tojson }}",
-                                                    personal_comment: "{{ book.personal_comment|tojson }}" 
+                                                    title: {{ book.title|tojson }},
+                                                    author: {{ book.author|tojson }},
+                                                    isbn: {{ book.isbn|tojson }},
+                                                    publisher: {{ book.publisher|tojson }},
+                                                    location: {{ book.location|tojson }},
+                                                    description: {{ book.description|tojson }},
+                                                    language: {{ book.language|tojson }},
+                                                    personal_comment: {{ book.personal_comment|tojson }}
                                                 })'
                                         class="edit-btn text-indigo-600 hover:text-indigo-900 text-xl font-bold">
                                         ✎
