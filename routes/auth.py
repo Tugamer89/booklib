@@ -17,6 +17,7 @@ router = APIRouter()
 
 
 @router.get("/auth", response_class=HTMLResponse)
+@router.head("/auth", response_class=HTMLResponse)
 def auth_page(
     request: Request,
     db: Session = Depends(get_db),
