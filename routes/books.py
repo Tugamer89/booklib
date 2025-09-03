@@ -21,6 +21,7 @@ router = APIRouter()
 
 
 @router.get("/", response_class=HTMLResponse)
+@router.head("/", response_class=HTMLResponse)
 def read_books(
     request: Request,
     user: User = Depends(get_authenticated_user),
