@@ -13,11 +13,16 @@ def create_env_file():
 
     session_secret = generate_base64_key()
     csrf_secret = generate_base64_key()
+    
+    # Modifica queste variabili con i tuoi valori
     database_url = "postgresql://bookuser:password@localhost:5432/booklib"
     cloudinary_cloud_name = "your_cloud_name"
     cloudinary_api_key = "your_api_key"
     cloudinary_api_secret = "your_api"
-    admin_user = {"admin1", "admin2"}
+    admin_users = {"admin1", "admin2"}
+    keepalive_url = ''  # Esempio: 'https://myapp.example.com/'
+    keepalive_cron = '*/10 * * * *' # cron expression
+    keepalive_db_cron = '0 0 */5 * *' # cron expression
 
     with open(ENV_FILE, "w") as f:
         f.write(f"SESSION_SECRET='{session_secret}'\n")
@@ -26,7 +31,10 @@ def create_env_file():
         f.write(f"CLOUDINARY_CLOUD_NAME='{cloudinary_cloud_name}'\n")
         f.write(f"CLOUDINARY_API_KEY='{cloudinary_api_key}'\n")
         f.write(f"CLOUDINARY_API_SECRET='{cloudinary_api_secret}'\n")
-        f.write(f"ADMIN_USERS='{','.join(admin_user)}'\n")
+        f.write(f"ADMIN_USERS='{','.join(admin_users)}'\n")
+        f.write(f"KEEPALIVE_URL='{keepalive_url}'\n")
+        f.write(f"KEEPALIVE_CRON='{keepalive_cron}'\n")
+        f.write(f"KEEPALIVE_DB_CRON='{keepalive_db_cron}'\n")
 
     print(f"File {ENV_FILE} creato con chiavi generate automaticamente.")
 

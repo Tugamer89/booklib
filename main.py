@@ -1,17 +1,14 @@
 from fastapi import FastAPI
-from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from securecookies import SecureCookiesMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
-from securecookies import SecureCookiesMiddleware
-
-from db.database import engine, Base
 from core.config import settings
-from routes import admin, auth, books, debug, errors
+from routes import admin, auth, books, debug, errors, extras
+from utils.starter import lifespan
 
 
-app = FastAPI()
-
+app = FastAPI(lifespan=lifespan, title="BookLib", version="1.0.2")
 
 # Middleware per sessioni
 app.add_middleware(
@@ -40,15 +37,6 @@ app.add_exception_handler(Exception, errors.generic_exception_handler)
 app.include_router(auth.router)
 app.include_router(books.router)
 app.include_router(admin.router)
+app.include_router(extras.router)
 if settings.DEBUG:
     app.include_router(debug.router)
-
-
-@app.on_event("startup")
-async def on_startup():
-    Base.metadata.create_all(bind=engine)
-
-# Favicon route
-@app.get("/favicon.ico")
-async def favicon():
-    return FileResponse("static/favicon.ico")

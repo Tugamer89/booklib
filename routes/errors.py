@@ -5,6 +5,7 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.exc import OperationalError
 
 from core.templates import templates
+from utils.logger import logger
 
 # Gestione HTTPException
 async def http_exception_redirect(request: Request, exc: HTTPException | StarletteHTTPException):
@@ -45,7 +46,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 # Gestione OperationalError
 async def operational_error_handler(request: Request, exc: OperationalError):
     import traceback
-    print("OperationalError:", "".join(traceback.format_exception(type(exc), exc, exc.__traceback__)))
+    logger.error(f"[OPERATIONAL ERROR] {''.join(traceback.format_exception(type(exc), exc, exc.__traceback__))}")
 
     referer = request.headers.get("referer")
     message = (
@@ -68,7 +69,7 @@ async def operational_error_handler(request: Request, exc: OperationalError):
 # Gestione eccezioni generiche
 async def generic_exception_handler(request: Request, exc: Exception):
     import traceback
-    print("ERRORE GENERICO:", "".join(traceback.format_exception(type(exc), exc, exc.__traceback__)))
+    logger.error(f"[GENERIC ERROR] {''.join(traceback.format_exception(type(exc), exc, exc.__traceback__))}")
 
     referer = request.headers.get("referer")
     message = (
