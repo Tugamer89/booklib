@@ -12,16 +12,16 @@ async def keepalive_job():
         async with httpx.AsyncClient() as client:
             resp = await client.head(settings.keepalive_url, timeout=10)
             if resp.status_code == 200:
-                logger.info(f"[KEEPALIVE] Successo HEAD {settings.keepalive_url}")
+                logger.info(f"[KEEPALIVE] Success HEAD {settings.keepalive_url}")
             else:
-                logger.warning(f"[KEEPALIVE] Status {resp.status_code} su {settings.keepalive_url}")
+                logger.warning(f"[KEEPALIVE] Status {resp.status_code} on {settings.keepalive_url}")
     except Exception as e:
-        logger.error(f"[KEEPALIVE] Errore: {e}")
+        logger.error(f"[HTTP-KEEPALIVE]: {e}")
 
 async def keepalive_db_job():
     try:
         with SessionLocal() as db:
             db.execute(text("SELECT 1"))
-        logger.info("[DB-KEEPALIVE] Query di keepalive eseguita con successo.")
+        logger.info("[KEEPALIVE] Success keepalive query.")
     except Exception as e:
-        logger.error(f"[DB-KEEPALIVE] Errore: {e}")
+        logger.error(f"[DB-KEEPALIVE]: {e}")
