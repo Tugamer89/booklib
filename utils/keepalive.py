@@ -2,7 +2,7 @@ import httpx
 from sqlalchemy import text
 
 from core.config import settings
-from db.database import SessionLocal
+from db.database import engine
 from utils.logger import logger
 
 async def keepalive_job():
@@ -20,7 +20,7 @@ async def keepalive_job():
 
 async def keepalive_db_job():
     try:
-        with SessionLocal() as db:
+        with engine.begin() as db:
             db.execute(text("SELECT 1"))
         logger.info("[KEEPALIVE] Success keepalive query.")
     except Exception as e:
