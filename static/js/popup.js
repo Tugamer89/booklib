@@ -5,20 +5,21 @@ function showConfirmDialog() {
     return false;
 }
 
+document.addEventListener("submit", (e) => {
+    const form = e.target;
+    if (form.matches("form[action$='/delete']")) {
+        e.preventDefault();
+        deleteForm = form;
+        document.body.style.overflow = 'hidden';
+        document.getElementById("confirmOverlay").classList.remove("hidden");
+    }
+});
+
 document.addEventListener("DOMContentLoaded", () => {
     const cancelBtn = document.getElementById("cancelDelete");
     const confirmBtn = document.getElementById("confirmDelete");
     
     if (!cancelBtn || !confirmBtn) return;
-
-    document.querySelectorAll("form[action$='/delete']").forEach(form => {
-        form.addEventListener("submit", (e) => {
-            document.body.style.overflow = 'hidden';
-            e.preventDefault();
-            deleteForm = form;
-            showConfirmDialog();
-        });
-    });
 
     cancelBtn.addEventListener("click", () => {
         document.getElementById("confirmOverlay").classList.add("hidden");
@@ -30,6 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (deleteForm) {
             document.getElementById("confirmOverlay").classList.add("hidden");
             deleteForm.submit();
-    }
+        }
     });
 });

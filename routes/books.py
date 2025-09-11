@@ -2,7 +2,7 @@ import os
 import re
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Request, status, UploadFile
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from isbnlib import canonical, is_isbn10, is_isbn13
 from sqlalchemy import asc, case, cast, desc, func, null
 from sqlalchemy.orm import Session
@@ -25,6 +25,20 @@ router = APIRouter()
 def read_books(
     request: Request,
     user: User = Depends(get_authenticated_user),
+):
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+        "books": [],
+        "sort_by": "id",
+        "sort_order": "asc",
+        "is_logged_in": True,
+        "is_admin": user.username in settings.admin_users
+    })
+
+
+@router.get("/books-data")
+def books_data(
+    user: User = Depends(get_authenticated_user),
     db: Session = Depends(get_db),
     title: str = Query(None),
     author: str = Query(None),
@@ -32,7 +46,9 @@ def read_books(
     publisher: str = Query(None),
     location: str = Query(None),
     sort_by: str = Query("id"),
-    sort_order: str = Query("asc")
+    sort_order: str = Query("asc"),
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0)
 ):
     query = db.query(Book).filter(Book.user_id == user.id)
 
@@ -70,17 +86,26 @@ def read_books(
     else:
         order_criteria = [asc(c) for c in order_criteria]
 
-    query = query.order_by(*order_criteria)
-    books = query.all()
+    books = query.order_by(*order_criteria).offset(offset).limit(limit + 1).all()
+    has_more = len(books) > limit
+    books = books[:limit]
+    
+    books_data = [
+        {
+            "id": b.id,
+            "title": b.title,
+            "author": b.author,
+            "isbn": b.isbn,
+            "publisher": b.publisher,
+            "location": b.location,
+            "cover_path": b.cover_path,
+            "description": b.description,
+            "language": b.language,
+            "personal_comment": b.personal_comment
+        } for b in books
+    ]
 
-    return templates.TemplateResponse("index.html", {
-        "request": request,
-        "books": books,
-        "sort_by": sort_by,
-        "sort_order": sort_order,
-        "is_logged_in": True,
-        "is_admin": user.username in settings.admin_users
-    })
+    return JSONResponse({"books": books_data, "has_more": has_more})
 
 
 @router.post("/add", response_class=HTMLResponse)

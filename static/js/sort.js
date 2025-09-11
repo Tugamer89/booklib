@@ -1,34 +1,15 @@
-function sortTableByColumn(table, columnIndex, type = "string") {
+function sortTableByColumn(table, columnIndex) {
     const currentColumn = parseInt(table.dataset.sortColumn);
     const currentDirection = table.dataset.sortDir || "asc";
 
     let direction = "asc";
     if (currentColumn === columnIndex) direction = currentDirection === "asc" ? "desc" : "asc";
 
-    const header = table.querySelectorAll("th")[columnIndex];
-    const sortBy = header.id;
+    const sortBy = table.querySelectorAll("th")[columnIndex].id;
     updateURLParam(sortBy, direction);
 
     table.dataset.sortDir = direction;
     table.dataset.sortColumn = columnIndex;
-
-    const rows = Array.from(table.tBodies[0].rows);
-
-    rows.sort((a, b) => {
-        const aText = a.cells[columnIndex].textContent.trim();
-        const bText = b.cells[columnIndex].textContent.trim();
-
-        let comparison = 0;
-        if (type === "number") {
-            comparison = parseFloat(aText) - parseFloat(bText);
-        } else {
-            comparison = aText.localeCompare(bText, undefined, { sensitivity: 'base' });
-        }
-
-        return direction === "asc" ? comparison : -comparison;
-    });
-
-    rows.forEach(row => table.tBodies[0].appendChild(row));
 
     table.querySelectorAll("th .arrow").forEach(arrow => arrow.textContent = "");
     const arrow = table.querySelectorAll("th")[columnIndex].querySelector(".arrow");
@@ -40,6 +21,10 @@ function updateURLParam(sortBy, sortOrder) {
     url.searchParams.set("sort_by", sortBy);
     url.searchParams.set("sort_order", sortOrder);
     history.replaceState(null, "", url);
+
+    window.dispatchEvent(new CustomEvent("sortChanged", {
+        detail: { sortBy, sortOrder }
+    }));
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -77,10 +62,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     headers.forEach(header => {
         const colIndex = parseInt(header.dataset.col);
-        const type = header.dataset.type || "string";
 
         header.addEventListener("click", () => {
-            sortTableByColumn(table, colIndex, type);
+            sortTableByColumn(table, colIndex);
         });
     });
 });

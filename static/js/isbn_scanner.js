@@ -70,3 +70,5 @@ function stopScanner() {
 
     isScanning = false;
 }
+
+window.toggleScanner = toggleScanner;

@@ -6,10 +6,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" type="text/javascript"></script>
     <script src="/static/js/form.js" defer></script>
-    <script src="/static/js/sort.js" defer></script>
-    <script src="/static/js/popup.js" defer></script>
-    <script src="/static/js/isbn_scanner.js" defer></script>
-    <script src="/static/js/googlebs_api.js" defer></script>
+    <script type="module" src="/static/js/sort.js" defer></script>
+    <script type="module" src="/static/js/popup.js" defer></script>
+    <script type="module" src="/static/js/books.js" defer></script>
+    <script type="module" src="/static/js/isbn_scanner.js" defer></script>
+    <script type="module" src="/static/js/googlebs_api.js" defer></script>
     <style>
         html {
             background-image: linear-gradient(to bottom right, #e0f2fe, #c7d2fe);
@@ -291,7 +292,6 @@
                             id="{{ col }}"
                             class="p-3 text-left cursor-pointer select-none text-sm font-semibold text-gray-700 hover:text-indigo-600 w-[{{ width }}%]"
                             data-col="{{ loop.index }}"
-                            data-type="string"
                         >
                             {{ label }} 
                             <span class="arrow"></span>
@@ -300,63 +300,7 @@
                         <th class="p-3 text-left text-sm font-semibold text-gray-700 w-[7%]">Azioni</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {% for book in books %}
-                        <tr onclick='event.stopPropagation(); openDetailModal({ 
-                                        id: {{ book.id }},
-                                        cover: {{ book.cover_path|tojson }},
-                                        title: {{ book.title|tojson }}, 
-                                        author: {{ book.author|tojson }},
-                                        isbn: {{ book.isbn|tojson }},
-                                        publisher: {{ book.publisher|tojson }},
-                                        location: {{ book.location|tojson }},
-                                        description: {{ book.description|tojson }},
-                                        language: {{ book.language|tojson }},
-                                        personal_comment: {{ book.personal_comment|tojson }}
-                                    })'
-                            class="border-t hover:bg-gray-50 transition group"
-                        >
-                            <td class="p-2 max-w-xs">
-                                <img src="{{ book.cover_path }}" alt="Copertina di {{ book.title }}" class="h-24 rounded shadow-sm" loading="lazy">
-                            </td>
-                            <td class="p-2 break-words max-w-xs">{{ book.title }}</td>
-                            <td class="p-2 break-words max-w-xs">{{ book.author }}</td>
-                            <td class="p-2 break-words ">{{ book.isbn | format_isbn }}</td>
-                            <td class="p-2 break-words max-w-xs">{{ book.publisher }}</td>
-                            <td class="p-2 break-words [text-indent:15%]">{{ book.location }}</td>
-                            <td class="p-2 text-center space-x-2 group">
-                                <div class="flex items-center justify-center space-x-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                                    <!-- Bottone Modifica -->
-                                    <button type="button" 
-                                        onclick='event.stopPropagation(); openEditModal({
-                                                    id: {{ book.id }},
-                                                    title: {{ book.title|tojson }},
-                                                    author: {{ book.author|tojson }},
-                                                    isbn: {{ book.isbn|tojson }},
-                                                    publisher: {{ book.publisher|tojson }},
-                                                    location: {{ book.location|tojson }},
-                                                    description: {{ book.description|tojson }},
-                                                    language: {{ book.language|tojson }},
-                                                    personal_comment: {{ book.personal_comment|tojson }}
-                                                })'
-                                        class="edit-btn text-indigo-600 hover:text-indigo-900 text-xl font-bold">
-                                        ✎
-                                    </button>
-
-                                    <!-- Form elimina -->
-                                    <form method="post" action="/delete">
-                                        <input type="hidden" name="book_id" value="{{ book.id }}">
-                                        <button type="submit"
-                                                onclick="event.stopPropagation();"
-                                                class="delete-btn text-red-600 hover:text-red-800 text-2xl font-bold">
-                                            &times;
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
+                <tbody id="bookRows"></tbody>
             </table>
         </div>
 

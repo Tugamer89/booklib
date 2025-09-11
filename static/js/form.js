@@ -130,7 +130,7 @@ function validateEditModalForm() {
 }
 
 function openDetailModal(book) {
-    document.getElementById('detailCover').src = book.cover;
+    document.getElementById('detailCover').src = book.cover_path;
     document.getElementById('detailTitle').textContent = book.title;
     document.getElementById('detailAuthor').textContent = book.author;
     document.getElementById('detailIsbn').textContent = formatISBN(book.isbn) || 'Non disponibile';
