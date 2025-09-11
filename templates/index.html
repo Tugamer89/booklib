@@ -9,8 +9,10 @@
     <script type="module" src="/static/js/sort.js" defer></script>
     <script type="module" src="/static/js/popup.js" defer></script>
     <script type="module" src="/static/js/books.js" defer></script>
+    <script type="module" src="/static/js/theme.js" defer></script>
     <script type="module" src="/static/js/isbn_scanner.js" defer></script>
     <script type="module" src="/static/js/googlebs_api.js" defer></script>
+    <link rel="stylesheet" href="/static/css/theme.css">
     <style>
         html {
             background-image: linear-gradient(to bottom right, #e0f2fe, #c7d2fe);
@@ -58,6 +60,11 @@
                 </form>
                 {% endif %}
                 
+                <button id="theme-toggle" 
+                        class="px-4 py-2 text-white font-semibold bg-indigo-500 hover:bg-indigo-600 rounded shadow transition flex items-center gap-2">
+                    <span id="theme-label">🌞 Chiaro</span>
+                </button>
+
                 <form action="/logout" method="get">
                     <button class="px-4 py-2 text-white font-semibold bg-red-500 hover:bg-red-600 rounded shadow transition">
                         Esci
@@ -320,12 +327,12 @@
 
                 <!-- Dati -->
                 <div class="flex-1 grid grid-cols-2 gap-x-6 gap-y-4 text-gray-900">
-                    <div class="font-semibold text-indigo-700">Titolo</div><div id="detailTitle" class="break-words"></div>
-                    <div class="font-semibold text-indigo-700">Autore</div><div id="detailAuthor" class="break-words"></div>
-                    <div class="font-semibold text-indigo-700">ISBN</div><div id="detailIsbn" class="break-words"></div>
-                    <div class="font-semibold text-indigo-700">Casa editrice</div><div id="detailPublisher" class="break-words"></div>
-                    <div class="font-semibold text-indigo-700">Posizione</div><div id="detailLocation" class="break-words"></div>
-                    <div class="font-semibold text-indigo-700">Lingua</div><div id="detailLanguage" class="break-words"></div>
+                    <div class="font-semibold text-indigo-700">Titolo</div><div id="detailTitle" class="detail-value break-words"></div>
+                    <div class="font-semibold text-indigo-700">Autore</div><div id="detailAuthor" class="detail-value break-words"></div>
+                    <div class="font-semibold text-indigo-700">ISBN</div><div id="detailIsbn" class="detail-value break-words"></div>
+                    <div class="font-semibold text-indigo-700">Casa editrice</div><div id="detailPublisher" class="detail-value break-words"></div>
+                    <div class="font-semibold text-indigo-700">Posizione</div><div id="detailLocation" class="detail-value break-words"></div>
+                    <div class="font-semibold text-indigo-700">Lingua</div><div id="detailLanguage" class="detail-value break-words"></div>
                     <div class="font-semibold text-indigo-700 col-span-2">Descrizione</div>
                     <div id="detailDescription" class="col-span-2 max-h-32 overflow-y-auto text-sm whitespace-pre-wrap border rounded p-3 bg-gray-50 shadow-inner"></div>
                     <div class="font-semibold text-indigo-700 col-span-2">Commento personale</div>
