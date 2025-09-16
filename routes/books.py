@@ -85,6 +85,8 @@ def books_data(
         order_criteria = [desc(c) for c in order_criteria]
     else:
         order_criteria = [asc(c) for c in order_criteria]
+    
+    order_criteria.append(asc(Book.id))
 
     books = query.order_by(*order_criteria).offset(offset).limit(limit + 1).all()
     has_more = len(books) > limit

@@ -78,8 +78,6 @@ async function loadBooks(reset = false) {
             fragment.appendChild(row);
         });
 
-        console.log(tableBody)
-
         if (reset) {
             tableBody.replaceChildren(fragment);
         } else {
