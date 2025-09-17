@@ -107,7 +107,10 @@ def books_data(
         } for b in books
     ]
 
-    return JSONResponse({"books": books_data, "has_more": has_more})
+    return JSONResponse(
+        content={"books": books_data, "has_more": has_more},
+        headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
+    )
 
 
 @router.post("/add", response_class=HTMLResponse)
