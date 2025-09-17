@@ -17,6 +17,7 @@ async function loadBooks(reset = false) {
     const params = new URLSearchParams(window.location.search);
     params.set("offset", currentOffset);
     params.set("limit", offsetSize);
+    params.set("_", Date.now());
 
     try {
         const res = await fetch(`/books-data?${params.toString()}`, {
