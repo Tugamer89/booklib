@@ -10,6 +10,7 @@
     <script type="module" src="/static/js/popup.js" defer></script>
     <script type="module" src="/static/js/books.js" defer></script>
     <script type="module" src="/static/js/theme.js" defer></script>
+    <script type="module" src="/static/js/filter.js" defer></script>
     <script type="module" src="/static/js/isbn_scanner.js" defer></script>
     <script type="module" src="/static/js/googlebs_api.js" defer></script>
     <link rel="stylesheet" href="/static/css/theme.css">
@@ -273,7 +274,7 @@
         <!-- Form filtri -->
         <div id="filterForm" class="hidden mb-10 p-6 bg-white/90 backdrop-blur-md rounded-xl shadow-lg">
             <h2 class="text-2xl font-bold mb-4 text-green-800">🔍 Filtra i libri</h2>
-                <form method="get" action="/" class="grid grid-cols-[29fr,20fr,18fr,21fr,12fr] gap-2">
+                <form id="filterFormElement" method="get" action="/" class="grid grid-cols-[29fr,20fr,18fr,21fr,12fr] gap-2">
                     <input type="text" name="title" placeholder="Titolo" value="{{ request.query_params.get('title', '') }}" class="w-full border p-2 rounded">
                     <input type="text" name="author" placeholder="Autore" value="{{ request.query_params.get('author', '') }}" class="w-full border p-2 rounded">
                     <input type="text" name="isbn" placeholder="ISBN" value="{{ request.query_params.get('isbn', '') }}" oninput="formatISBN(this)" maxlength="17" class="w-full border p-2 rounded">
