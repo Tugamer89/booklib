@@ -95,7 +95,11 @@ async function loadBooks(reset = false) {
 
 window.addEventListener("scroll", () => {
     if (isLoading || !hasMore) return;
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight * 0.9) loadBooks();
+
+    const scrollPosition = window.innerHeight + window.scrollY;
+    const pageHeight = document.documentElement.scrollHeight;
+    
+    if (scrollPosition >= pageHeight * 0.9) loadBooks();
 });
 
 document.addEventListener("DOMContentLoaded", () => {

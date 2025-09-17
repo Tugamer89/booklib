@@ -198,7 +198,10 @@ async function scrollerLoading() {
     if (isLoading) return;
     if (currentStartIndex >= totalItems) return;
 
-    if (el.scrollTop + el.clientHeight >= el.scrollHeight * 0.9) {
+    const scrollPosition = el.scrollTop + el.clientHeight;
+    const pageHeight = el.scrollHeight;
+    
+    if (scrollPosition >= pageHeight * 0.9) {
         isLoading = true;
 
         const loadingIndicator = document.createElement('p');
