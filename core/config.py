@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     admin_users: set[str] = set()
     keepalive_url: str = os.getenv("KEEPALIVE_URL", "")
     keepalive_cron: str = os.getenv("KEEPALIVE_CRON", "*/10 * * * *")
+    keepalive_db: str = os.getenv("KEEPALIVE_DB", "")
     keepalive_db_cron: str = os.getenv("KEEPALIVE_DB_CRON", "0 0 */5 * *")
 
     def __init__(self, **data):

@@ -22,6 +22,7 @@ def create_env_file():
     admin_users = {"admin1", "admin2"}
     keepalive_url = ''  # Esempio: 'https://myapp.example.com/'
     keepalive_cron = '*/10 * * * *' # cron expression
+    keepalive_db = ''  # Esempio: 'test'
     keepalive_db_cron = '0 0 */5 * *' # cron expression
 
     with open(ENV_FILE, "w") as f:
@@ -34,6 +35,7 @@ def create_env_file():
         f.write(f"ADMIN_USERS='{','.join(admin_users)}'\n")
         f.write(f"KEEPALIVE_URL='{keepalive_url}'\n")
         f.write(f"KEEPALIVE_CRON='{keepalive_cron}'\n")
+        f.write(f"KEEPALIVE_DB='{keepalive_db}'\n")
         f.write(f"KEEPALIVE_DB_CRON='{keepalive_db_cron}'\n")
 
     print(f"File {ENV_FILE} creato con chiavi generate automaticamente.")

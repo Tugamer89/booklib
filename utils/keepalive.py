@@ -19,6 +19,8 @@ async def keepalive_job():
         logger.error(f"[HTTP-KEEPALIVE]: {e}")
 
 async def keepalive_db_job():
+    if not settings.keepalive_db:
+        return
     try:
         with engine.begin() as db:
             db.execute(text("SELECT 1"))
