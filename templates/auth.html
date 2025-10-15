@@ -1,134 +1,127 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" class="">
 <head>
     <meta charset="UTF-8">
-    <title>Login / Registrazione</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accedi - Libreria di Casa</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="/static/js/auth.js" defer></script>
-    <script src="/static/js/theme.js" defer></script>
-    <link rel="stylesheet" href="/static/css/theme.css">
-    <style>
-        .fade-enter {
-            opacity: 0;
-            transform: translateY(-10px);
+    <script>
+        tailwind.config = { darkMode: 'class' };
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
         }
-        .fade-enter-active {
-            opacity: 1;
-            transform: translateY(0);
-            transition: all 300ms ease-in-out;
-        }
-        .fade-exit {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .fade-exit-active {
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: all 300ms ease-in-out;
-        }
-        .toggle-password {
-            cursor: pointer;
-            user-select: none;
-            position: absolute;
-            right: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #2563eb; /* blue-600 */
+    </script>
+    <style type="text/tailwindcss">
+        .form-container { transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out; }
+        .form-inactive { opacity: 0; transform: translateY(10px); pointer-events: none; position: absolute; left: 0; right: 0; }
+        @layer components {
+            .input-style {
+                @apply w-full px-4 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-slate-100;
+            }
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-100 to-indigo-200 text-gray-900 p-8 flex flex-col items-center justify-center min-h-screen">
-    <h1 class="text-4xl font-bold mb-6">📚 Accedi alla tua libreria</h1>
-    
-    <!-- Toggle tema -->
+<body class="bg-gradient-to-br from-slate-50 to-slate-200 dark:from-slate-800 dark:to-slate-900 transition-colors duration-300 flex items-center justify-center min-h-screen p-4">
+
     <div class="absolute top-4 right-4">
-        <button id="theme-toggle" 
-                class="px-3 py-2 rounded bg-gray-200 hover:bg-gray-300 text-sm font-medium shadow transition dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-100">
-            <span id="theme-label">🌞 Chiaro</span>
-        </button>
+        <button id="theme-toggle" class="p-2 rounded-full text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-700 transition" aria-label="Toggle theme"></button>
     </div>
 
-
-    <div id="login-container" class="bg-white/90 backdrop-blur p-8 rounded-xl shadow-xl w-full max-w-md">
+    <div class="w-full max-w-md p-8 space-y-6 bg-white dark:bg-slate-800 shadow-xl rounded-2xl">
+        <h1 class="text-3xl font-bold text-center text-slate-800 dark:text-slate-100">📚 Bentornato!</h1>
         
-        <!-- Tabs -->
-        <div class="flex justify-center mb-6">
-            <button id="loginTab" class="px-6 py-2 rounded-tl-xl border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-100">Accedi</button>
-            <button id="registerTab" class="px-6 py-2 rounded-tr-xl border-b-2 border-transparent font-semibold text-gray-600">Registrati</button>
+        <div id="error-container" class="hidden bg-red-100 dark:bg-red-900/50 border border-red-400 dark:border-red-500/50 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg" role="alert">
+            <span id="error-message"></span>
         </div>
 
-        <!-- Error message -->
-        {% if error %}
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {{ error }}
+        <div class="flex border-b border-slate-200 dark:border-slate-700">
+            <button id="loginTab" class="flex-1 py-2 text-center font-semibold border-b-2 transition-colors duration-300">Accedi</button>
+            <button id="registerTab" class="flex-1 py-2 text-center font-semibold border-b-2 transition-colors duration-300">Registrati</button>
         </div>
-        {% endif %}
-
-        <!-- Auth Form -->
-        <form method="post" action="/auth" class="space-y-4" id="authForm">
+        
+        <form action="/auth" method="post" class="relative h-48">
             <input type="hidden" name="authAction" id="authAction" value="login">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
             
-            <input
-                type="text"
-                id="username"
-                name="username"
-                placeholder="Username"
-                required
-                autocomplete="username"
-                value="{{ username }}"
-                class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-
-            <div class="relative">
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    placeholder="Password"
-                    minlength="8"
-                    required
-                    class="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                <span class="toggle-password" onclick="togglePassword(this)" title="Mostra/Nascondi password">👁️</span>
+            <div id="login-form" class="form-container space-y-4">
+                <input name="username" type="text" required placeholder="Username" class="input-style">
+                <input name="password" type="password" required placeholder="Password" class="input-style">
             </div>
 
-            <!-- Conferma Password -->
-            <div id="confirmPasswordGroup" class="hidden relative">
-                <input
-                    type="password"
-                    id="confirmPassword"
-                    placeholder="Conferma password"
-                    class="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                >
-                <span class="toggle-password" onclick="togglePassword(this)" title="Mostra/Nascondi password">👁️</span>
-                <p id="passwordMismatch" class="text-red-600 text-sm mt-1 hidden">
-                    Le password non coincidono.
-                </p>
+            <div id="register-form" class="form-container form-inactive space-y-4">
+                 <input name="username" type="text" required placeholder="Scegli un Username" class="input-style" disabled>
+                <input name="password" type="password" required minlength="8" placeholder="Scegli una Password" class="input-style" disabled>
             </div>
 
-            <button
-                type="submit"
-                id="submitButton"
-                class="w-full py-3 rounded-lg text-white font-semibold transition duration-300 ease-in-out"
-                style="background-color: #2563eb;"
-            >
+            <button id="submitButton" type="submit" class="w-full absolute bottom-0 py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-slate-800 transition-colors duration-300">
                 Accedi
             </button>
         </form>
     </div>
 
     <script>
-        function togglePassword(span) {
-            const input = span.previousElementSibling;
-            if (input.type === "password") {
-                input.type = "text";
-                span.textContent = "🙈";
-            } else {
-                input.type = "password";
-                span.textContent = "👁️";
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-toggle');
+            const html = document.documentElement;
+            const applyTheme = (theme) => {
+                if (theme === 'dark') {
+                    html.classList.add('dark');
+                    themeToggle.innerHTML = '☀️';
+                } else {
+                    html.classList.remove('dark');
+                    themeToggle.innerHTML = '🌙';
+                }
+            };
+            themeToggle.addEventListener('click', () => {
+                const newTheme = html.classList.contains('dark') ? 'light' : 'dark';
+                localStorage.setItem('theme', newTheme);
+                applyTheme(newTheme);
+            });
+            applyTheme(html.classList.contains('dark') ? 'dark' : 'light');
+
+            const loginTab = document.getElementById('loginTab');
+            const registerTab = document.getElementById('registerTab');
+            const authAction = document.getElementById('authAction');
+            const submitButton = document.getElementById('submitButton');
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const loginInputs = loginForm.querySelectorAll('input');
+            const registerInputs = registerForm.querySelectorAll('input');
+
+            const setActiveTab = (mode) => {
+                const isLogin = mode === 'login';
+                
+                authAction.value = mode;
+                submitButton.textContent = isLogin ? 'Accedi' : 'Registrati';
+                
+                loginTab.classList.toggle('border-indigo-500', isLogin);
+                loginTab.classList.toggle('text-indigo-600', isLogin);
+                loginTab.classList.toggle('dark:text-indigo-400', isLogin);
+                loginTab.classList.toggle('text-slate-500', !isLogin);
+                
+                registerTab.classList.toggle('border-indigo-500', !isLogin);
+                registerTab.classList.toggle('text-indigo-600', !isLogin);
+                registerTab.classList.toggle('dark:text-indigo-400', !isLogin);
+                registerTab.classList.toggle('text-slate-500', isLogin);
+                
+                loginForm.classList.toggle('form-inactive', !isLogin);
+                registerForm.classList.toggle('form-inactive', isLogin);
+
+                loginInputs.forEach(input => input.disabled = !isLogin);
+                registerInputs.forEach(input => input.disabled = isLogin);
+            };
+            
+            loginTab.addEventListener('click', () => setActiveTab('login'));
+            registerTab.addEventListener('click', () => setActiveTab('register'));
+            
+            setActiveTab('login');
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            if (error) {
+                document.getElementById('error-container').classList.remove('hidden');
+                document.getElementById('error-message').textContent = decodeURIComponent(error.replace(/\+/g, ' '));
             }
-        }
+        });
     </script>
 </body>
 </html>

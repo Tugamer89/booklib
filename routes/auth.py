@@ -5,13 +5,10 @@ from passlib.hash import bcrypt
 from sqlalchemy.orm import Session
 
 from core.auth import get_authenticated_user, create_session
-from core.csrf import CsrfProtect
 from core.security import validate_credentials
-from core.templates import templates
 from db.crud import get_user_by_username, logout_current
 from db.database import get_db
 from db.models import User
-
 
 router = APIRouter()
 
@@ -20,36 +17,15 @@ router = APIRouter()
 @router.head("/auth", response_class=HTMLResponse)
 def auth_page(
     request: Request,
-    db: Session = Depends(get_db),
-    error: str = Query(None),
-    username: str = Query(None),
-    csrf_protect: CsrfProtect = Depends()
-):    
+    db: Session = Depends(get_db)
+):
     try:
         get_authenticated_user(request, db)
         return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
     except HTTPException:
-        pass
-
-    if username:
-        username = username.strip()
-    raw_token, signed_token = csrf_protect.generate_csrf_tokens()
-    
-    response = templates.TemplateResponse("auth.html", {
-        "request": request,
-        "error": error,
-        "username": username or "",
-        "csrf_token": raw_token
-    })
-    response.set_cookie(
-        key=csrf_protect._cookie_key,
-        value=signed_token,
-        httponly=True,
-        secure=csrf_protect._cookie_secure,
-        samesite=csrf_protect._cookie_samesite,
-        max_age=csrf_protect._max_age
-    )
-    return response
+        from fastapi.templating import Jinja2Templates
+        templates = Jinja2Templates(directory="templates")
+        return templates.TemplateResponse("auth.html", {"request": request})
 
 
 @router.post("/auth")
@@ -58,52 +34,40 @@ async def auth_action(
     db: Session = Depends(get_db),
     username: str = Form(...),
     password: str = Form(...),
-    authAction: str = Form(...),
-    csrf_protect: CsrfProtect = Depends()
+    authAction: str = Form(...)
 ):
     error = None
     user = None
-    if username:
-        username = username.strip()
+    clean_username = username.strip()
 
-    try:
-        await csrf_protect.validate_csrf(request)
-    except TokenValidationError:
-        error = "Token CSRF non valido"
+    if authAction == "login":
+        user = get_user_by_username(db, clean_username)
+        if not user or not bcrypt.verify(password, user.password):
+            error = "Credenziali errate"
+    elif authAction == "register":
+        try:
+            validate_credentials(clean_username, password)
+        except HTTPException as e:
+            error = e.detail
+        if not error and get_user_by_username(db, clean_username):
+            error = "Username già in uso"
+        if not error:
+            user = User(username=clean_username, password=bcrypt.hash(password))
+            db.add(user)
+            db.commit()
     else:
-        if authAction == "login":
-            user = get_user_by_username(db, username)
-            if not user or not bcrypt.verify(password, user.password):
-                error = "Credenziali errate"
-        elif authAction == "register":
-            try:
-                validate_credentials(username, password)
-            except HTTPException as e:
-                error = e.detail
-            if get_user_by_username(db, username):
-                error = "Username già in uso"
-                username = ""
-            if not error:
-                user = User(username=username, password=bcrypt.hash(password))
-                db.add(user)
-                db.commit()
-        else:
-            error = "Azione non valida"
+        error = "Azione non valida"
 
     if error or not user:
-        return auth_page(
-            request=request,
-            db=db,
-            error=error,
-            username=username,
-            csrf_protect=csrf_protect
+        return RedirectResponse(
+            url=f"/auth?error={error}",
+            status_code=status.HTTP_303_SEE_OTHER
         )
-
 
     token = create_session(db, user.id)
     request.session["user_id"] = user.id
     request.session["session_token"] = token
-    return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
+    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.get("/logout")
@@ -112,7 +76,8 @@ def logout(
     user: User = Depends(get_authenticated_user),
     db: Session = Depends(get_db)
 ):
-    token = request.session["session_token"]
-    logout_current(db, token)
+    token = request.session.get("session_token")
+    if token:
+        logout_current(db, token)
     request.session.clear()
     return RedirectResponse(url="/auth", status_code=status.HTTP_302_FOUND)

@@ -3,6 +3,7 @@ import re
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Request, status, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.templating import Jinja2Templates
 from isbnlib import canonical, is_isbn10, is_isbn13
 from sqlalchemy import asc, case, cast, desc, func, null
 from sqlalchemy.orm import Session
@@ -18,21 +19,20 @@ from utils.file_utils import validate_and_save_cover, validate_cover_url, delete
 
 
 router = APIRouter()
-
+templates = Jinja2Templates(directory="templates")
 
 @router.get("/", response_class=HTMLResponse)
 @router.head("/", response_class=HTMLResponse)
-def read_books(
+def read_books_page(
     request: Request,
     user: User = Depends(get_authenticated_user),
 ):
     return templates.TemplateResponse("index.html", {
         "request": request,
-        "books": [],
-        "sort_by": "id",
-        "sort_order": "asc",
-        "is_logged_in": True,
-        "is_admin": user.username in settings.admin_users
+        "user": {
+            "username": user.username,
+            "is_admin": user.username in settings.admin_users
+        }
     })
 
 

@@ -1,25 +1,55 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" class="">
 <head>
     <meta charset="UTF-8">
-    <title>Errore</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Errore {{ status_code }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="/static/js/theme.js" defer></script>
-    <link rel="stylesheet" href="/static/css/theme.css">
-    <style>
-        body {
-            background-image: linear-gradient(to bottom right, #e0f2fe, #c7d2fe);
+    <script>
+        tailwind.config = { darkMode: 'class' };
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
         }
-    </style>
+    </script>
 </head>
-<body class="flex items-center justify-center min-h-screen text-gray-800">
-    <div class="error-container bg-white/90 backdrop-blur-md rounded-xl shadow-lg p-10 max-w-lg text-center">
-        <h1 class="text-6xl font-bold text-red-500 mb-4">{{ status_code }}</h1>
-        <h2 class="text-2xl font-semibold mb-2">{{ title }}</h2>
-        <p class="text-gray-600 mb-6">{{ message }}</p>
-        <a href="{{ referer or '/' }}" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded shadow transition">
-            Torna alla home
+<body class="bg-gradient-to-br from-slate-50 to-slate-200 dark:from-slate-800 dark:to-slate-900 text-slate-800 dark:text-slate-200 transition-colors duration-300 flex items-center justify-center min-h-screen text-center">
+    
+    <div class="absolute top-4 right-4">
+        <button id="theme-toggle" class="p-2 rounded-full text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-700 transition" aria-label="Toggle theme"></button>
+    </div>
+
+    <div>
+        <h1 class="text-6xl font-bold text-indigo-600 dark:text-indigo-400">{{ status_code }}</h1>
+        <h2 class="text-2xl font-semibold mt-4">{{ title }}</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-2">{{ message }}</p>
+        <a href="{{ referer or '/' }}" class="mt-6 inline-block bg-indigo-600 text-white px-6 py-2 rounded-md shadow hover:bg-indigo-700 transition">
+            Torna indietro
         </a>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-toggle');
+            const html = document.documentElement;
+
+            const applyTheme = (theme) => {
+                if (theme === 'dark') {
+                    html.classList.add('dark');
+                    themeToggle.innerHTML = '☀️';
+                } else {
+                    html.classList.remove('dark');
+                    themeToggle.innerHTML = '🌙';
+                }
+            };
+            
+            themeToggle.addEventListener('click', () => {
+                const newTheme = html.classList.contains('dark') ? 'light' : 'dark';
+                localStorage.setItem('theme', newTheme);
+                applyTheme(newTheme);
+            });
+            
+            applyTheme(html.classList.contains('dark') ? 'dark' : 'light');
+        });
+    </script>
 </body>
 </html>

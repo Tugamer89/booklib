@@ -1,29 +1,36 @@
 from fastapi import HTTPException, Request, status
+from fastapi.responses import JSONResponse, RedirectResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import RedirectResponse
 from sqlalchemy.exc import OperationalError
+from fastapi.templating import Jinja2Templates
 
-from core.templates import templates
 from utils.logger import logger
 
-# Gestione HTTPException
+templates = Jinja2Templates(directory="templates")
+
+def wants_json(request: Request) -> bool:
+    return "application/json" in request.headers.get("accept", "") or \
+           request.headers.get("x-requested-with") == "XMLHttpRequest"
+
 async def http_exception_redirect(request: Request, exc: HTTPException | StarletteHTTPException):
     if exc.status_code == status.HTTP_401_UNAUTHORIZED:
         return RedirectResponse(url="/auth", status_code=status.HTTP_302_FOUND)
-    
-    referer = request.headers.get("referer")
-    if request.url.path.startswith("/admin/users"):
-        referer = "/admin/users"
-    
+
+    if wants_json(request):
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"detail": exc.detail or "Errore"},
+        )
+
     return templates.TemplateResponse(
         "error.html",
         {
             "request": request,
             "status_code": exc.status_code,
             "title": "Oops! Qualcosa è andato storto",
-            "message": exc.detail if exc.detail else "Errore imprevisto",
-            "referer": referer
+            "message": exc.detail,
+            "referer": request.headers.get("referer", "/")
         },
         status_code=exc.status_code
     )
