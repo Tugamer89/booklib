@@ -28,8 +28,8 @@ export default {
             sort_by: 'id', sort_order: 'asc'
         });
 
-        const showAddForm = ref(false);
-        const showFilters = ref(false);
+        const showAddForm = ref(localStorage.getItem('showAddForm') === 'true');
+        const showFilters = ref(localStorage.getItem('showFilters') === 'true');
         const showScrollToTop = ref(false);
 
         const selectedBookForEdit = ref(null);
@@ -37,7 +37,7 @@ export default {
         const showGoogleBooksModal = ref(false);
         const googleSearchTerms = ref({});
         const newBookData = ref({
-            title: '', author: '', isbn: '', publisher: '', 
+            title: '', author: '', isbn: '', publisher: '',
             location: '', language: '', description: '', personal_comment: '',
             cover_url: ''
         });
@@ -45,11 +45,11 @@ export default {
         const userData = JSON.parse(document.getElementById('user-data').textContent);
         const username = ref(userData.username);
         const isAdmin = ref(userData.is_admin);
-        
+
         const { theme, toggleTheme } = useTheme();
-        const isAnyModalOpen = computed(() => 
-            !!selectedBookForEdit.value || 
-            !!selectedBookForDetail.value || 
+        const isAnyModalOpen = computed(() =>
+            !!selectedBookForEdit.value ||
+            !!selectedBookForDetail.value ||
             showGoogleBooksModal.value
         );
         useBodyScrollLock(isAnyModalOpen);
@@ -88,7 +88,7 @@ export default {
 
             fetchBooks(true);
             lastAppliedFilters = currentFiltersString;
-            
+
             const urlParams = new URLSearchParams();
             for (const [key, value] of Object.entries(currentFilters.value)) {
                 if (value && String(value).trim() !== '') {
@@ -106,7 +106,7 @@ export default {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(applyFiltersAndUrl, 500);
         }, { deep: true });
-        
+
 
 
         const handleScroll = () => {
@@ -149,7 +149,7 @@ export default {
         };
         const resetNewBookData = () => {
             newBookData.value = {
-                title: '', author: '', isbn: '', publisher: '', 
+                title: '', author: '', isbn: '', publisher: '',
                 location: '', language: '', description: '', personal_comment: '',
                 cover_url: ''
             };
@@ -158,8 +158,12 @@ export default {
             if (!isShown) {
                 resetNewBookData();
             }
+            localStorage.setItem('showAddForm', isShown);
         });
 
+        watch(showFilters, (isShown) => {
+            localStorage.setItem('showFilters', isShown);
+        });
 
         onMounted(() => {
             window.scrollTo(0, 0);
@@ -170,13 +174,13 @@ export default {
                 filtersFromUrl[key] = value;
             }
             currentFilters.value = { ...currentFilters.value, ...filtersFromUrl };
-            
+
             lastAppliedFilters = JSON.stringify(currentFilters.value);
-            
+
             fetchBooks();
             window.addEventListener('scroll', handleScroll);
         });
-        
+
         onUnmounted(() => {
             window.removeEventListener('scroll', handleScroll);
         });
@@ -188,6 +192,7 @@ export default {
             selectedBookForEdit, selectedBookForDetail, showGoogleBooksModal,
             newBookData, googleSearchTerms,
             username, isAdmin, theme,
+            isAnyModalOpen,
 
             toggleTheme,
             handleScroll,
@@ -220,18 +225,18 @@ export default {
             </div>
 
             <transition name="fade">
-                <FilterPanel 
-                    v-if="showFilters" 
+                <FilterPanel
+                    v-if="showFilters"
                     v-model="currentFilters"
                     @apply-now="applyFiltersNow"
                     @reset-now="resetFiltersNow"
                 />
             </transition>
             <transition name="fade">
-                <AddBookForm 
-                    v-if="showAddForm" 
+                <AddBookForm
+                    v-if="showAddForm"
                     :book-data="newBookData"
-                    @open-google-search="openGoogleSearch" 
+                    @open-google-search="openGoogleSearch"
                     id="add-book-form-component"
                 />
             </transition>
@@ -249,10 +254,10 @@ export default {
                 <p>Caricamento altri libri...</p>
             </div>
         </main>
-        
+
         <EditBookModal v-if="selectedBookForEdit" :book="selectedBookForEdit" @close="selectedBookForEdit = null" />
         <DetailModal v-if="selectedBookForDetail" :book="selectedBookForDetail" @close="selectedBookForDetail = null" />
-        <GoogleBooksModal 
+        <GoogleBooksModal
             v-if="showGoogleBooksModal"
             :isVisible="showGoogleBooksModal"
             :initial-search-terms="googleSearchTerms"
@@ -264,7 +269,9 @@ export default {
             <button
                 v-if="showScrollToTop"
                 @click="scrollToTop"
-                class="fixed bottom-8 right-8 z-50 w-12 h-12 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-lg hover:bg-indigo-700 transition-colors"
+                class="fixed bottom-8 right-8 z-30 w-12 h-12 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-lg hover:bg-indigo-700 transition-all"
+                :class="{ 'opacity-50 cursor-not-allowed': isAnyModalOpen }"
+                :disabled="isAnyModalOpen"
                 aria-label="Torna in cima"
             >
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

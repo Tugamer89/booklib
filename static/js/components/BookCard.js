@@ -8,9 +8,11 @@ export default {
     },
     template: `
         <div class="group bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden flex flex-col border border-slate-200 dark:border-slate-700">
-            <div @click="$emit('show-details', book)" class="relative cursor-pointer">
-                <img :src="book.cover_path" :alt="'Copertina di ' + book.title" class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105">
-                <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div @click="$emit('show-details', book)" class="relative cursor-pointer overflow-hidden">
+                <div class="transition-transform duration-300 group-hover:scale-105">
+                    <img :src="book.cover_path" :alt="'Copertina di ' + book.title" class="w-full h-64 object-cover">
+                    <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
             </div>
             <div class="p-4 flex flex-col flex-grow">
                 <h3 class="font-bold text-md truncate text-slate-800 dark:text-slate-100">{{ book.title }}</h3>
