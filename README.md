@@ -107,4 +107,5 @@ MIT License — sentiti libero di usare e modificare.
 
 ## 📋 TODO list
 
-* Aggiungere compatibiltà per mobile
+* Aggiungere email tra i dati dell'utente 
+* Reset password automatico tramite email
