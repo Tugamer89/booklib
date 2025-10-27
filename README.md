@@ -16,7 +16,7 @@ Applicazione web full-stack per gestire e catalogare la propria libreria di casa
 * **PostgreSQL**: Come database relazionale.
 * **Jinja2**: Per il rendering dei template HTML lato server (autenticazione, admin).
 * **Cloudinary**: Per l'hosting e la gestione delle copertine dei libri.
-* **Passlib[bcrypt]**: Per l'hashing sicuro delle password.
+* **Passlib**: Per l'hashing sicuro delle password.
 * **Pydantic**: Per la validazione e la gestione delle impostazioni.
 * **APScheduler**: Per i job programmati (es. keep-alive).
 
