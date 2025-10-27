@@ -1,11 +1,91 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import func
+from passlib.hash import bcrypt
+from datetime import datetime, timedelta, timezone
+
 from db.models import User, Book, UserSession
+from core.config import settings
+from utils.logger import logger
 
 def get_user_by_id(db: Session, user_id: int) -> User | None:
     return db.query(User).filter(User.id == user_id).first()
 
 def get_user_by_username(db: Session, username: str) -> User | None:
     return db.query(User).filter(User.username == username).first()
+
+def get_user_by_email(db: Session, email: str) -> User | None:
+    return db.query(User).filter(User.email == email).first()
+
+def get_user_by_username_or_email(db: Session, identifier: str) -> User | None:
+    identifier_lower = identifier.lower()
+    return db.query(User).filter(
+        (func.lower(User.username) == identifier_lower) |
+        (func.lower(User.email) == identifier_lower)
+    ).first()
+
+def create_user(db: Session, user_data: dict, verification_token: str) -> User:
+    hashed_password = bcrypt.hash(user_data["password"])
+    db_user = User(
+        username=user_data["username"].strip(),
+        email=user_data["email"].strip().lower(),
+        password=hashed_password,
+        is_verified=False,
+        verification_token=verification_token
+    )
+    try:
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+    except Exception as e:
+        logger.error(f"Errore durante la creazione dell'utente {user_data.get('username')}: {e}")
+        db.rollback()
+        return None
+
+def verify_user_email(db: Session, token: str) -> User | None:
+    user = db.query(User).filter(User.verification_token == token).first()
+    if user:
+        try:
+            user.is_verified = True
+            user.verification_token = None
+            db.commit()
+            db.refresh(user)
+            return user
+        except Exception as e:
+            logger.error(f"Errore durante la verifica email per user {user.id} con token {token}: {e}")
+            db.rollback()
+            return None
+    return None
+
+def set_password_reset_token(db: Session, user: User, token: str) -> bool:
+    try:
+        user.reset_token = token
+        user.reset_token_expiry = datetime.now(timezone.utc) + timedelta(minutes=settings.password_reset_token_expire_minutes)
+        db.commit()
+        return True
+    except Exception as e:
+        logger.error(f"Errore durante il salvataggio del reset token per user {user.id}: {e}")
+        db.rollback()
+        return False
+
+def get_user_by_email_and_reset_token(db: Session, email: str, token: str) -> User | None:
+    return db.query(User).filter(
+        User.email == email,
+        User.reset_token == token,
+        User.reset_token_expiry > datetime.now(timezone.utc)
+    ).first()
+
+def reset_user_password(db: Session, user: User, new_password: str) -> bool:
+    try:
+        user.password = bcrypt.hash(new_password)
+        user.reset_token = None
+        user.reset_token_expiry = None
+        db.commit()
+        return True
+    except Exception as e:
+        logger.error(f"Errore durante il reset della password per user {user.id}: {e}")
+        db.rollback()
+        return False
 
 def add_book(db: Session, book: Book):
     db.add(book)

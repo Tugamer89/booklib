@@ -22,9 +22,17 @@ class Settings(BaseSettings):
     }
     username_regex: str = r"^[a-zA-Z0-9_.-]{3,20}$"
     password_regex: str = r"^.{8,100}$"
+    email_regex: str = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+    
     db_max_retries: int = 3
-    db_retry_delay: int = 1 # seconds
+    db_retry_delay_seconds: int = 1
     max_sessions_per_user: int = 5
+    password_reset_token_expire_minutes: int = 15
+    
+    BREVO_API_KEY: str = os.getenv("BREVO_API_KEY", "")
+    BREVO_EMAIL_FROM_ADDRESS: str = os.getenv("BREVO_EMAIL_FROM_ADDRESS", "noreply@example.com")
+    BREVO_EMAIL_FROM_NAME: str = os.getenv("BREVO_EMAIL_FROM_NAME", "BookLib")
+    
     DEBUG: bool = os.getenv("DEBUG", "false").lower() == "true"
     admin_users_env: str = Field(default=os.getenv("ADMIN_USERS", ""), repr=False)
     admin_users: set[str] = set()

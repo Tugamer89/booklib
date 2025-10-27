@@ -3,20 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accedi - Libreria di Casa</title>
+    <title>Accedi o Registrati - Libreria di Casa</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { darkMode: 'class' };
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
         }
     </script>
     <style type="text/tailwindcss">
-        .form-container { transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out; }
-        .form-inactive { opacity: 0; transform: translateY(10px); pointer-events: none; position: absolute; left: 0; right: 0; }
+        .form-container {
+            transition: opacity 0.2s ease-in-out, visibility 0s linear 0.2s;
+        }
+        .form-inactive {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease-in-out, visibility 0s linear 0s;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            pointer-events: none;
+        }
+
         @layer components {
             .input-style {
-                @apply w-full px-4 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-slate-100;
+                @apply w-full px-4 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500;
+                font-weight: normal;
+            }
+            .password-container {
+                @apply relative;
+            }
+            .password-toggle-icon {
+                @apply absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer text-slate-400 hover:text-slate-600 dark:hover:text-slate-200;
             }
         }
     </style>
@@ -28,28 +49,64 @@
     </div>
 
     <div class="w-full max-w-md p-8 space-y-6 bg-white dark:bg-slate-800 shadow-xl rounded-2xl">
-        <h1 class="text-3xl font-bold text-center text-slate-800 dark:text-slate-100">📚 Bentornato!</h1>
-        
-        <div id="error-container" class="hidden bg-red-100 dark:bg-red-900/50 border border-red-400 dark:border-red-500/50 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg" role="alert">
+        <h1 class="text-3xl font-bold text-center text-slate-800 dark:text-slate-100">📚 BookLib</h1>
+
+        <div id="error-container" class="hidden bg-red-100 dark:bg-red-900/50 border border-red-400 dark:border-red-500/50 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg text-sm" role="alert">
             <span id="error-message"></span>
         </div>
+        <div id="msg-container" class="hidden bg-green-100 dark:bg-green-900/50 border border-green-400 dark:border-green-500/50 text-green-700 dark:text-green-300 px-4 py-3 rounded-lg text-sm" role="alert">
+            <span id="msg-message"></span>
+        </div>
+
 
         <div class="flex border-b border-slate-200 dark:border-slate-700">
             <button id="loginTab" class="flex-1 py-2 text-center font-semibold border-b-2 transition-colors duration-300">Accedi</button>
             <button id="registerTab" class="flex-1 py-2 text-center font-semibold border-b-2 transition-colors duration-300">Registrati</button>
         </div>
-        
-        <form action="/auth" method="post" class="relative h-48">
+
+        <form action="/auth" method="post" class="relative h-64 sm:h-56">
             <input type="hidden" name="authAction" id="authAction" value="login">
-            
+
             <div id="login-form" class="form-container space-y-4">
-                <input name="username" type="text" required placeholder="Username" class="input-style">
-                <input name="password" type="password" required placeholder="Password" class="input-style">
+                <div>
+                    <label for="login-username" class="sr-only">Username o Email</label>
+                    <input id="login-username" name="username" type="text" required placeholder="Username o Email" class="input-style">
+                </div>
+                <div class="password-container">
+                    <label for="login-password" class="sr-only">Password</label>
+                    <input id="login-password" name="password" type="password" required placeholder="Password" class="input-style pr-10"> <!-- Aggiunto padding a destra -->
+                    <span class="password-toggle-icon" data-target="login-password">
+                        <svg class="w-5 h-5 eye-closed" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L6.228 6.228" />
+                        </svg>
+                        <svg class="w-5 h-5 eye-open hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                    </span>
+                </div>
+                 <div class="text-right">
+                     <a href="/forgot-password" class="text-sm text-indigo-600 hover:underline dark:text-indigo-400">Password dimenticata?</a>
+                 </div>
             </div>
 
             <div id="register-form" class="form-container form-inactive space-y-4">
-                 <input name="username" type="text" required placeholder="Scegli un Username" class="input-style" disabled>
-                <input name="password" type="password" required minlength="8" placeholder="Scegli una Password" class="input-style" disabled>
+                <div>
+                    <label for="register-username" class="sr-only">Username</label>
+                    <input id="register-username" name="username" type="text" required placeholder="Scegli un Username" class="input-style" disabled>
+                </div>
+                <div>
+                    <label for="register-email" class="sr-only">Email</label>
+                    <input id="register-email" name="email" type="email" required placeholder="La tua Email" class="input-style" disabled>
+                </div>
+                <div class="password-container">
+                    <label for="register-password" class="sr-only">Password</label>
+                    <input id="register-password" name="password" type="password" required minlength="8" placeholder="Scegli una Password (min. 8)" class="input-style pr-10" disabled>
+                    <span class="password-toggle-icon" data-target="register-password">
+                        <svg class="w-5 h-5 eye-closed" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L6.228 6.228" /></svg>
+                        <svg class="w-5 h-5 eye-open hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                    </span>
+                </div>
             </div>
 
             <button id="submitButton" type="submit" class="w-full absolute bottom-0 py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-slate-800 transition-colors duration-300">
@@ -89,38 +146,75 @@
 
             const setActiveTab = (mode) => {
                 const isLogin = mode === 'login';
-                
+
                 authAction.value = mode;
                 submitButton.textContent = isLogin ? 'Accedi' : 'Registrati';
-                
+
                 loginTab.classList.toggle('border-indigo-500', isLogin);
                 loginTab.classList.toggle('text-indigo-600', isLogin);
                 loginTab.classList.toggle('dark:text-indigo-400', isLogin);
                 loginTab.classList.toggle('text-slate-500', !isLogin);
-                
+                loginTab.classList.toggle('border-transparent', !isLogin);
+
                 registerTab.classList.toggle('border-indigo-500', !isLogin);
                 registerTab.classList.toggle('text-indigo-600', !isLogin);
                 registerTab.classList.toggle('dark:text-indigo-400', !isLogin);
                 registerTab.classList.toggle('text-slate-500', isLogin);
-                
-                loginForm.classList.toggle('form-inactive', !isLogin);
-                registerForm.classList.toggle('form-inactive', isLogin);
+                registerTab.classList.toggle('border-transparent', isLogin);
+
+                if (isLogin) {
+                    registerForm.classList.add('form-inactive');
+                    loginForm.classList.remove('form-inactive');
+                } else {
+                    loginForm.classList.add('form-inactive');
+                    registerForm.classList.remove('form-inactive');
+                }
 
                 loginInputs.forEach(input => input.disabled = !isLogin);
                 registerInputs.forEach(input => input.disabled = isLogin);
             };
-            
+
             loginTab.addEventListener('click', () => setActiveTab('login'));
             registerTab.addEventListener('click', () => setActiveTab('register'));
-            
-            setActiveTab('login');
 
             const urlParams = new URLSearchParams(window.location.search);
             const error = urlParams.get('error');
+            const msg = urlParams.get('msg');
+            const errorContainer = document.getElementById('error-container');
+            const errorMessage = document.getElementById('error-message');
+            const msgContainer = document.getElementById('msg-container');
+            const msgMessage = document.getElementById('msg-message');
+
             if (error) {
-                document.getElementById('error-container').classList.remove('hidden');
-                document.getElementById('error-message').textContent = decodeURIComponent(error.replace(/\+/g, ' '));
+                errorMessage.textContent = decodeURIComponent(error.replace(/\+/g, ' '));
+                errorContainer.classList.remove('hidden');
+                msgContainer.classList.add('hidden'); 
+            } else if (msg) {
+                msgMessage.textContent = decodeURIComponent(msg.replace(/\+/g, ' '));
+                msgContainer.classList.remove('hidden');
+                errorContainer.classList.add('hidden');
             }
+
+            setActiveTab('login');
+
+            document.querySelectorAll('.password-toggle-icon').forEach(icon => {
+                icon.addEventListener('click', () => {
+                    const targetInputId = icon.getAttribute('data-target');
+                    const targetInput = document.getElementById(targetInputId);
+                    const eyeOpen = icon.querySelector('.eye-open');
+                    const eyeClosed = icon.querySelector('.eye-closed');
+
+                    if (targetInput.type === 'password') {
+                        targetInput.type = 'text';
+                        eyeOpen.classList.remove('hidden');
+                        eyeClosed.classList.add('hidden');
+                    } else {
+                        targetInput.type = 'password';
+                        eyeOpen.classList.add('hidden');
+                        eyeClosed.classList.remove('hidden');
+                    }
+                });
+            });
         });
     </script>
 </body>

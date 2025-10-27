@@ -24,7 +24,7 @@ def get_db():
             if retries >= settings.db_max_retries:
                 raise e
             retries += 1
-            time.sleep(settings.db_retry_delay)
+            time.sleep(settings.db_retry_delay_seconds)
         finally:
             try:
                 db.close()
