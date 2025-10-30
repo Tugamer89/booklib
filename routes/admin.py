@@ -1,11 +1,10 @@
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, status
 from fastapi_csrf_protect import CsrfProtect
 from sqlalchemy.orm import Session
-from passlib.hash import bcrypt
 
 from core.auth import admin_required
-from core.config import settings
 from core.templates import templates
+from core.security import hash_password
 from db.crud import logout_all
 from db.database import get_db
 from db.models import User
@@ -62,7 +61,7 @@ async def admin_reset_password(
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Utente non trovato")
     
-    user.password = bcrypt.hash(new_password)
+    user.password = hash_password(new_password)
     db.commit()
     logout_all(db, user_id)
     

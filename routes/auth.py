@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi_csrf_protect import CsrfProtect
-from passlib.hash import bcrypt
 from sqlalchemy.orm import Session
 from urllib.parse import urlencode
 
@@ -10,10 +9,11 @@ from core.security import (
     generate_password_reset_token,
     generate_verification_token,
     validate_email,
+    validate_password,
     validate_username_and_password,
     verify_password_reset_token,
     verify_verification_token,
-    validate_password
+    verify_password
 )
 from core.email import send_password_reset_email, send_verification_email
 from core.templates import templates
@@ -80,7 +80,7 @@ async def auth_action(
 
     if authAction == "login":
         user = get_user_by_username_or_email(db, clean_username)
-        if not user or not bcrypt.verify(password, user.password):
+        if not user or not verify_password(password, user.password):
             error = "Credenziali errate"
         elif not user.is_verified:
             error = "Account non verificato. Controlla la tua email per il link di verifica."

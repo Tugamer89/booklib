@@ -1,9 +1,11 @@
-from pydantic_settings import BaseSettings
-from dotenv import load_dotenv
-from pydantic_settings.sources import PydanticBaseSettingsSource
-from pydantic import Field
-import cloudinary
 import os
+import cloudinary
+
+from dotenv import load_dotenv
+from passlib.context import CryptContext
+from pydantic import Field
+from pydantic_settings import BaseSettings
+from pydantic_settings.sources import PydanticBaseSettingsSource
 
 load_dotenv()
 
@@ -40,6 +42,8 @@ class Settings(BaseSettings):
     keepalive_cron: str = os.getenv("KEEPALIVE_CRON", "*/10 * * * *")
     keepalive_db: str = os.getenv("KEEPALIVE_DB", "")
     keepalive_db_cron: str = os.getenv("KEEPALIVE_DB_CRON", "0 0 */5 * *")
+
+    pwd_context: CryptContext = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
     def __init__(self, **data):
         super().__init__(**data)

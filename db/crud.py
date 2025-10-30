@@ -1,10 +1,10 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from passlib.hash import bcrypt
 from datetime import datetime, timedelta, timezone
 
 from db.models import User, Book, UserSession
 from core.config import settings
+from core.security import hash_password
 from utils.logger import logger
 
 def get_user_by_id(db: Session, user_id: int) -> User | None:
@@ -24,7 +24,7 @@ def get_user_by_username_or_email(db: Session, identifier: str) -> User | None:
     ).first()
 
 def create_user(db: Session, user_data: dict, verification_token: str) -> User:
-    hashed_password = bcrypt.hash(user_data["password"])
+    hashed_password = hash_password(user_data["password"])
     db_user = User(
         username=user_data["username"].strip(),
         email=user_data["email"].strip().lower(),
@@ -77,7 +77,7 @@ def get_user_by_email_and_reset_token(db: Session, email: str, token: str) -> Us
 
 def reset_user_password(db: Session, user: User, new_password: str) -> bool:
     try:
-        user.password = bcrypt.hash(new_password)
+        user.password = hash_password(new_password)
         user.reset_token = None
         user.reset_token_expiry = None
         db.commit()

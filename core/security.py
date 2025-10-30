@@ -1,6 +1,6 @@
 import re
 from fastapi import HTTPException, status
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature, BadSignature
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from datetime import timedelta
 
 from core.config import settings
@@ -50,3 +50,9 @@ def verify_verification_token(token: str) -> str | None:
         return email
     except (SignatureExpired, BadSignature):
         return None
+
+def hash_password(password: str) -> str:
+    return settings.pwd_context.hash(password)
+
+def verify_password(secret: str, password: str) -> bool:
+    return settings.pwd_context.verify(secret, password)
