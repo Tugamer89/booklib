@@ -32,7 +32,7 @@ const URLS_TO_CACHE = [
   '/static/icons/icon-384x384.png',
   '/static/icons/icon-512x512.png',
 
-  'https://cdn.tailwindcss.com',
+  'https://corsproxy.io/?url=https://cdn.tailwindcss.com',
   'https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js',
   'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js'
 ];
@@ -45,7 +45,12 @@ self.addEventListener('install', (event) => {
         try {
             const cache = await caches.open(CACHE_NAME);
             console.log('[ServiceWorker] Main resources caching');
-            await cache.addAll(URLS_TO_CACHE);
+            const cachePromises = URLS_TO_CACHE.map(url => {
+                return cache.add(url).catch(err => {
+                    console.warn(`[ServiceWorker] Failed to cache ${url}:`, err);
+                });
+            });
+            await Promise.all(cachePromises);
             await self.skipWaiting();
         } catch (error) {
             console.error('[ServiceWorker] Pre-caching failed:', error);
@@ -87,7 +92,12 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    if (request.url.includes('/books-data')) {
+    if (request.mode === 'navigate') {
+        event.respondWith(networkFirst(request));
+        return;
+    }
+
+    if (request.url.includes('/books-data') || request.url.pathname === '/static/css/main.css') {
         event.respondWith(networkFirst(request));
         return;
     }

@@ -151,4 +151,3 @@ MIT License — sentiti libero di usare e modificare.
 ---
 
 ## 📋 TODO list
-* Renderla compatibile come web-app

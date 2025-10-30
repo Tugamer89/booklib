@@ -110,14 +110,34 @@ export default {
 
 
 
-        const handleScroll = () => {
+        let scrollDebounceTimer = null;
+        let resizeDebounceTimer = null;
+
+        const onScroll = () => {
             const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
             const scrollPosition = window.scrollY;
+            
             if (scrollableHeight > 0 && (scrollPosition / scrollableHeight) > 0.85) {
                 fetchBooks();
             }
+            
             showScrollToTop.value = window.scrollY > 400;
         };
+
+        const onResize = () => {
+            showScrollToTop.value = window.scrollY > 400;
+        };
+
+        const handleScroll = () => {
+            clearTimeout(scrollDebounceTimer);
+            scrollDebounceTimer = setTimeout(onScroll, 100); 
+        };
+        
+        const handleResize = () => {
+            clearTimeout(resizeDebounceTimer);
+            resizeDebounceTimer = setTimeout(onResize, 100);
+        };
+
         const scrollToTop = () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
@@ -179,16 +199,19 @@ export default {
             lastAppliedFilters = JSON.stringify(currentFilters.value);
 
             fetchBooks();
+            
             window.addEventListener('scroll', handleScroll);
+            window.addEventListener('resize', handleResize);
         });
 
         onUnmounted(() => {
             window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('resize', handleResize);
         });
 
 
         return {
-            books, isLoading, hasMore, fetchError, currentFilters,
+            books, isLoading, fetchError, currentFilters,
             showAddForm, showFilters, showScrollToTop,
             selectedBookForEdit, selectedBookForDetail, showGoogleBooksModal,
             newBookData, googleSearchTerms,
@@ -197,7 +220,6 @@ export default {
             csrfToken,
 
             toggleTheme,
-            handleScroll,
             scrollToTop,
             applyFiltersNow,
             resetFiltersNow,

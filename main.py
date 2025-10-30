@@ -13,7 +13,7 @@ from routes import admin, auth, books, debug, errors, extras
 from utils.starter import lifespan
 
 
-app = FastAPI(lifespan=lifespan, title="BookLib", version="1.5.1")
+app = FastAPI(lifespan=lifespan, title="BookLib", version="1.5.2")
 
 @CsrfProtect.load_config
 def get_config():

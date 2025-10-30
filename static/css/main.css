@@ -4,6 +4,39 @@ body {
     min-height: 100vh;
 }
 
+@media (display-mode: window-controls-overlay) {
+  nav[class*="sticky"] {
+    padding-top: env(titlebar-area-height);
+    app-region: drag;
+  }
+
+  nav h1,
+  nav a,
+  nav button {
+    app-region: no-drag;
+  }
+
+  .pwa-drag-area {
+    top: 0 !important;
+    right: 0 !important;
+    left: 0;
+    width: 100%;
+
+    padding-top: env(titlebar-area-height);
+    
+    padding-right: 1rem; 
+
+    app-region: drag;
+
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .pwa-no-drag {
+    app-region: no-drag;
+  }
+}
+
 .fade-enter-active, .fade-leave-active {
     transition: opacity 0.2s ease;
 }

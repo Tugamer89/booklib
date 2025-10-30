@@ -13,6 +13,14 @@ async def keepalive():
 async def favicon():
     return FileResponse("static/favicon.ico")
 
+@router.get("/manifest.json")
+async def get_manifest():
+    return FileResponse("static/manifest.json")
+
+@router.get("/sw.js")
+async def get_service_worker():
+    return FileResponse("static/sw.js", media_type="application/javascript")
+
 # Rotta per Chrome DevTools
 @router.get("/.well-known/appspecific/com.chrome.devtools.json")
 async def chrome_devtools():
