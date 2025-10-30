@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, Response, JSONResponse
 
 router = APIRouter()
 
@@ -12,3 +12,8 @@ async def keepalive():
 @router.get("/favicon.ico")
 async def favicon():
     return FileResponse("static/favicon.ico")
+
+# Rotta per Chrome DevTools
+@router.get("/.well-known/appspecific/com.chrome.devtools.json")
+async def chrome_devtools():
+    return JSONResponse(content=[])

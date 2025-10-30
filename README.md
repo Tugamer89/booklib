@@ -151,5 +151,4 @@ MIT License — sentiti libero di usare e modificare.
 ---
 
 ## 📋 TODO list
-* Aggiungere `/.well-known/appspecific/com.chrome.devtools.json`
 * Renderla compatibile come web-app
