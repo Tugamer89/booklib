@@ -1,4 +1,4 @@
-const CACHE_NAME = 'booklib-cache-v1';
+const CACHE_NAME = 'booklib-cache-v1.1';
 
 const URLS_TO_CACHE = [
   '/',

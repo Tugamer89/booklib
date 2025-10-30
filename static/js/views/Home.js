@@ -230,6 +230,7 @@ export default {
         };
     },
     template: `
+    <div class="flex flex-col min-h-[100svh]">
         <Navbar :is-admin="isAdmin" :username="username" :theme="theme" @toggle-theme="toggleTheme" />
 
         <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -317,5 +318,6 @@ export default {
                 </svg>
             </button>
         </transition>
+    </div>
     `
 };
