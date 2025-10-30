@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi_csrf_protect import CsrfProtect
 from passlib.hash import bcrypt
 from sqlalchemy.orm import Session
 from urllib.parse import urlencode
@@ -40,6 +41,7 @@ router = APIRouter()
 def auth_page(
     request: Request,
     db: Session = Depends(get_db),
+    csrf_protect: CsrfProtect = Depends(),
     msg: str = Query(None),
     error: str = Query(None)
 ):
@@ -47,22 +49,29 @@ def auth_page(
         get_authenticated_user(request, db)
         return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
     except HTTPException:
-        return templates.TemplateResponse("auth.html", {
+        csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+        response = templates.TemplateResponse("auth.html", {
             "request": request,
             "msg": msg,
-            "error": error
+            "error": error,
+            "csrf_token": csrf_token
         })
+        csrf_protect.set_csrf_cookie(signed_token, response)
+        return response
 
 
 @router.post("/auth")
 async def auth_action(
     request: Request,
     db: Session = Depends(get_db),
+    csrf_protect: CsrfProtect = Depends(),
     authAction: str = Form(...),
     username: str = Form(...),
     password: str = Form(...),
     email: str = Form(None)
 ):
+    await csrf_protect.validate_csrf(request)
+    
     error = None
     msg = None
     user = None
@@ -118,8 +127,12 @@ async def auth_action(
         error = "Azione non valida"
 
     if error:
+        # TODO: serve davvero rigenerare il csrf_token anche se poi non viene usato? il redirect poi non permette gia` di ricalcolare i vari token?
+        csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
         redirect_url = f"/auth?{urlencode({'error': error})}"
-        return RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+        response = RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+        csrf_protect.set_csrf_cookie(signed_token, response)
+        return response
 
     if msg:
         redirect_url = f"/auth?{urlencode({'msg': msg})}"
@@ -130,15 +143,30 @@ async def auth_action(
         if token:
             request.session["user_id"] = user.id
             request.session["session_token"] = token
-            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+            
+            # TODO: stesso ragionamento di riga 130
+            csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+            response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+            csrf_protect.set_csrf_cookie(signed_token, response)
+            return response
         else:
             error = "Impossibile creare la sessione. Riprova."
+            
+            # TODO: stesso ragionamento di riga 130
+            csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
             redirect_url = f"/auth?{urlencode({'error': error})}"
-            return RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+            response = RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+            csrf_protect.set_csrf_cookie(signed_token, response)
+            return response
 
     error = "Si è verificato un errore imprevisto."
+    
+    # TODO: stesso ragionamento di riga 130
+    csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
     redirect_url = f"/auth?{urlencode({'error': error})}"
-    return RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+    response = RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+    csrf_protect.set_csrf_cookie(signed_token, response)
+    return response
 
 
 @router.get("/verify-email", response_class=HTMLResponse)
@@ -182,6 +210,7 @@ async def verify_email_route(
 def forgot_password_page(
     request: Request,
     db: Session = Depends(get_db),
+    csrf_protect: CsrfProtect = Depends(),
     msg: str = Query(None),
     error: str = Query(None)
 ):
@@ -189,19 +218,26 @@ def forgot_password_page(
         get_authenticated_user(request, db)
         return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
     except HTTPException:
-        return templates.TemplateResponse("forgot_password.html", {
+        csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+        response = templates.TemplateResponse("forgot_password.html", {
             "request": request,
             "msg": msg,
-            "error": error
+            "error": error,
+            "csrf_token": csrf_token
         })
+        csrf_protect.set_csrf_cookie(signed_token, response)
+        return response
 
 
 @router.post("/forgot-password")
 async def handle_forgot_password(
     request: Request,
     db: Session = Depends(get_db),
+    csrf_protect: CsrfProtect = Depends(),
     email: str = Form(...)
 ):
+    await csrf_protect.validate_csrf(request)
+
     user = get_user_by_email(db, email.strip().lower())
     msg = "Se un account con questa email esiste, abbiamo inviato un link per il reset della password."
     
@@ -215,16 +251,21 @@ async def handle_forgot_password(
             if not email_sent:
                 logger.warning(f"Tentativo invio email reset per {user.email} fallito.")
 
-    return RedirectResponse(
+    # TODO: stesso ragionamento di riga 130
+    csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+    response = RedirectResponse(
         url=f"/forgot-password?{urlencode({'msg': msg})}",
         status_code=status.HTTP_303_SEE_OTHER
     )
+    csrf_protect.set_csrf_cookie(signed_token, response)
+    return response
 
 
 @router.get("/reset-password", response_class=HTMLResponse)
 def reset_password_page(
     request: Request,
     db: Session = Depends(get_db),
+    csrf_protect: CsrfProtect = Depends(),
     token: str = Query(...)
 ):
     email = verify_password_reset_token(token)
@@ -244,22 +285,29 @@ def reset_password_page(
             status_code=status.HTTP_303_SEE_OTHER
         )
     
-    return templates.TemplateResponse("reset_password.html", {
+    csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+    response = templates.TemplateResponse("reset_password.html", {
         "request": request,
         "token": token,
         "error": None,
-        "msg": None
+        "msg": None,
+        "csrf_token": csrf_token
     })
+    csrf_protect.set_csrf_cookie(signed_token, response)
+    return response
 
 
 @router.post("/reset-password")
 async def handle_reset_password(
     request: Request,
     db: Session = Depends(get_db),
+    csrf_protect: CsrfProtect = Depends(),
     token: str = Form(...),
     password: str = Form(...),
     confirm_password: str = Form(...)
 ):
+    await csrf_protect.validate_csrf(request)
+    
     error = None
     if password != confirm_password:
         error = "Le password non coincidono."
@@ -270,12 +318,16 @@ async def handle_reset_password(
             error = e.detail
 
     if error:
-        return templates.TemplateResponse("reset_password.html", {
+        csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+        response = templates.TemplateResponse("reset_password.html", {
             "request": request,
             "token": token,
             "error": error,
-            "msg": None
+            "msg": None,
+            "csrf_token": csrf_token
         }, status_code=status.HTTP_400_BAD_REQUEST)
+        csrf_protect.set_csrf_cookie(signed_token, response)
+        return response
 
     email = verify_password_reset_token(token)
     if not email:
@@ -296,31 +348,41 @@ async def handle_reset_password(
 
     if not reset_user_password(db, user, password):
         error = "Errore interno durante l'aggiornamento della password. Riprova."
-        return templates.TemplateResponse("reset_password.html", {
+        csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+        response = templates.TemplateResponse("reset_password.html", {
             "request": request,
             "token": token,
             "error": error,
-            "msg": None
+            "msg": None,
+            "csrf_token": csrf_token
         }, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        csrf_protect.set_csrf_cookie(signed_token, response)
+        return response
 
     logout_all(db, user.id)
     request.session.clear()
 
     msg = "Password aggiornata con successo. Ora puoi accedere."
-    return RedirectResponse(
+    response = RedirectResponse(
         url=f"/auth?{urlencode({'msg': msg})}",
         status_code=status.HTTP_303_SEE_OTHER
     )
+    csrf_protect.unset_csrf_cookie(response)
+    return response
 
 
 @router.get("/logout")
 def logout(
     request: Request,
     user: User = Depends(get_authenticated_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    csrf_protect: CsrfProtect = Depends()
 ):
     token = request.session.get("session_token")
     if token:
         logout_current(db, token)
     request.session.clear()
-    return RedirectResponse(url="/auth", status_code=status.HTTP_302_FOUND)
+    
+    response = RedirectResponse(url="/auth", status_code=status.HTTP_302_FOUND)
+    csrf_protect.unset_csrf_cookie(response)
+    return response

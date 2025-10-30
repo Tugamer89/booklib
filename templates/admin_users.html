@@ -74,6 +74,7 @@
                             <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                                 <form method="post" action="/admin/users/reset-password" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                                     <input type="hidden" name="user_id" value="{{ user.id }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                                     <div class="password-container w-full sm:w-40">
                                         <input type="password" name="new_password" placeholder="Nuova password" minlength="8" required class="input-style pr-8" id="password-{{ user.id }}">
                                         <span class="password-toggle-icon" data-target="password-{{ user.id }}">
@@ -85,6 +86,7 @@
                                 </form>
                                 <form method="post" action="/admin/users/delete" onsubmit="return confirm('Sei sicuro di voler eliminare l\\'utente {{ user.username }}? Questa azione è irreversibile.');">
                                     <input type="hidden" name="user_id" value="{{ user.id }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                                     <button type="submit" class="px-3 py-1 bg-red-600 text-white text-sm rounded-md hover:bg-red-700">Elimina</button>
                                 </form>
                             </div>

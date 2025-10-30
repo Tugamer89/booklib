@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, status
+from fastapi_csrf_protect import CsrfProtect
 from sqlalchemy.orm import Session
 from passlib.hash import bcrypt
 
@@ -15,66 +16,106 @@ router = APIRouter()
 def admin_users_list(
     request: Request,
     db: Session = Depends(get_db),
+    csrf_protect: CsrfProtect = Depends(),
     admin: User = Depends(admin_required),
     msg: str = Query(None),
     error: str = Query(None)
 ):
     users = db.query(User).order_by(User.id).all()
-    return templates.TemplateResponse("admin_users.html", {
+    
+    csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+    response = templates.TemplateResponse("admin_users.html", {
         "request": request,
         "users": users,
         "msg": msg,
-        "error": error
+        "error": error,
+        "csrf_token": csrf_token
     })
+    csrf_protect.set_csrf_cookie(signed_token, response)
+    return response
 
 @router.post("/admin/users/reset-password")
 async def admin_reset_password(
     request: Request,
-    user_id: int = Form(...),
-    new_password: str = Form(...),
     db: Session = Depends(get_db),
-    admin = Depends(admin_required)
+    csrf_protect: CsrfProtect = Depends(),
+    admin = Depends(admin_required),
+    user_id: int = Form(...),
+    new_password: str = Form(...)
 ):
+    await csrf_protect.validate_csrf(request)
+    
     if len(new_password) < 8:
-        return admin_users_list(
-            request=request,
-            db=db,
-            admin=admin,
-            msg="",
-            error="Password troppo corta"
-        )
+        users = db.query(User).order_by(User.id).all()
+        csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+        response = templates.TemplateResponse("admin_users.html", {
+            "request": request,
+            "users": users,
+            "msg": "",
+            "error": "Password troppo corta",
+            "csrf_token": csrf_token
+        }, status_code=status.HTTP_400_BAD_REQUEST)
+        csrf_protect.set_csrf_cookie(signed_token, response)
+        return response
 
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Utente non trovato")
     
     user.password = bcrypt.hash(new_password)
+    db.commit()
     logout_all(db, user_id)
-    return admin_users_list(
-        request=request,
-        db=db,
-        admin=admin,
-        msg="Password aggiornata",
-        error=""
-    )
+    
+    users = db.query(User).order_by(User.id).all()
+    csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+    response = templates.TemplateResponse("admin_users.html", {
+        "request": request,
+        "users": users,
+        "msg": "Password aggiornata",
+        "error": "",
+        "csrf_token": csrf_token
+    })
+    csrf_protect.set_csrf_cookie(signed_token, response)
+    return response
 
 @router.post("/admin/users/delete")
 async def admin_delete_user(
     request: Request,
-    user_id: int = Form(...),
     db: Session = Depends(get_db),
-    admin = Depends(admin_required)
+    csrf_protect: CsrfProtect = Depends(),
+    admin = Depends(admin_required),
+    user_id: int = Form(...)
 ):
+    await csrf_protect.validate_csrf(request)
+    
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Utente non trovato")
     
+    if user_id == admin.id:
+        users = db.query(User).order_by(User.id).all()
+        csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+        response = templates.TemplateResponse("admin_users.html", {
+            "request": request,
+            "users": users,
+            "msg": "",
+            "error": "Non puoi eliminare te stesso.",
+            "csrf_token": csrf_token
+        }, status_code=status.HTTP_400_BAD_REQUEST)
+        csrf_protect.set_csrf_cookie(signed_token, response)
+        return response
+    
     db.delete(user)
     db.commit()
-    return admin_users_list(
-        request=request,
-        db=db,
-        admin=admin,
-        msg="Utente eliminato",
-        error=""
-    )
+    
+    users = db.query(User).order_by(User.id).all()
+    csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+    response = templates.TemplateResponse("admin_users.html", {
+        "request": request,
+        "users": users,
+        "msg": "Utente eliminato",
+        "error": "",
+        "csrf_token": csrf_token
+    })
+    csrf_protect.set_csrf_cookie(signed_token, response)
+    return response

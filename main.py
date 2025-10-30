@@ -3,15 +3,21 @@ import uvicorn
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi_csrf_protect import CsrfProtect
 from securecookies import SecureCookiesMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from core.config import settings
+from core.csrf import CsrfSettings
 from routes import admin, auth, books, debug, errors, extras
 from utils.starter import lifespan
 
 
-app = FastAPI(lifespan=lifespan, title="BookLib", version="1.5.0")
+app = FastAPI(lifespan=lifespan, title="BookLib", version="1.5.1")
+
+@CsrfProtect.load_config
+def get_config():
+    return CsrfSettings()
 
 # Middleware per sessioni
 app.add_middleware(
@@ -35,6 +41,7 @@ app.add_exception_handler(errors.HTTPException, errors.http_exception_redirect)
 app.add_exception_handler(errors.StarletteHTTPException, errors.http_exception_redirect)
 app.add_exception_handler(errors.RequestValidationError, errors.validation_exception_handler)
 app.add_exception_handler(errors.OperationalError, errors.operational_error_handler)
+app.add_exception_handler(errors.CsrfProtectError, errors.csrf_protect_exception_handler)
 app.add_exception_handler(Exception, errors.generic_exception_handler)
 
 app.include_router(auth.router)

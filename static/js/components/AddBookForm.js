@@ -8,7 +8,8 @@ export default {
         bookData: {
             type: Object,
             required: true
-        }
+        },
+        csrfToken: String
     },
     emits: ['open-google-search'],
     components: { GoogleBooksModal },
@@ -52,7 +53,7 @@ export default {
                 },
                 (errorMessage) => { /* ignore errors */ }
             ).catch(err => {
-                alert("Errore nell'avvio della fotocamera. Assicurati di aver dato i permessi.");
+                console.error("Errore nell'avvio della fotocamera. Assicurati di aver concesso i permessi.");
                 stopScanner();
             });
         };
@@ -92,6 +93,7 @@ export default {
             <h2 class="text-2xl font-bold mb-6 text-slate-800 dark:text-slate-100">Aggiungi un nuovo libro</h2>
 
             <form action="/add" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" :value="csrfToken">
                 <input type="hidden" name="cover_url" v-model="bookData.cover_url">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     

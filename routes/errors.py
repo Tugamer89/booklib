@@ -4,6 +4,8 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.exceptions import RequestValidationError
 from sqlalchemy.exc import OperationalError
 from fastapi.templating import Jinja2Templates
+from fastapi_csrf_protect.exceptions import CsrfProtectError
+from urllib.parse import urlparse, urlencode
 
 from utils.logger import logger
 
@@ -72,6 +74,30 @@ async def operational_error_handler(request: Request, exc: OperationalError):
         },
         status_code=status.HTTP_503_SERVICE_UNAVAILABLE
     )
+
+# Gestione eccezioni per CSRF errato
+async def csrf_protect_exception_handler(request: Request, exc: CsrfProtectError):
+    logger.warning(f"CSRF error: {exc.message} | Path: {request.url.path}")
+    
+    error_message = "Azione non valida. Ricarica la pagina e riprova."
+
+    if wants_json(request):
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={"detail": error_message}
+        )
+
+    referer = request.headers.get("referer")
+    
+    if referer:
+        clean_url = urlparse(referer)._replace(query=None).geturl()
+    else:
+        clean_url = "/auth"
+
+    query_params = urlencode({'error': error_message})
+    redirect_url = f"{clean_url}?{query_params}"
+    
+    return RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
 
 # Gestione eccezioni generiche
 async def generic_exception_handler(request: Request, exc: Exception):

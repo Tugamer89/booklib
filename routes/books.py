@@ -4,6 +4,7 @@ import re
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Request, status, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from fastapi_csrf_protect import CsrfProtect
 from isbnlib import canonical, is_isbn10, is_isbn13
 from sqlalchemy import asc, case, cast, desc, func, null
 from sqlalchemy.orm import Session
@@ -25,15 +26,20 @@ templates = Jinja2Templates(directory="templates")
 @router.head("/", response_class=HTMLResponse)
 def read_books_page(
     request: Request,
-    user: User = Depends(get_authenticated_user),
+    csrf_protect: CsrfProtect = Depends(),
+    user: User = Depends(get_authenticated_user)
 ):
-    return templates.TemplateResponse("index.html", {
+    csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+    response = templates.TemplateResponse("index.html", {
         "request": request,
         "user": {
             "username": user.username,
             "is_admin": user.username in settings.admin_users
-        }
+        },
+        "csrf_token": csrf_token
     })
+    csrf_protect.set_csrf_cookie(signed_token, response)
+    return response
 
 
 @router.get("/books-data")
@@ -114,8 +120,9 @@ def books_data(
 
 
 @router.post("/add", response_class=HTMLResponse)
-def add_book(
+async def add_book(
     request: Request,
+    csrf_protect: CsrfProtect = Depends(),
     user: User = Depends(get_authenticated_user),
     db: Session = Depends(get_db),
     title: str = Form(...),
@@ -129,6 +136,8 @@ def add_book(
     cover: UploadFile = File(None),
     cover_url: str = Form(None),
 ):
+    await csrf_protect.validate_csrf(request)
+    
     # Validazione ISBN
     isbn_canonical = canonical(isbn.strip())
     if isbn_canonical and not (is_isbn13(isbn_canonical) or is_isbn10(isbn_canonical)):
@@ -175,8 +184,11 @@ def add_book(
 
 
 @router.post("/edit", response_class=HTMLResponse)
-def edit_book(
+async def edit_book(
     request: Request,
+    csrf_protect: CsrfProtect = Depends(),
+    user: User = Depends(get_authenticated_user),
+    db: Session = Depends(get_db),
     book_id: int = Form(...),
     title: str = Form(...),
     author: str = Form(...),
@@ -186,10 +198,10 @@ def edit_book(
     description: str = Form(...),
     language: str = Form(...),
     personal_comment: str = Form(...),
-    cover: UploadFile = File(None),
-    user: User = Depends(get_authenticated_user),
-    db: Session = Depends(get_db)
+    cover: UploadFile = File(None)
 ):
+    await csrf_protect.validate_csrf(request)
+    
     book = db.query(Book).filter(Book.id == book_id, Book.user_id == user.id).first()
     if not book:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Libro non trovato")
@@ -237,12 +249,15 @@ def edit_book(
 
 
 @router.post("/delete", response_class=HTMLResponse)
-def delete_book(
+async def delete_book(
     request: Request,
-    book_id: int = Form(...),
+    csrf_protect: CsrfProtect = Depends(),
     user: User = Depends(get_authenticated_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    book_id: int = Form(...)
 ):
+    await csrf_protect.validate_csrf(request)
+    
     book = db.query(Book).filter(Book.id == book_id, Book.user_id == user.id).first()
     if not book:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Libro non trovato")

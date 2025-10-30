@@ -45,6 +45,7 @@
         <div class="flex items-center justify-center min-h-screen"><p class="text-lg text-slate-500">Caricamento della libreria...</p></div>
     </div>
     <script id="user-data" type="application/json">{{ user | tojson }}</script>
+    <script id="csrf-token" type="application/json">{{ csrf_token | tojson }}</script>
     <script type="module" src="/static/js/main.js"></script>
 </body>
 </html>

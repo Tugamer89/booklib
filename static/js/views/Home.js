@@ -43,6 +43,7 @@ export default {
         });
 
         const userData = JSON.parse(document.getElementById('user-data').textContent);
+        const csrfToken = ref(JSON.parse(document.getElementById('csrf-token').textContent));
         const username = ref(userData.username);
         const isAdmin = ref(userData.is_admin);
 
@@ -193,6 +194,7 @@ export default {
             newBookData, googleSearchTerms,
             username, isAdmin, theme,
             isAnyModalOpen,
+            csrfToken,
 
             toggleTheme,
             handleScroll,
@@ -238,6 +240,7 @@ export default {
                     :book-data="newBookData"
                     @open-google-search="openGoogleSearch"
                     id="add-book-form-component"
+                    :csrf-token="csrfToken"
                 />
             </transition>
 
@@ -248,14 +251,26 @@ export default {
                 <p>Nessun libro trovato. Prova a cambiare i filtri o aggiungine uno nuovo!</p>
             </div>
             <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                <BookCard v-for="book in books" :key="book.id" :book="book" @edit-book="openEditModal" @show-details="openDetailModal" />
+                <BookCard
+                    v-for="book in books"
+                    :key="book.id"
+                    :book="book"
+                    @edit-book="openEditModal"
+                    @show-details="openDetailModal"
+                    :csrf-token="csrfToken"
+                />
             </div>
              <div v-if="isLoading && books.length > 0" class="text-center py-8 text-slate-500 dark:text-slate-400">
                 <p>Caricamento altri libri...</p>
             </div>
         </main>
 
-        <EditBookModal v-if="selectedBookForEdit" :book="selectedBookForEdit" @close="selectedBookForEdit = null" />
+        <EditBookModal
+            v-if="selectedBookForEdit"
+            :book="selectedBookForEdit"
+            @close="selectedBookForEdit = null"
+            :csrf-token="csrfToken"
+        />
         <DetailModal v-if="selectedBookForDetail" :book="selectedBookForDetail" @close="selectedBookForDetail = null" />
         <GoogleBooksModal
             v-if="showGoogleBooksModal"
@@ -263,6 +278,7 @@ export default {
             :initial-search-terms="googleSearchTerms"
             @close="showGoogleBooksModal = false"
             @book-selected="handleBookSelected"
+            :csrf-token="csrfToken"
         />
 
         <transition name="slide-fade">

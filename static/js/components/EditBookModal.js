@@ -1,7 +1,7 @@
 import { formatISBN } from '../utils/formatters.js';
 
 export default {
-    props: ['book'],
+    props: ['book', 'csrfToken'],
     emits: ['close'],
     setup(props, { emit }) {
         const close = () => emit('close');
@@ -19,6 +19,7 @@ export default {
                         </div>
                         
                         <input type="hidden" name="book_id" :value="book.id">
+                        <input type="hidden" name="csrf_token" :value="csrfToken">
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
                             <div>

@@ -151,5 +151,5 @@ MIT License — sentiti libero di usare e modificare.
 ---
 
 ## 📋 TODO list
-* Aggiungere email tra i dati dell'utente
-* Reset password automatico tramite email
+* Aggiungere `/.well-known/appspecific/com.chrome.devtools.json`
+* Renderla compatibile come web-app
