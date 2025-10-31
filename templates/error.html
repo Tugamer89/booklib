@@ -1,56 +1,17 @@
-<!DOCTYPE html>
-<html lang="it" class="">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Errore {{ status_code }}</title>
-    <link rel="manifest" href="/manifest.json">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = { darkMode: 'class' };
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && globalThis.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        }
-    </script>
-</head>
-<body class="bg-gradient-to-br from-slate-50 to-slate-200 dark:from-slate-800 dark:to-slate-900 text-slate-800 dark:text-slate-200 transition-colors duration-300 flex items-center justify-center min-h-[100svh] text-center">
-    
-    <div class="absolute top-4 right-4 pwa-drag-area">
-        <button id="theme-toggle" class="p-2 rounded-full text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-700 transition pwa-no-drag" aria-label="Toggle theme"></button>
-    </div>
+{% extends "_base.html" %}
 
-    <div>
-        <h1 class="text-6xl font-bold text-indigo-600 dark:text-indigo-400">{{ status_code }}</h1>
-        <h2 class="text-2xl font-semibold mt-4">{{ title }}</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-2">{{ message }}</p>
-        <a href="{{ referer or '/' }}" class="mt-6 inline-block bg-indigo-600 text-white px-6 py-2 rounded-md shadow hover:bg-indigo-700 transition">
-            Torna indietro
-        </a>
-    </div>
+{% block title %}Errore {{ status_code }}{% endblock %}
+{% block meta %}
+    <meta name="robots" content="noindex, nofollow">
+{% endblock %}
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const themeToggle = document.getElementById('theme-toggle');
-            const html = document.documentElement;
-
-            const applyTheme = (theme) => {
-                if (theme === 'dark') {
-                    html.classList.add('dark');
-                    themeToggle.innerHTML = '☀️';
-                } else {
-                    html.classList.remove('dark');
-                    themeToggle.innerHTML = '🌙';
-                }
-            };
-            
-            themeToggle.addEventListener('click', () => {
-                const newTheme = html.classList.contains('dark') ? 'light' : 'dark';
-                localStorage.setItem('theme', newTheme);
-                applyTheme(newTheme);
-            });
-            
-            applyTheme(html.classList.contains('dark') ? 'dark' : 'light');
-        });
-    </script>
-</body>
-</html>
+{% block content %}
+<div>
+    <h1 class="text-6xl font-bold text-indigo-600 dark:text-indigo-400">{{ status_code }}</h1>
+    <h2 class="text-2xl font-semibold mt-4">{{ title }}</h2>
+    <p class="text-slate-500 dark:text-slate-400 mt-2">{{ message }}</p>
+    <a href="{{ referer or '/' }}" class="mt-6 inline-block bg-indigo-600 text-white px-6 py-2 rounded-md shadow hover:bg-indigo-700 transition">
+        Torna indietro
+    </a>
+</div>
+{% endblock %}
