@@ -6,10 +6,10 @@ export function useBodyScrollLock(isLocked) {
     watch(isLocked, (newVal) => {
         if (newVal) {
             document.body.classList.add(lockClass);
-            document.documentElement.classList.add(lockClass); // Aggiungi questo
+            document.documentElement.classList.add(lockClass);
         } else {
             document.body.classList.remove(lockClass);
-            document.documentElement.classList.remove(lockClass); // E questo
+            document.documentElement.classList.remove(lockClass);
         }
     }, { immediate: true });
 

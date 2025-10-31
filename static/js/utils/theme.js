@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue';
 
-const isDarkPreferred = localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+const isDarkPreferred = localStorage.theme === 'dark' || (!('theme' in localStorage) && globalThis.matchMedia('(prefers-color-scheme: dark)').matches);
 const theme = ref(isDarkPreferred ? 'dark' : 'light');
 if (isDarkPreferred) {
     document.documentElement.classList.add('dark');

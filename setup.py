@@ -73,17 +73,17 @@ def create_env_file():
         f.write(f"KEEPALIVE_CRON='{KEEPALIVE_CRON}'\n")
         f.write(f"KEEPALIVE_DB='{KEEPALIVE_DB}'\n")
         f.write(f"KEEPALIVE_DB_CRON='{KEEPALIVE_DB_CRON}'\n")
-        f.write(f"DEBUG='False'\n")
+        f.write("DEBUG='False'\n")
 
     print(f"File {ENV_FILE} creato con chiavi generate automaticamente.")
 
-def create_tables(engine, Base):
+def create_tables(engine, base):
     """
     Crea tutte le tabelle definite nei modelli SQLAlchemy.
     """
     print("Creazione tabelle nel database...")
     try:
-        Base.metadata.create_all(bind=engine)
+        base.metadata.create_all(bind=engine)
         print("Tabelle create con successo.")
     except Exception as e:
         print(f"Errore durante la creazione delle tabelle: {e}")

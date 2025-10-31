@@ -34,7 +34,7 @@ def verify_password_reset_token(token: str) -> str | None:
             max_age=timedelta(minutes=settings.password_reset_token_expire_minutes).total_seconds()
         )
         return email
-    except (SignatureExpired, BadSignature):
+    except (BadSignature):
         return None
 
 def generate_verification_token(email: str) -> str:
@@ -48,7 +48,7 @@ def verify_verification_token(token: str) -> str | None:
             max_age=timedelta(days=7).total_seconds()
         )
         return email
-    except (SignatureExpired, BadSignature):
+    except (BadSignature):
         return None
 
 def hash_password(password: str) -> str:
