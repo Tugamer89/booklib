@@ -151,4 +151,3 @@ MIT License — sentiti libero di usare e modificare.
 ---
 
 ## 📋 TODO list
-* Togliere errore passato come GET in `/auth` e in `/forgot-password`
