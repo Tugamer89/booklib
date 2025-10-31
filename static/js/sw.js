@@ -1,4 +1,4 @@
-const CACHE_NAME = 'booklib-cache-v1.1';
+const CACHE_NAME = 'booklib-cache-v1.2';
 
 const URLS_TO_CACHE = [
   '/',
@@ -51,7 +51,7 @@ self.addEventListener('install', (event) => {
                 });
             });
             await Promise.all(cachePromises);
-            await self.skipWaiting();
+            await globalThis.skipWaiting();
         } catch (error) {
             console.error('[ServiceWorker] Pre-caching failed:', error);
         }
@@ -75,7 +75,7 @@ self.addEventListener('activate', (event) => {
                         return caches.delete(cacheName);
                     })
             );
-            await self.clients.claim();
+            await globalThis.clients.claim();
         } catch (error) {
             console.error('[ServiceWorker] Cache cleanup failed:', error);
         }
@@ -92,12 +92,7 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    if (request.mode === 'navigate') {
-        event.respondWith(networkFirst(request));
-        return;
-    }
-
-    if (request.url.includes('/books-data') || request.url.pathname === '/static/css/main.css') {
+    if (request.mode === 'navigate' || request.url.includes('/books-data') || request.url.pathname === '/static/css/main.css') {
         event.respondWith(networkFirst(request));
         return;
     }
@@ -115,7 +110,7 @@ const networkFirst = async (request) => {
         
         return networkResponse;
     } catch (error) {
-        console.warn('[ServiceWorker] Network failed, trying cache for:', request.url);
+        console.warn('[ServiceWorker] Network failed, trying cache for:', request.url, error);
         const cachedResponse = await caches.match(request);
         return cachedResponse;
     }

@@ -1,21 +1,22 @@
+import traceback
 from fastapi import HTTPException, Request, status
 from fastapi.responses import JSONResponse, RedirectResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.exceptions import RequestValidationError
 from sqlalchemy.exc import OperationalError
-from fastapi.templating import Jinja2Templates
 from fastapi_csrf_protect.exceptions import CsrfProtectError
-from urllib.parse import urlparse, urlencode
 
+from core.templates import templates
 from utils.logger import logger
 
-templates = Jinja2Templates(directory="templates")
+ERROR_PAGE = "error.html"
+
 
 def wants_json(request: Request) -> bool:
     return "application/json" in request.headers.get("accept", "") or \
            request.headers.get("x-requested-with") == "XMLHttpRequest"
 
-async def http_exception_redirect(request: Request, exc: HTTPException | StarletteHTTPException):
+def http_exception_redirect(request: Request, exc: HTTPException | StarletteHTTPException):
     if exc.status_code == status.HTTP_401_UNAUTHORIZED:
         return RedirectResponse(url="/auth", status_code=status.HTTP_302_FOUND)
 
@@ -26,7 +27,7 @@ async def http_exception_redirect(request: Request, exc: HTTPException | Starlet
         )
 
     return templates.TemplateResponse(
-        "error.html",
+        ERROR_PAGE,
         {
             "request": request,
             "status_code": exc.status_code,
@@ -38,10 +39,12 @@ async def http_exception_redirect(request: Request, exc: HTTPException | Starlet
     )
 
 # Gestione errori di validazione (422)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
+def validation_exception_handler(request: Request, exc: RequestValidationError):
+    logger.warning(f"[VALIDATION EXCEPTION] {''.join(traceback.format_exception(type(exc), exc, exc.__traceback__))}")
+    
     referer = request.headers.get("referer")
     return templates.TemplateResponse(
-        "error.html",
+        ERROR_PAGE,
         {
             "request": request,
             "status_code": status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -53,8 +56,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 # Gestione OperationalError
-async def operational_error_handler(request: Request, exc: OperationalError):
-    import traceback
+def operational_error_handler(request: Request, exc: OperationalError):
     logger.error(f"[OPERATIONAL ERROR] {''.join(traceback.format_exception(type(exc), exc, exc.__traceback__))}")
 
     referer = request.headers.get("referer")
@@ -64,7 +66,7 @@ async def operational_error_handler(request: Request, exc: OperationalError):
     )
     
     return templates.TemplateResponse(
-        "error.html",
+        ERROR_PAGE,
         {
             "request": request,
             "status_code": status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -76,10 +78,10 @@ async def operational_error_handler(request: Request, exc: OperationalError):
     )
 
 # Gestione eccezioni per CSRF errato
-async def csrf_protect_exception_handler(request: Request, exc: CsrfProtectError):
-    logger.warning(f"CSRF error: {exc.message} | Path: {request.url.path}")
-    
-    error_message = "Azione non valida. Ricarica la pagina e riprova."
+def csrf_protect_exception_handler(request: Request, exc: CsrfProtectError):
+    logger.warning(f"CSRF error: {getattr(exc, 'message', str(exc))} | Path: {request.url.path}")
+
+    error_message = "Azione non valida. Torna indietro e riprova."
 
     if wants_json(request):
         return JSONResponse(
@@ -88,20 +90,21 @@ async def csrf_protect_exception_handler(request: Request, exc: CsrfProtectError
         )
 
     referer = request.headers.get("referer")
-    
-    if referer:
-        clean_url = urlparse(referer)._replace(query=None).geturl()
-    else:
-        clean_url = "/auth"
 
-    query_params = urlencode({'error': error_message})
-    redirect_url = f"{clean_url}?{query_params}"
-    
-    return RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+    return templates.TemplateResponse(
+        ERROR_PAGE,
+        {
+            "request": request,
+            "status_code": status.HTTP_403_FORBIDDEN,
+            "title": "Azione non valida",
+            "message": error_message,
+            "referer": referer or "/",
+        },
+        status_code=status.HTTP_403_FORBIDDEN,
+    )
 
 # Gestione eccezioni generiche
-async def generic_exception_handler(request: Request, exc: Exception):
-    import traceback
+def generic_exception_handler(request: Request, exc: Exception):
     logger.error(f"[GENERIC ERROR] {''.join(traceback.format_exception(type(exc), exc, exc.__traceback__))}")
 
     referer = request.headers.get("referer")
@@ -111,7 +114,7 @@ async def generic_exception_handler(request: Request, exc: Exception):
     )
 
     return templates.TemplateResponse(
-        "error.html",
+        ERROR_PAGE,
         {
             "request": request,
             "status_code": status.HTTP_500_INTERNAL_SERVER_ERROR,

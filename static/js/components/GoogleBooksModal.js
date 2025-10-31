@@ -20,7 +20,7 @@ export default {
             const parts = [];
             if (title) parts.push(`Titolo: "${title}"`);
             if (author) parts.push(`Autore: "${author}"`);
-            if (isbn) parts.push(`ISBN: "${isbn}"`);
+            if (isbn && isbn !== "N/D") parts.push(`ISBN: "${isbn}"`);
             return parts.join(', ') || 'Nessun termine inserito';
         });
 
@@ -29,7 +29,7 @@ export default {
             const queryParts = [];
             if (title) queryParts.push(`intitle:${encodeURIComponent(title)}`);
             if (author) queryParts.push(`inauthor:${encodeURIComponent(author)}`);
-            if (isbn) queryParts.push(`isbn:${encodeURIComponent(isbn.replace(/-/g, ''))}`);
+            if (isbn && isbn !== "N/D") queryParts.push(`isbn:${encodeURIComponent(isbn.replaceAll('-', ''))}`);
 
             if (queryParts.length === 0) {
                 error.value = "Inserisci almeno un termine di ricerca (titolo, autore o ISBN) nel form.";

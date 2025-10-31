@@ -99,8 +99,8 @@ export default {
                 }
             }
             const queryString = urlParams.toString();
-            const newUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
-            window.history.pushState({ path: newUrl }, '', newUrl);
+            const newUrl = queryString ? `${globalThis.location.pathname}?${queryString}` : globalThis.location.pathname;
+            globalThis.history.pushState({ path: newUrl }, '', newUrl);
         };
 
         watch(currentFilters, () => {
@@ -189,7 +189,7 @@ export default {
         onMounted(() => {
             window.scrollTo(0, 0);
 
-            const urlParams = new URLSearchParams(window.location.search);
+            const urlParams = new URLSearchParams(globalThis.location.search);
             const filtersFromUrl = {};
             for (const [key, value] of urlParams.entries()) {
                 filtersFromUrl[key] = value;

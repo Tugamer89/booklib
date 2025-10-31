@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
     <title>Admin - Gestione Utenti</title>
     <link rel="manifest" href="/manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { darkMode: 'class' };
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && globalThis.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         } else {
             document.documentElement.classList.remove('dark');
@@ -119,9 +120,9 @@
             });
             applyTheme(html.classList.contains('dark') ? 'dark' : 'light');
 
-            document.querySelectorAll('.password-toggle-icon').forEach(icon => {
+            for (const icon of document.querySelectorAll('.password-toggle-icon')) {
                 icon.addEventListener('click', () => {
-                    const targetInputId = icon.getAttribute('data-target');
+                    const targetInputId = icon.dataset.target;
                     const targetInput = document.getElementById(targetInputId);
                     const eyeOpen = icon.querySelector('.eye-open');
                     const eyeClosed = icon.querySelector('.eye-closed');
@@ -136,7 +137,7 @@
                         eyeClosed.classList.remove('hidden');
                     }
                 });
-            });
+            }
         });
     </script>
 </body>

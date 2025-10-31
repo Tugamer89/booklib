@@ -33,6 +33,10 @@ from db.database import get_db
 from db.models import User
 from utils.logger import logger
 
+RESET_PASSWORD_PAGE = "reset_password.html"
+AUTH_PAGE = "auth.html"
+FORGOT_PASSWORD_PAGE = "forgot_password.html"
+
 router = APIRouter()
 
 
@@ -41,31 +45,75 @@ router = APIRouter()
 def auth_page(
     request: Request,
     db: Session = Depends(get_db),
-    csrf_protect: CsrfProtect = Depends(),
-    msg: str = Query(None),
-    error: str = Query(None)
+    csrf_protect: CsrfProtect = Depends()
 ):
     try:
         get_authenticated_user(request, db)
         return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
     except HTTPException:
         csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-        response = templates.TemplateResponse("auth.html", {
+        response = templates.TemplateResponse(AUTH_PAGE, {
             "request": request,
-            "msg": msg,
-            "error": error,
+            "msg": None,
+            "error": None,
             "csrf_token": csrf_token
         })
         csrf_protect.set_csrf_cookie(signed_token, response)
         return response
 
 
+def _handle_login(db: Session, username: str, password: str) -> tuple[User | None, str | None]:
+    user = get_user_by_username_or_email(db, username)
+    if not user or not verify_password(password, user.password):
+        return None, "Credenziali errate"
+    if not user.is_verified:
+        return None, "Account non verificato. Controlla la tua email per il link di verifica."
+    return user, None
+
+
+def _handle_register(db: Session, username: str, password: str, email: str, request: Request) -> tuple[str | None, str | None]:
+    try:
+        validate_username_and_password(username, password)
+        validate_email(email)
+    except HTTPException as e:
+        return None, e.detail
+    
+    if get_user_by_username(db, username):
+        return None, "Username già in uso"
+    if get_user_by_email(db, email):
+        return None, "Email già in uso"
+    
+    verification_token = generate_verification_token(email)
+    user_data = {
+        "username": username,
+        "password": password,
+        "email": email
+    }
+    created_user = create_user(db, user_data, verification_token)
+
+    if not created_user:
+        return None, "Errore durante la creazione dell'utente. Riprova."
+
+    base_url = str(request.base_url).rstrip('/')
+    email_sent = send_verification_email(
+        created_user.email, created_user.username, verification_token, base_url
+    )
+    
+    if email_sent:
+        msg = "Registrazione completata! Controlla la tua email per verificare l'account."
+    else:
+        logger.error(f"Fallito invio email verifica a {created_user.email} dopo registrazione.")
+        msg = "Registrazione completata, ma c'è stato un problema nell'invio dell'email di verifica. Contatta l'assistenza se necessario."
+    
+    return msg, None
+
+
 @router.post("/auth")
-async def auth_action(
+async def auth_auction_post(
     request: Request,
     db: Session = Depends(get_db),
     csrf_protect: CsrfProtect = Depends(),
-    authAction: str = Form(...),
+    auth_action: str = Form(...),
     username: str = Form(...),
     password: str = Form(...),
     email: str = Form(None)
@@ -78,93 +126,53 @@ async def auth_action(
     clean_username = username.strip()
     clean_email = email.strip().lower() if email else None
 
-    if authAction == "login":
-        user = get_user_by_username_or_email(db, clean_username)
-        if not user or not verify_password(password, user.password):
-            error = "Credenziali errate"
-        elif not user.is_verified:
-            error = "Account non verificato. Controlla la tua email per il link di verifica."
-            user = None
-    
-    elif authAction == "register":
-        try:
-            validate_username_and_password(clean_username, password)
-            validate_email(clean_email)
-        except HTTPException as e:
-            error = e.detail
-        
-        if not error and get_user_by_username(db, clean_username):
-            error = "Username già in uso"
-        if not error and get_user_by_email(db, clean_email):
-            error = "Email già in uso"
-        
-        if not error:
-            verification_token = generate_verification_token(clean_email)
-            user_data = {
-                "username": clean_username,
-                "password": password,
-                "email": clean_email
-            }
-            created_user = create_user(db, user_data, verification_token)
-
-            if created_user:
-                base_url = str(request.base_url).rstrip('/')
-                email_sent = send_verification_email(
-                    created_user.email, created_user.username, verification_token, base_url
-                )
-                
-                if email_sent:
-                    msg = "Registrazione completata! Controlla la tua email per verificare l'account."
-                else:
-                    logger.error(f"Fallito invio email verifica a {created_user.email} dopo registrazione.")
-                    msg = "Registrazione completata, ma c'è stato un problema nell'invio dell'email di verifica. Contatta l'assistenza se necessario."
-                    
-                user = None
-            else:
-                error = "Errore durante la creazione dell'utente. Riprova."
-
+    if auth_action == "login":
+        user, error = _handle_login(db, clean_username, password)
+    elif auth_action == "register":
+        if not clean_email:
+            error = "L'email è obbligatoria per la registrazione."
+        else:
+            msg, error = _handle_register(db, clean_username, password, clean_email, request)
     else:
         error = "Azione non valida"
 
-    if error:
-        # TODO: serve davvero rigenerare il csrf_token anche se poi non viene usato? il redirect poi non permette gia` di ricalcolare i vari token?
+    if error or msg:
         csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-        redirect_url = f"/auth?{urlencode({'error': error})}"
-        response = RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+        status_code = status.HTTP_400_BAD_REQUEST if error else status.HTTP_200_OK
+        response = templates.TemplateResponse(AUTH_PAGE, {
+            "request": request,
+            "error": error,
+            "msg": msg,
+            "csrf_token": csrf_token
+        }, status_code=status_code)
         csrf_protect.set_csrf_cookie(signed_token, response)
         return response
 
-    if msg:
-        redirect_url = f"/auth?{urlencode({'msg': msg})}"
-        return RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
-
-    if user and user.is_verified:
+    if user:
         token = create_session(db, user.id)
-        if token:
-            request.session["user_id"] = user.id
-            request.session["session_token"] = token
-            
-            # TODO: stesso ragionamento di riga 130
-            csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-            response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
-            csrf_protect.set_csrf_cookie(signed_token, response)
-            return response
-        else:
+        if not token:
             error = "Impossibile creare la sessione. Riprova."
-            
-            # TODO: stesso ragionamento di riga 130
             csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-            redirect_url = f"/auth?{urlencode({'error': error})}"
-            response = RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+            response = templates.TemplateResponse(AUTH_PAGE, {
+                "request": request,
+                "error": error,
+                "csrf_token": csrf_token,
+            }, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
             csrf_protect.set_csrf_cookie(signed_token, response)
             return response
+
+        request.session["user_id"] = user.id
+        request.session["session_token"] = token
+        
+        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
     error = "Si è verificato un errore imprevisto."
-    
-    # TODO: stesso ragionamento di riga 130
     csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-    redirect_url = f"/auth?{urlencode({'error': error})}"
-    response = RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+    response = templates.TemplateResponse(AUTH_PAGE, {
+        "request": request,
+        "error": error,
+        "csrf_token": csrf_token,
+    }, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     csrf_protect.set_csrf_cookie(signed_token, response)
     return response
 
@@ -173,6 +181,7 @@ async def auth_action(
 async def verify_email_route(
     request: Request,
     db: Session = Depends(get_db),
+    csrf_protect: CsrfProtect = Depends(),
     token: str = Query(...)
 ):
     email = verify_verification_token(token)
@@ -196,33 +205,32 @@ async def verify_email_route(
             else:
                 error = "Link di verifica non valido o già utilizzato."
 
-    query_params = {}
-    if msg:
-        query_params['msg'] = msg
-    if error:
-        query_params['error'] = error
-
-    redirect_url = f"/auth?{urlencode(query_params)}"
-    return RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+    csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+    response = templates.TemplateResponse(AUTH_PAGE, {
+        "request": request,
+        "msg": msg,
+        "error": error,
+        "csrf_token": csrf_token
+    })
+    csrf_protect.set_csrf_cookie(signed_token, response)
+    return response
 
 
 @router.get("/forgot-password", response_class=HTMLResponse)
 def forgot_password_page(
     request: Request,
     db: Session = Depends(get_db),
-    csrf_protect: CsrfProtect = Depends(),
-    msg: str = Query(None),
-    error: str = Query(None)
+    csrf_protect: CsrfProtect = Depends()
 ):
     try:
         get_authenticated_user(request, db)
         return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
     except HTTPException:
         csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-        response = templates.TemplateResponse("forgot_password.html", {
+        response = templates.TemplateResponse(FORGOT_PASSWORD_PAGE, {
             "request": request,
-            "msg": msg,
-            "error": error,
+            "msg": None,
+            "error": None,
             "csrf_token": csrf_token
         })
         csrf_protect.set_csrf_cookie(signed_token, response)
@@ -251,12 +259,12 @@ async def handle_forgot_password(
             if not email_sent:
                 logger.warning(f"Tentativo invio email reset per {user.email} fallito.")
 
-    # TODO: stesso ragionamento di riga 130
     csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-    response = RedirectResponse(
-        url=f"/forgot-password?{urlencode({'msg': msg})}",
-        status_code=status.HTTP_303_SEE_OTHER
-    )
+    response = templates.TemplateResponse(FORGOT_PASSWORD_PAGE, {
+        "request": request,
+        "msg": msg,
+        "csrf_token": csrf_token
+    })
     csrf_protect.set_csrf_cookie(signed_token, response)
     return response
 
@@ -269,24 +277,31 @@ def reset_password_page(
     token: str = Query(...)
 ):
     email = verify_password_reset_token(token)
+    error = "Link di reset non valido o scaduto. Richiedine uno nuovo."
     
     if not email:
-        error = "Link di reset non valido o scaduto. Richiedine uno nuovo."
-        return RedirectResponse(
-            url=f"/forgot-password?{urlencode({'error': error})}",
-            status_code=status.HTTP_303_SEE_OTHER
-        )
+        csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+        response = templates.TemplateResponse(FORGOT_PASSWORD_PAGE, {
+            "request": request,
+            "error": error,
+            "csrf_token": csrf_token
+        })
+        csrf_protect.set_csrf_cookie(signed_token, response)
+        return response
     
     user = get_user_by_email_and_reset_token(db, email, token)
     if not user:
-        error = "Link di reset non valido o scaduto. Richiedine uno nuovo."
-        return RedirectResponse(
-            url=f"/forgot-password?{urlencode({'error': error})}",
-            status_code=status.HTTP_303_SEE_OTHER
-        )
+        csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+        response = templates.TemplateResponse(FORGOT_PASSWORD_PAGE, {
+            "request": request,
+            "error": error,
+            "csrf_token": csrf_token
+        })
+        csrf_protect.set_csrf_cookie(signed_token, response)
+        return response
     
     csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-    response = templates.TemplateResponse("reset_password.html", {
+    response = templates.TemplateResponse(RESET_PASSWORD_PAGE, {
         "request": request,
         "token": token,
         "error": None,
@@ -319,7 +334,7 @@ async def handle_reset_password(
 
     if error:
         csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-        response = templates.TemplateResponse("reset_password.html", {
+        response = templates.TemplateResponse(RESET_PASSWORD_PAGE, {
             "request": request,
             "token": token,
             "error": error,
@@ -331,25 +346,33 @@ async def handle_reset_password(
 
     email = verify_password_reset_token(token)
     if not email:
-        error="Link di reset non valido o scaduto. Richiedine uno nuovo."
-        return RedirectResponse(
-            url=f"/forgot-password?{urlencode({'error': error})}",
-            status_code=status.HTTP_303_SEE_OTHER
-        )
+        error = "Link di reset non valido o scaduto. Richiedine uno nuovo."
+        csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+        response = templates.TemplateResponse(FORGOT_PASSWORD_PAGE, {
+            "request": request,
+            "error": error,
+            "csrf_token": csrf_token
+        })
+        csrf_protect.set_csrf_cookie(signed_token, response)
+        return response
 
     user = get_user_by_email_and_reset_token(db, email, token)
     
     if not user:
-        error="Link di reset non valido o scaduto (utente non trovato o token non corrispondente). Richiedine uno nuovo."
-        return RedirectResponse(
-            url=f"/forgot-password?{urlencode({'error': error})}",
-            status_code=status.HTTP_303_SEE_OTHER
-        )
+        error = "Link di reset non valido o scaduto (utente non trovato o token non corrispondente). Richiedine uno nuovo."
+        csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+        response = templates.TemplateResponse(FORGOT_PASSWORD_PAGE, {
+            "request": request,
+            "error": error,
+            "csrf_token": csrf_token
+        })
+        csrf_protect.set_csrf_cookie(signed_token, response)
+        return response
 
     if not reset_user_password(db, user, password):
         error = "Errore interno durante l'aggiornamento della password. Riprova."
         csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-        response = templates.TemplateResponse("reset_password.html", {
+        response = templates.TemplateResponse(RESET_PASSWORD_PAGE, {
             "request": request,
             "token": token,
             "error": error,
@@ -363,11 +386,14 @@ async def handle_reset_password(
     request.session.clear()
 
     msg = "Password aggiornata con successo. Ora puoi accedere."
-    response = RedirectResponse(
-        url=f"/auth?{urlencode({'msg': msg})}",
-        status_code=status.HTTP_303_SEE_OTHER
-    )
-    csrf_protect.unset_csrf_cookie(response)
+    csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+    response = templates.TemplateResponse(AUTH_PAGE, {
+        "request": request,
+        "msg": msg,
+        "error": None,
+        "csrf_token": csrf_token
+    })
+    csrf_protect.set_csrf_cookie(signed_token, response)
     return response
 
 

@@ -18,7 +18,7 @@ async def keepalive_job():
     except Exception as e:
         logger.error(f"[HTTP-KEEPALIVE]: {e}")
 
-async def keepalive_db_job():
+def keepalive_db_job():
     if not settings.keepalive_db:
         return
     try:

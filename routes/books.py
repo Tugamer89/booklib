@@ -3,7 +3,6 @@ import re
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Request, status, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
 from fastapi_csrf_protect import CsrfProtect
 from isbnlib import canonical, is_isbn10, is_isbn13
 from sqlalchemy import asc, case, cast, desc, func, null
@@ -18,9 +17,9 @@ from db.database import get_db
 from db.models import Book, User
 from utils.file_utils import validate_and_save_cover, validate_cover_url, delete_cover_from_cloudinary
 
+DEFAULT_COVER_PATH = "static/covers/default.jpg"
 
 router = APIRouter()
-templates = Jinja2Templates(directory="templates")
 
 @router.get("/", response_class=HTMLResponse)
 @router.head("/", response_class=HTMLResponse)
@@ -119,59 +118,61 @@ def books_data(
     )
 
 
+class AddBookForm:
+    def __init__(
+        self,
+        title: str = Form(...),
+        author: str = Form(...),
+        isbn: str = Form(...),
+        publisher: str = Form(...),
+        location: str = Form(...),
+        description: str = Form(None),
+        language: str = Form(None),
+        personal_comment: str = Form(None),
+        cover: UploadFile = File(None),
+        cover_url: str = Form(None),
+    ):
+        self.title = title
+        self.author = author
+        self.isbn = isbn
+        self.publisher = publisher
+        self.location = location
+        self.description = description
+        self.language = language
+        self.personal_comment = personal_comment
+        self.cover = cover
+        self.cover_url = cover_url
+
+
 @router.post("/add", response_class=HTMLResponse)
 async def add_book(
     request: Request,
     csrf_protect: CsrfProtect = Depends(),
     user: User = Depends(get_authenticated_user),
     db: Session = Depends(get_db),
-    title: str = Form(...),
-    author: str = Form(...),
-    isbn: str = Form(...),
-    publisher: str = Form(...),
-    location: str = Form(...),
-    description: str = Form(None),
-    language: str = Form(None),
-    personal_comment: str = Form(None),
-    cover: UploadFile = File(None),
-    cover_url: str = Form(None),
+    form_data: AddBookForm = Depends()
 ):
     await csrf_protect.validate_csrf(request)
     
-    # Validazione ISBN
-    isbn_canonical = canonical(isbn.strip())
-    if isbn_canonical and not (is_isbn13(isbn_canonical) or is_isbn10(isbn_canonical)):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="ISBN non valido. Deve essere un ISBN-13 corretto.")
+    isbn_canonical, location_cleaned, language_cleaned = _validate_book_fields(form_data.isbn, form_data.location, form_data.language)
 
-    # Validazione location
-    if not re.fullmatch(r'[A-Z]+[0-9]+', location.strip()):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Formato location non valido. Deve essere lettere maiuscole seguite da cifre (es. A5, AB30, LIBRERIA1)")
-
-    # Validazione language
-    if language:
-        language = language.strip().upper()
-        if not re.fullmatch(r'[A-Z]{2,3}', language):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Lingua non valida. Deve essere 2-3 lettere maiuscole (es. IT, EN)")
-
-    # Validazione e gestione cover
-    if cover_url:
-        cover_path = validate_cover_url(cover_url)
-    elif cover and cover.filename:
-        cover_path = validate_and_save_cover(cover)
+    if form_data.cover_url:
+        cover_path = validate_cover_url(form_data.cover_url)
+    elif form_data.cover and form_data.cover.filename:
+        cover_path = validate_and_save_cover(form_data.cover)
     else:
         cover_path = "static/covers/default.jpg"
 
-    # Creazione libro
     book = Book(
-        title=title.strip(),
-        author=author.strip(),
+        title=form_data.title.strip(),
+        author=form_data.author.strip(),
         isbn=isbn_canonical,
-        publisher=publisher.strip(),
-        location=location,
+        publisher=form_data.publisher.strip(),
+        location=location_cleaned,
         cover_path=cover_path,
-        description=description.strip(),
-        language=language,
-        personal_comment=personal_comment.strip(),
+        description=form_data.description.strip() if form_data.description is not None else None,
+        language=language_cleaned,
+        personal_comment=form_data.personal_comment.strip() if form_data.personal_comment is not None else None,
         owner=user
     )
 
@@ -183,61 +184,88 @@ async def add_book(
     return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 
+def _validate_book_fields(isbn: str, location: str, language: str | None):
+    isbn_canonical = canonical(isbn.strip())
+    if isbn_canonical and not (is_isbn13(isbn_canonical) or is_isbn10(isbn_canonical)):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="ISBN non valido. Deve essere un ISBN-13 corretto.")
+
+    location_cleaned = location.strip()
+    if not re.fullmatch(r'[A-Z]+\d+', location_cleaned):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Formato location non valido. Deve essere lettere maiuscole seguite da cifre, es. A5")
+
+    language_cleaned = None
+    if language:
+        language_cleaned = language.strip().upper()
+        if not re.fullmatch(r'[A-Z]{2,3}', language_cleaned):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Lingua non valida. Deve essere 2-3 lettere maiuscole (es. IT, EN)")
+    
+    return isbn_canonical, location_cleaned, language_cleaned
+
+
+def _delete_old_cover(cover_path: str):
+    if cover_path == DEFAULT_COVER_PATH:
+        return
+    
+    if cover_path.startswith("https://res.cloudinary.com/"):
+        delete_cover_from_cloudinary(cover_path)
+    elif os.path.exists(cover_path):
+        os.remove(cover_path)
+
+
+class EditBookForm:
+    def __init__(
+        self,
+        book_id: int = Form(...),
+        title: str = Form(...),
+        author: str = Form(...),
+        isbn: str = Form(...),
+        publisher: str = Form(...),
+        location: str = Form(...),
+        description: str = Form(...),
+        language: str = Form(...),
+        personal_comment: str = Form(...),
+        cover: UploadFile = File(None)
+    ):
+        self.book_id = book_id
+        self.title = title
+        self.author = author
+        self.isbn = isbn
+        self.publisher = publisher
+        self.location = location
+        self.description = description
+        self.language = language
+        self.personal_comment = personal_comment
+        self.cover = cover
+
+
 @router.post("/edit", response_class=HTMLResponse)
 async def edit_book(
     request: Request,
     csrf_protect: CsrfProtect = Depends(),
     user: User = Depends(get_authenticated_user),
     db: Session = Depends(get_db),
-    book_id: int = Form(...),
-    title: str = Form(...),
-    author: str = Form(...),
-    isbn: str = Form(...),
-    publisher: str = Form(...),
-    location: str = Form(...),
-    description: str = Form(...),
-    language: str = Form(...),
-    personal_comment: str = Form(...),
-    cover: UploadFile = File(None)
+    form_data: EditBookForm = Depends()
 ):
     await csrf_protect.validate_csrf(request)
     
-    book = db.query(Book).filter(Book.id == book_id, Book.user_id == user.id).first()
+    book = db.query(Book).filter(Book.id == form_data.book_id, Book.user_id == user.id).first()
     if not book:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Libro non trovato")
 
-    # Validazione ISBN
-    isbn_canonical = canonical(isbn.strip())
-    if isbn_canonical and not (is_isbn13(isbn_canonical) or is_isbn10(isbn_canonical)):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="ISBN non valido. Deve essere un ISBN-13 corretto.")
+    isbn_canonical, location_cleaned, language_cleaned = _validate_book_fields(form_data.isbn, form_data.location, form_data.language)
 
-    # Validazione location
-    location = location.strip()
-    if not re.fullmatch(r'[A-Z]+[0-9]+', location):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Formato location non valido. Deve essere lettere maiuscole seguite da cifre, es. A5")
-
-    # Validazione language
-    if language:
-        language = language.strip().upper()
-        if not re.fullmatch(r'[A-Z]{2,3}', language):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Lingua non valida. Deve essere 2-3 lettere maiuscole (es. IT, EN)")
-
-    book.title = title.strip()
-    book.author = author.strip()
+    book.title = form_data.title.strip()
+    book.author = form_data.author.strip()
     book.isbn = isbn_canonical
-    book.publisher = publisher.strip()
-    book.location = location
-    book.description = description.strip()
-    book.language = language
-    book.personal_comment = personal_comment.strip()
+    book.publisher = form_data.publisher.strip()
+    book.location = location_cleaned
+    book.description = form_data.description.strip()
+    book.language = language_cleaned
+    book.personal_comment = form_data.personal_comment.strip()
 
-    if cover and cover.filename:
-        new_cover = validate_and_save_cover(cover)
-        if book.cover_path != "static/covers/default.jpg":
-            if book.cover_path.startswith("https://res.cloudinary.com/"):
-                delete_cover_from_cloudinary(book.cover_path)
-            elif os.path.exists(book.cover_path):
-                os.remove(book.cover_path)
+    if form_data.cover and form_data.cover.filename:
+        new_cover = validate_and_save_cover(form_data.cover)
+        _delete_old_cover(book.cover_path)
         book.cover_path = new_cover
 
     db.commit()
@@ -262,7 +290,7 @@ async def delete_book(
     if not book:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Libro non trovato")
 
-    if book.cover_path != "static/covers/default.jpg":
+    if book.cover_path != DEFAULT_COVER_PATH:
         if book.cover_path.startswith("https://res.cloudinary.com/"):
             delete_cover_from_cloudinary(book.cover_path)
         elif os.path.exists(book.cover_path):

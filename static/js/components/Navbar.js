@@ -4,7 +4,7 @@ export default {
     props: ['isAdmin', 'username'],
     emits: ['toggle-theme'],
     setup(props, { emit }) {
-        const { theme, toggleTheme, themeIcon } = useTheme();
+        const { toggleTheme, themeIcon } = useTheme();
         return { toggleTheme, themeIcon };
     },
     template: `

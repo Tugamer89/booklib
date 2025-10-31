@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="BookLib - Gestisci la tua libreria di casa. Aggiungi, cataloga, filtra e ritrova i tuoi libri in modo semplice e veloce.">
     <title>Libreria di Casa</title>
     
     <link rel="manifest" href="/manifest.json">
@@ -24,7 +25,7 @@
     </style>
 
     <script>
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && globalThis.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark')
         } else {
             document.documentElement.classList.remove('dark')
@@ -38,7 +39,7 @@
             } 
         }
     </script>
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" type="text/javascript"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" integrity="sha512-r6rDA7W6ZeQhvl8S7yRVQUKVHdexq+GAlNkNNqVC7YyIV+NwqCTJe2hDWCiffTyRNOeGEzRRJ9ifvRm/HCzGYg==" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="/static/css/main.css">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
 </head>

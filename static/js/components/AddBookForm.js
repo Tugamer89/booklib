@@ -59,7 +59,7 @@ export default {
         };
 
         const stopScanner = () => {
-            if (html5QrCode && html5QrCode.isScanning) {
+            if (html5QrCode?.isScanning) {
                 html5QrCode.stop().then(() => {
                     const readerElement = document.getElementById('isbn-scanner-reader');
                     if(readerElement) readerElement.classList.add('hidden');

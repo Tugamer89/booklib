@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Accedi o registrati a BookLib per iniziare subito a catalogare la tua libreria personale.">
     <title>Accedi o Registrati - Libreria di Casa</title>
     <link rel="manifest" href="/manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { darkMode: 'class' };
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && globalThis.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         } else {
             document.documentElement.classList.remove('dark');
@@ -52,11 +53,11 @@
     <div class="w-full max-w-md p-8 space-y-6 bg-white dark:bg-slate-800 shadow-xl rounded-2xl">
         <h1 class="text-3xl font-bold text-center text-slate-800 dark:text-slate-100">📚 BookLib</h1>
 
-        <div id="error-container" class="hidden bg-red-100 dark:bg-red-900/50 border border-red-400 dark:border-red-500/50 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg text-sm" role="alert">
-            <span id="error-message"></span>
+        <div id="error-container" class="{% if not error %}hidden{% endif %} bg-red-100 dark:bg-red-900/50 border border-red-400 dark:border-red-500/50 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg text-sm" role="alert">
+            <span id="error-message">{{ error }}</span>
         </div>
-        <div id="msg-container" class="hidden bg-green-100 dark:bg-green-900/50 border border-green-400 dark:border-green-500/50 text-green-700 dark:text-green-300 px-4 py-3 rounded-lg text-sm" role="alert">
-            <span id="msg-message"></span>
+        <div id="msg-container" class="{% if not msg %}hidden{% endif %} bg-green-100 dark:bg-green-900/50 border border-green-400 dark:border-green-500/50 text-green-700 dark:text-green-300 px-4 py-3 rounded-lg text-sm" role="alert">
+            <span id="msg-message">{{ msg }}</span>
         </div>
 
 
@@ -66,7 +67,7 @@
         </div>
 
         <form action="/auth" method="post" class="relative h-64 sm:h-56">
-            <input type="hidden" name="authAction" id="authAction" value="login">
+            <input type="hidden" name="auth_action" id="authAction" value="login">
             <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 
             <div id="login-form" class="form-container space-y-4">
@@ -172,40 +173,18 @@
                     registerForm.classList.remove('form-inactive');
                 }
 
-                loginInputs.forEach(input => input.disabled = !isLogin);
-                registerInputs.forEach(input => input.disabled = isLogin);
+                for (const input of loginInputs) input.disabled = !isLogin;
+                for (const input of registerInputs) input.disabled = isLogin;
             };
 
             loginTab.addEventListener('click', () => setActiveTab('login'));
             registerTab.addEventListener('click', () => setActiveTab('register'));
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const error = urlParams.get('error');
-            const msg = urlParams.get('msg');
-            const errorContainer = document.getElementById('error-container');
-            const errorMessage = document.getElementById('error-message');
-            const msgContainer = document.getElementById('msg-container');
-            const msgMessage = document.getElementById('msg-message');
+            setActiveTab('login');
 
-            if (error) {
-                errorMessage.textContent = decodeURIComponent(error.replace(/\+/g, ' '));
-                errorContainer.classList.remove('hidden');
-                msgContainer.classList.add('hidden'); 
-            } else if (msg) {
-                msgMessage.textContent = decodeURIComponent(msg.replace(/\+/g, ' '));
-                msgContainer.classList.remove('hidden');
-                errorContainer.classList.add('hidden');
-            }
-
-            if (error && (error.includes('Username') || error.includes('Email') || error.includes('Password troppo corta'))) {
-                setActiveTab('register');
-            } else {
-                setActiveTab('login');
-            }
-
-            document.querySelectorAll('.password-toggle-icon').forEach(icon => {
+            for (const icon of document.querySelectorAll('.password-toggle-icon')) {
                 icon.addEventListener('click', () => {
-                    const targetInputId = icon.getAttribute('data-target');
+                    const targetInputId = icon.dataset.target;
                     const targetInput = document.getElementById(targetInputId);
                     const eyeOpen = icon.querySelector('.eye-open');
                     const eyeClosed = icon.querySelector('.eye-closed');
@@ -220,7 +199,7 @@
                         eyeClosed.classList.remove('hidden');
                     }
                 });
-            });
+            }
         });
     </script>
 </body>

@@ -10,7 +10,7 @@ export default {
         <div class="group bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden flex flex-col border border-slate-200 dark:border-slate-700">
             <div @click="$emit('show-details', book)" class="relative cursor-pointer overflow-hidden">
                 <div class="transition-transform duration-300 group-hover:scale-105">
-                    <img :src="book.cover_path" :alt="'Copertina di ' + book.title" class="w-full h-64 object-cover">
+                    <img :src="book.cover_path" :alt="'Copertina di ' + book.title" class="w-full h-64 object-cover defer">
                     <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
             </div>
@@ -37,7 +37,7 @@ export default {
     `,
     methods: {
         confirmDelete(event) {
-            const userConfirmed = window.confirm(`Sei sicuro di voler eliminare "${this.book.title}"?`);
+            const userConfirmed = globalThis.confirm(`Sei sicuro di voler eliminare "${this.book.title}"?`);
             if (!userConfirmed) {
                 event.preventDefault();
             }

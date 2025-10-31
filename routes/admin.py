@@ -9,6 +9,8 @@ from db.crud import logout_all
 from db.database import get_db
 from db.models import User
 
+ADMIN_USERS_PAGE = "admin_users.html"
+
 router = APIRouter()
 
 @router.get("/admin/users")
@@ -23,7 +25,7 @@ def admin_users_list(
     users = db.query(User).order_by(User.id).all()
     
     csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-    response = templates.TemplateResponse("admin_users.html", {
+    response = templates.TemplateResponse(ADMIN_USERS_PAGE, {
         "request": request,
         "users": users,
         "msg": msg,
@@ -47,7 +49,7 @@ async def admin_reset_password(
     if len(new_password) < 8:
         users = db.query(User).order_by(User.id).all()
         csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-        response = templates.TemplateResponse("admin_users.html", {
+        response = templates.TemplateResponse(ADMIN_USERS_PAGE, {
             "request": request,
             "users": users,
             "msg": "",
@@ -67,7 +69,7 @@ async def admin_reset_password(
     
     users = db.query(User).order_by(User.id).all()
     csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-    response = templates.TemplateResponse("admin_users.html", {
+    response = templates.TemplateResponse(ADMIN_USERS_PAGE, {
         "request": request,
         "users": users,
         "msg": "Password aggiornata",
@@ -94,7 +96,7 @@ async def admin_delete_user(
     if user_id == admin.id:
         users = db.query(User).order_by(User.id).all()
         csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-        response = templates.TemplateResponse("admin_users.html", {
+        response = templates.TemplateResponse(ADMIN_USERS_PAGE, {
             "request": request,
             "users": users,
             "msg": "",
@@ -109,7 +111,7 @@ async def admin_delete_user(
     
     users = db.query(User).order_by(User.id).all()
     csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-    response = templates.TemplateResponse("admin_users.html", {
+    response = templates.TemplateResponse(ADMIN_USERS_PAGE, {
         "request": request,
         "users": users,
         "msg": "Utente eliminato",

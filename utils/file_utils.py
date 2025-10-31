@@ -31,7 +31,7 @@ def validate_and_save_cover(cover):
 def validate_cover_url(cover_url: str) -> str:
     cover_path = cover_url.strip()
     
-    if not cover_path.startswith("http://") and not cover_path.startswith("https://"):
+    if not cover_path.startswith(("http://", "https://")):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="URL della copertina non valido")
     
     try:

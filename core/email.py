@@ -53,7 +53,7 @@ def send_password_reset_email(email: str, username: str, token: str, request_url
 
     if not settings.BREVO_API_KEY or not settings.BREVO_EMAIL_FROM_ADDRESS:
         logger.info("="*50)
-        logger.info(f"CONFIGURAZIONE EMAIL MANCANTE - Stampa fallback")
+        logger.info("CONFIGURAZIONE EMAIL MANCANTE - Stampa fallback")
         logger.info(f"Invio a: {email}")
         logger.info(f"Oggetto: {subject}")
         logger.info(f"Link reset: {reset_link}")
@@ -79,7 +79,7 @@ def send_verification_email(email: str, username: str, token: str, request_url: 
 
     if not settings.BREVO_API_KEY or not settings.BREVO_EMAIL_FROM_ADDRESS:
         logger.info("="*50)
-        logger.info(f"CONFIGURAZIONE EMAIL MANCANTE - Stampa fallback")
+        logger.info("CONFIGURAZIONE EMAIL MANCANTE - Stampa fallback")
         logger.info(f"Invio a: {email}")
         logger.info(f"Oggetto: {subject}")
         logger.info(f"Link verifica: {verification_link}")
