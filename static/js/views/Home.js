@@ -138,6 +138,18 @@ export default {
             resizeDebounceTimer = setTimeout(onResize, 100);
         };
 
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                if (showGoogleBooksModal.value) {
+                    showGoogleBooksModal.value = false;
+                } else if (selectedBookForEdit.value) {
+                    selectedBookForEdit.value = null;
+                } else if (selectedBookForDetail.value) {
+                    selectedBookForDetail.value = null;
+                }
+            }
+        };
+
         const scrollToTop = () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
@@ -200,13 +212,15 @@ export default {
 
             fetchBooks();
             
-            window.addEventListener('scroll', handleScroll);
-            window.addEventListener('resize', handleResize);
+            globalThis.addEventListener('scroll', handleScroll);
+            globalThis.addEventListener('resize', handleResize);
+            globalThis.addEventListener('keydown', handleKeyDown);
         });
 
         onUnmounted(() => {
-            window.removeEventListener('scroll', handleScroll);
-            window.removeEventListener('resize', handleResize);
+            globalThis.removeEventListener('scroll', handleScroll);
+            globalThis.removeEventListener('resize', handleResize);
+            globalThis.removeEventListener('keydown', handleKeyDown);
         });
 
 
