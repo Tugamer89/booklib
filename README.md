@@ -154,4 +154,5 @@ MIT License — sentiti libero di usare e modificare.
 * implementare "remember me" e usare cookie di sessione
 * migliorare session worker per gestione cache più coerente
 * tabelle belle per pagina amministrazione
-* `esc` per chiudere modali/pop-up 
+* `esc` per chiudere modali/pop-up
+* tema di default quello del sistema
