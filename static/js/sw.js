@@ -1,4 +1,4 @@
-const CACHE_NAME = 'booklib-cache-v1.2';
+const CACHE_NAME = 'booklib-cache-v1.3';
 
 const URLS_TO_CACHE = [
   '/',
@@ -45,8 +45,9 @@ self.addEventListener('install', (event) => {
         try {
             const cache = await caches.open(CACHE_NAME);
             console.log('[ServiceWorker] Main resources caching');
-            const cachePromises = URLS_TO_CACHE.map(url => {
-                return cache.add(url).catch(err => {
+            const cachePromises = URLS_TO_CACHE.map(async url => {
+                const request = new Request(url, { cache: 'reload' });
+                return cache.add(request).catch(err => {
                     console.warn(`[ServiceWorker] Failed to cache ${url}:`, err);
                 });
             });
@@ -92,7 +93,7 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    if (request.mode === 'navigate' || request.url.includes('/books-data') || request.url.pathname === '/static/css/main.css') {
+    if (request.mode === 'navigate' || request.url.includes('/books-data')) {
         event.respondWith(networkFirst(request));
         return;
     }

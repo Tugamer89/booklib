@@ -18,30 +18,32 @@
     
     <style type="text/tailwindcss">
         @layer components {
-            .input-style {
-                @apply w-full px-4 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500;
-                font-weight: normal;
-            }
-            .password-container {
-                @apply relative;
-            }
-            .password-toggle-icon {
-                @apply absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer text-slate-400 hover:text-slate-600 dark:hover:text-slate-200;
-            }
+          .input-style {
+            @apply w-full px-4 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500;
+            font-weight: normal;
+          }
+          /* Contenitore per input password + icona */
+          .password-container {
+            @apply relative;
+          }
+          /* Icona occhio per mostrare/nascondere password */
+          .password-toggle-icon {
+            @apply absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer text-slate-400 hover:text-slate-600 dark:hover:text-slate-200;
+          }
         }
         /* Stili per la pagina di login/registrazione */
         .form-container {
-            transition: opacity 0.2s ease-in-out, visibility 0s linear 0.2s;
+            transition: opacity 0.2s ease-in-out, max-height 0.3s ease-in-out;
+            overflow: hidden;
+            max-height: 500px; /* Abbastanza grande per contenere il form */
+            opacity: 1;
         }
         .form-inactive {
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.2s ease-in-out, visibility 0s linear 0s;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            pointer-events: none;
+            max-height: 0px !important;
+            opacity: 0 !important;
+            /* Rimuove padding e margin quando è collassato per evitare spazi extra */
+            margin: 0 !important;
+            padding: 0 !important;
         }
     </style>
     
@@ -58,7 +60,7 @@
 <body class="bg-gradient-to-br from-slate-50 to-slate-200 dark:from-slate-800 dark:to-slate-900 text-slate-800 dark:text-slate-200 transition-colors duration-300">
 
     <div class="absolute top-4 right-4 pwa-drag-area">
-        <button id="theme-toggle" class="p-2 rounded-full text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-700 transition pwa-no-drag" aria-label="Toggle theme"></button>
+        <button id="theme-toggle" class="fixed top-4 right-4 z-50 p-2 rounded-full text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-700 transition pwa-no-drag" aria-label="Toggle theme"></button>
     </div>
 
     <main class="flex items-center justify-center min-h-[100svh] p-4">
@@ -68,25 +70,28 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const themeToggle = document.getElementById('theme-toggle');
-            const html = document.documentElement;
+            if (themeToggle) {
+                const html = document.documentElement;
 
-            const applyTheme = (theme) => {
-                if (theme === 'dark') {
-                    html.classList.add('dark');
-                    themeToggle.innerHTML = '☀️';
-                } else {
-                    html.classList.remove('dark');
-                    themeToggle.innerHTML = '🌙';
-                }
-            };
-            
-            themeToggle.addEventListener('click', () => {
-                const newTheme = html.classList.contains('dark') ? 'light' : 'dark';
-                localStorage.setItem('theme', newTheme);
-                applyTheme(newTheme);
-            });
-            
-            applyTheme(html.classList.contains('dark') ? 'dark' : 'light');
+                const applyTheme = (theme) => {
+                    if (theme === 'dark') {
+                        html.classList.add('dark');
+                        themeToggle.innerHTML = '☀️';
+                    } else {
+                        html.classList.remove('dark');
+                        themeToggle.innerHTML = '🌙';
+                    }
+                };
+                
+                themeToggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const newTheme = html.classList.contains('dark') ? 'light' : 'dark';
+                    localStorage.setItem('theme', newTheme);
+                    applyTheme(newTheme);
+                });
+                
+                applyTheme(html.classList.contains('dark') ? 'dark' : 'light');
+            }
         });
     </script>
 

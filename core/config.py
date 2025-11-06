@@ -31,6 +31,9 @@ class Settings(BaseSettings):
     max_sessions_per_user: int = 5
     password_reset_token_expire_minutes: int = 15
     
+    session_cookie_max_age_days: int = 30
+    session_cookie_max_age_seconds: int = Field(0, repr=False)
+    
     BREVO_API_KEY: str = os.getenv("BREVO_API_KEY", "")
     BREVO_EMAIL_FROM_ADDRESS: str = os.getenv("BREVO_EMAIL_FROM_ADDRESS", "noreply@example.com")
     BREVO_EMAIL_FROM_NAME: str = os.getenv("BREVO_EMAIL_FROM_NAME", "BookLib")
@@ -52,6 +55,7 @@ class Settings(BaseSettings):
             for u in self.admin_users_env.split(",")
             if u.strip()
         }
+        self.session_cookie_max_age_seconds = self.session_cookie_max_age_days * 24 * 60 * 60
 
     @classmethod
     def settings_customise_sources(

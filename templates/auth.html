@@ -20,11 +20,11 @@
         <button id="registerTab" class="flex-1 py-2 text-center font-semibold border-b-2 transition-colors duration-300">Registrati</button>
     </div>
 
-    <form action="/auth" method="post" class="relative h-64 sm:h-56">
+    <form action="/auth" method="post" class="relative overflow-hidden">
         <input type="hidden" name="auth_action" id="authAction" value="login">
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 
-        <div id="login-form" class="form-container space-y-4">
+        <div id="login-form" class="form-container space-y-4 pt-4">
             <div>
                 <label for="login-username" class="sr-only">Username o Email</label>
                 <input id="login-username" name="username" type="text" required placeholder="Username o Email" class="input-style">
@@ -42,12 +42,20 @@
                     </svg>
                 </span>
             </div>
-             <div class="text-right">
-                 <a href="/forgot-password" class="text-sm text-indigo-600 hover:underline dark:text-indigo-400">Password dimenticata?</a>
-             </div>
+             <div class="flex items-center justify-between pt-2">
+                <div class="flex items-center">
+                    <input id="remember-me" name="remember_me" type="checkbox" value="true" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300 dark:border-slate-600 dark:bg-slate-700 rounded">
+                    <label for="remember-me" class="ml-2 block text-sm text-slate-900 dark:text-slate-300">
+                        Ricordami
+                    </label>
+                </div>
+                <div class="text-sm">
+                    <a href="/forgot-password" class="font-medium text-indigo-600 hover:underline dark:text-indigo-400">Password dimenticata?</a>
+                </div>
+            </div>
         </div>
 
-        <div id="register-form" class="form-container form-inactive space-y-4">
+        <div id="register-form" class="form-container form-inactive space-y-4 pt-4">
             <div>
                 <label for="register-username" class="sr-only">Username</label>
                 <input id="register-username" name="username" type="text" required placeholder="Scegli un Username" class="input-style" disabled>
@@ -64,9 +72,20 @@
                     <svg class="w-5 h-5 eye-open hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
                 </span>
             </div>
+             <div class="flex items-center justify-between pt-2">
+                <div class="flex items-center">
+                    <input type="checkbox" id="remember_me" name="remember_me" class="h-4 w-4 opacity-0" disabled>
+                    <label for="remember_me" class="ml-2 block text-sm opacity-0">
+                        &nbsp;
+                    </label>
+                </div>
+                <div class="text-sm">
+                    <a href="#" class="font-medium opacity-0">&nbsp;</a>
+                </div>
+            </div>
         </div>
 
-        <button id="submitButton" type="submit" class="w-full absolute bottom-0 py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-slate-800 transition-colors duration-300">
+        <button id="submitButton" type="submit" class="w-full mt-6 py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-slate-800 transition-colors duration-300">
             Accedi
         </button>
     </form>
@@ -96,12 +115,14 @@
             loginTab.classList.toggle('text-indigo-600', isLogin);
             loginTab.classList.toggle('dark:text-indigo-400', isLogin);
             loginTab.classList.toggle('text-slate-500', !isLogin);
+            loginTab.classList.toggle('dark:text-slate-400', !isLogin);
             loginTab.classList.toggle('border-transparent', !isLogin);
 
             registerTab.classList.toggle('border-indigo-500', !isLogin);
             registerTab.classList.toggle('text-indigo-600', !isLogin);
             registerTab.classList.toggle('dark:text-indigo-400', !isLogin);
             registerTab.classList.toggle('text-slate-500', isLogin);
+            registerTab.classList.toggle('dark:text-slate-400', isLogin);
             registerTab.classList.toggle('border-transparent', isLogin);
 
             if (isLogin) {

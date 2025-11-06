@@ -9,26 +9,32 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from core.config import settings
 from core.csrf import CsrfSettings
+from core.middleware import PreventSessionOverwriteMiddleware
 from routes import admin, auth, books, debug, errors, extras
 from utils.starter import lifespan
 
 
-app = FastAPI(lifespan=lifespan, title="BookLib", version="1.6.0")
+app = FastAPI(lifespan=lifespan, title="BookLib", version="1.6.2")
 
 @CsrfProtect.load_config
 def get_config():
     return CsrfSettings()
+
 
 # Middleware per sessioni
 app.add_middleware(
     SessionMiddleware,
     secret_key=settings.session_secret_key,
     session_cookie="session",
-    max_age=7 * 24 * 3600,  # 7 giorni
-    same_site="lax"
+    max_age=None,
+    same_site="lax",
+    https_only=not settings.DEBUG
 )
 
-# Middleware per cookie sicuri e protezione CSRF
+# Middleware per gestire il "remember me"
+app.add_middleware(PreventSessionOverwriteMiddleware)
+
+# Middleware per cookie sicuri
 app.add_middleware(
     SecureCookiesMiddleware,
     secrets=[settings.csrf_secret_key],

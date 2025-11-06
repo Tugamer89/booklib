@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, sta
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi_csrf_protect import CsrfProtect
 from sqlalchemy.orm import Session
-from urllib.parse import urlencode
 
 from core.auth import get_authenticated_user, create_session
+from core.config import settings
 from core.security import (
     generate_password_reset_token,
     generate_verification_token,
@@ -116,7 +116,8 @@ async def auth_auction_post(
     auth_action: str = Form(...),
     username: str = Form(...),
     password: str = Form(...),
-    email: str = Form(None)
+    email: str = Form(None),
+    remember_me: bool = Form(False)
 ):
     await csrf_protect.validate_csrf(request)
     
@@ -148,33 +149,36 @@ async def auth_auction_post(
         csrf_protect.set_csrf_cookie(signed_token, response)
         return response
 
-    if user:
-        token = create_session(db, user.id)
-        if not token:
-            error = "Impossibile creare la sessione. Riprova."
-            csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-            response = templates.TemplateResponse(AUTH_PAGE, {
-                "request": request,
-                "error": error,
-                "csrf_token": csrf_token,
-            }, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            csrf_protect.set_csrf_cookie(signed_token, response)
-            return response
+    if not user:
+        error = "Si è verificato un errore imprevisto."
+        csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+        response = templates.TemplateResponse(AUTH_PAGE, {
+            "request": request,
+            "error": error,
+            "csrf_token": csrf_token,
+        }, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        csrf_protect.set_csrf_cookie(signed_token, response)
+        return response
+    
+    token = create_session(db, user.id, remember_me=remember_me)
+    if not token:
+        error = "Impossibile creare la sessione. Riprova."
+        csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+        response = templates.TemplateResponse(AUTH_PAGE, {
+            "request": request,
+            "error": error,
+            "csrf_token": csrf_token,
+        }, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        csrf_protect.set_csrf_cookie(signed_token, response)
+        return response
 
-        request.session["user_id"] = user.id
-        request.session["session_token"] = token
-        
-        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    request.session.update({
+        "user_id": user.id,
+        "session_token": token,
+        "remember_me": remember_me
+    })
 
-    error = "Si è verificato un errore imprevisto."
-    csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-    response = templates.TemplateResponse(AUTH_PAGE, {
-        "request": request,
-        "error": error,
-        "csrf_token": csrf_token,
-    }, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    csrf_protect.set_csrf_cookie(signed_token, response)
-    return response
+    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.get("/verify-email", response_class=HTMLResponse)
@@ -407,8 +411,13 @@ def logout(
     token = request.session.get("session_token")
     if token:
         logout_current(db, token)
+
     request.session.clear()
-    
+
     response = RedirectResponse(url="/auth", status_code=status.HTTP_302_FOUND)
+    
+    response.delete_cookie("session")
+    response.delete_cookie("fastapi-csrf-token")
+    
     csrf_protect.unset_csrf_cookie(response)
     return response

@@ -151,6 +151,3 @@ MIT License — sentiti libero di usare e modificare.
 ---
 
 ## 📋 TODO list
-* implementare "remember me" e usare cookie di sessione
-* migliorare session worker per gestione cache più coerente
-* tabelle belle per pagina amministrazione
