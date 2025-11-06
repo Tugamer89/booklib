@@ -13,7 +13,7 @@ from db.models import User, UserSession
 def create_session(db: Session, user_id: int, remember_me: bool = False) -> str:
     active_sessions = db.query(UserSession).filter(
         UserSession.user_id == user_id,
-        UserSession.expires_at > datetime.now()
+        UserSession.expires_at > datetime.now(timezone.utc)
     ).count()
 
     if active_sessions >= settings.max_sessions_per_user:
@@ -27,10 +27,10 @@ def create_session(db: Session, user_id: int, remember_me: bool = False) -> str:
     token = secrets.token_urlsafe(32)
     
     if remember_me:
-        expires_at = datetime.now() + timedelta(days=settings.session_cookie_max_age_days)
+        expires_at = datetime.now(timezone.utc) + timedelta(days=settings.session_cookie_max_age_days)
     else:
-        expires_at = datetime.now() + timedelta(hours=8)
-    
+        expires_at = datetime.now(timezone.utc) + timedelta(hours=8)
+
     session = UserSession(
         user_id=user_id,
         token=token,
@@ -62,7 +62,7 @@ def get_authenticated_user(request: Request, db: Session = Depends(get_db)):
             detail="Sessione non valida"
         )
 
-    if db_session.expires_at and db_session.expires_at < datetime.now():
+    if db_session.expires_at and db_session.expires_at < datetime.now(timezone.utc):
         request.session.clear()
         db.delete(db_session)
         db.commit()
