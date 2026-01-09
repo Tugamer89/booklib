@@ -42,13 +42,28 @@
                     </svg>
                 </span>
             </div>
-             <div class="flex items-center justify-between pt-2">
-                <div class="flex items-center">
-                    <input id="remember-me" name="remember_me" type="checkbox" value="true" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300 dark:border-slate-600 dark:bg-slate-700 rounded">
-                    <label for="remember-me" class="ml-2 block text-sm text-slate-900 dark:text-slate-300">
+            <div class="flex items-center justify-between pt-2">
+                <label for="remember-me" class="flex items-center cursor-pointer group">
+                    <input id="remember-me" name="remember_me" type="checkbox" value="true" class="sr-only peer">
+                    
+                    <span class="flex h-4 w-4 shrink-0 items-center justify-center rounded-md 
+                                 bg-slate-100 dark:bg-slate-700 
+                                 border border-slate-300 dark:border-slate-600 
+                                 transition-colors
+                                 group-hover:border-slate-400 dark:group-hover:border-slate-500
+                                 peer-checked:border-indigo-600 peer-checked:bg-indigo-600
+                                 peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-500 peer-focus-visible:ring-offset-2 dark:peer-focus-visible:ring-offset-slate-800">
+                        
+                        <svg class="h-3 w-3 hidden text-white peer-checked:block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" aria-hidden="true">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                        </svg>
+                        </span>
+
+                    <span class="ml-2 block text-sm text-slate-900 dark:text-slate-300 select-none">
                         Ricordami
-                    </label>
-                </div>
+                    </span>
+                </label>
+                
                 <div class="text-sm">
                     <a href="/forgot-password" class="font-medium text-indigo-600 hover:underline dark:text-indigo-400">Password dimenticata?</a>
                 </div>

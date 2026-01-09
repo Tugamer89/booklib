@@ -151,3 +151,4 @@ MIT License — sentiti libero di usare e modificare.
 ---
 
 ## 📋 TODO list
+* fixare icona matita di modifica
