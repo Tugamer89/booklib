@@ -1,11 +1,18 @@
-from fastapi import APIRouter
-from fastapi.responses import FileResponse, Response, JSONResponse
+from fastapi import APIRouter, Depends, Response, status
+from fastapi.responses import FileResponse, JSONResponse
+from sqlalchemy.orm import Session
+from sqlalchemy import text
+from db.database import get_db
 
 router = APIRouter()
 
 @router.head("/keepalive")
-async def keepalive():
-    return Response(status_code=200)
+async def keepalive(db: Session = Depends(get_db)):
+    try:
+        db.execute(text("SELECT 1"))
+        return Response(status_code=status.HTTP_200_OK)
+    except Exception:
+        return Response(status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 @router.get("/favicon.ico")
 async def favicon():
