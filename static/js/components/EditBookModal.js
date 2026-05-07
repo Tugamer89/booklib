@@ -1,10 +1,10 @@
-import { formatISBN } from '../utils/formatters.js';
+import { formatISBN } from "../utils/formatters.js";
 
 export default {
-    props: ['book', 'csrfToken'],
-    emits: ['close'],
+    props: ["book", "csrfToken"],
+    emits: ["close"],
     setup(props, { emit }) {
-        const close = () => emit('close');
+        const close = () => emit("close");
         const locationPattern = "[A-Z]+[0-9]+";
         return { close, formatISBN, locationPattern };
     },
@@ -68,5 +68,5 @@ export default {
                 </div>
             </div>
         </transition>
-    `
+    `,
 };

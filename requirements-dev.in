@@ -1,0 +1,4 @@
+-c requirements.txt
+
+pre-commit
+ruff==0.3.3

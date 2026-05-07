@@ -1,18 +1,19 @@
-import os
 import base64
+import os
 from urllib.parse import quote_plus
 
 ENV_FILE = ".env"
 
 print("📚 Avvio script di setup per BookLib...")
 
+
 def generate_base64_key(length=32):
     """Genera una chiave sicura codificata in Base64."""
-    return base64.b64encode(os.urandom(length)).decode('utf-8')
+    return base64.b64encode(os.urandom(length)).decode("utf-8")
+
 
 def create_env_file():
-    """
-    Crea il file .env se non esiste, utilizzando le configurazioni
+    """Crea il file .env se non esiste, utilizzando le configurazioni
     specificate in questo script.
     """
     if os.path.exists(ENV_FILE):
@@ -77,17 +78,19 @@ def create_env_file():
 
     print(f"File {ENV_FILE} creato con chiavi generate automaticamente.")
 
+
 def create_tables(engine, base):
-    """
-    Crea tutte le tabelle definite nei modelli SQLAlchemy.
-    """
+    """Crea tutte le tabelle definite nei modelli SQLAlchemy."""
     print("Creazione tabelle nel database...")
     try:
         base.metadata.create_all(bind=engine)
         print("Tabelle create con successo.")
     except Exception as e:
         print(f"Errore durante la creazione delle tabelle: {e}")
-        print("Assicurati che il database sia in esecuzione e le credenziali in .env (o nello script) siano corrette.")
+        print(
+            "Assicurati che il database sia in esecuzione e le credenziali in .env (o nello script) siano corrette."
+        )
+
 
 if __name__ == "__main__":
     # 1. Crea il file .env
@@ -97,9 +100,7 @@ if __name__ == "__main__":
     #    e i modelli solo DOPO che .env è stato creato.
     print("\nImportazione configurazione e modelli DB...")
     try:
-        from db.database import engine, Base
-        # Importa i modelli per registrarli con Base
-        from db.models import User, UserSession, Book
+        from db.database import Base, engine
     except ImportError as e:
         print(f"Errore di importazione: {e}")
         print("Assicurati di eseguire questo script dalla directory principale del progetto.")

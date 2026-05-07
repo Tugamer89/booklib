@@ -1,20 +1,26 @@
-import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
-import { useTheme } from '../utils/theme.js';
-import { useBodyScrollLock } from '../utils/useBodyScrollLock.js';
-import { api } from '../services/api.js';
-import { formatISBN } from '../utils/formatters.js';
+import { ref, onMounted, onUnmounted, computed, watch } from "vue";
+import { useTheme } from "../utils/theme.js";
+import { useBodyScrollLock } from "../utils/useBodyScrollLock.js";
+import { api } from "../services/api.js";
+import { formatISBN } from "../utils/formatters.js";
 
-import Navbar from '../components/Navbar.js';
-import BookCard from '../components/BookCard.js';
-import AddBookForm from '../components/AddBookForm.js';
-import EditBookModal from '../components/EditBookModal.js';
-import DetailModal from '../components/DetailModal.js';
-import FilterPanel from '../components/FilterPanel.js';
-import GoogleBooksModal from '../components/GoogleBooksModal.js';
+import Navbar from "../components/Navbar.js";
+import BookCard from "../components/BookCard.js";
+import AddBookForm from "../components/AddBookForm.js";
+import EditBookModal from "../components/EditBookModal.js";
+import DetailModal from "../components/DetailModal.js";
+import FilterPanel from "../components/FilterPanel.js";
+import GoogleBooksModal from "../components/GoogleBooksModal.js";
 
 export default {
     components: {
-        Navbar, BookCard, AddBookForm, EditBookModal, DetailModal, FilterPanel, GoogleBooksModal
+        Navbar,
+        BookCard,
+        AddBookForm,
+        EditBookModal,
+        DetailModal,
+        FilterPanel,
+        GoogleBooksModal,
     },
     setup() {
         const books = ref([]);
@@ -24,12 +30,16 @@ export default {
         const fetchError = ref(null);
 
         const currentFilters = ref({
-            title: '', author: '', publisher: '', location: '',
-            sort_by: 'id', sort_order: 'asc'
+            title: "",
+            author: "",
+            publisher: "",
+            location: "",
+            sort_by: "id",
+            sort_order: "asc",
         });
 
-        const showAddForm = ref(localStorage.getItem('showAddForm') === 'true');
-        const showFilters = ref(localStorage.getItem('showFilters') === 'true');
+        const showAddForm = ref(localStorage.getItem("showAddForm") === "true");
+        const showFilters = ref(localStorage.getItem("showFilters") === "true");
         const showScrollToTop = ref(false);
 
         const selectedBookForEdit = ref(null);
@@ -37,25 +47,30 @@ export default {
         const showGoogleBooksModal = ref(false);
         const googleSearchTerms = ref({});
         const newBookData = ref({
-            title: '', author: '', isbn: '', publisher: '',
-            location: '', language: '', description: '', personal_comment: '',
-            cover_url: ''
+            title: "",
+            author: "",
+            isbn: "",
+            publisher: "",
+            location: "",
+            language: "",
+            description: "",
+            personal_comment: "",
+            cover_url: "",
         });
 
-        const userData = JSON.parse(document.getElementById('user-data').textContent);
-        const csrfToken = ref(JSON.parse(document.getElementById('csrf-token').textContent));
+        const userData = JSON.parse(document.getElementById("user-data").textContent);
+        const csrfToken = ref(JSON.parse(document.getElementById("csrf-token").textContent));
         const username = ref(userData.username);
         const isAdmin = ref(userData.is_admin);
 
         const { theme, toggleTheme } = useTheme();
-        const isAnyModalOpen = computed(() =>
-            !!selectedBookForEdit.value ||
-            !!selectedBookForDetail.value ||
-            showGoogleBooksModal.value
+        const isAnyModalOpen = computed(
+            () =>
+                !!selectedBookForEdit.value ||
+                !!selectedBookForDetail.value ||
+                showGoogleBooksModal.value
         );
         useBodyScrollLock(isAnyModalOpen);
-
-
 
         let debounceTimer = null;
         let lastAppliedFilters = JSON.stringify(currentFilters.value);
@@ -92,23 +107,27 @@ export default {
 
             const urlParams = new URLSearchParams();
             for (const [key, value] of Object.entries(currentFilters.value)) {
-                if (value && String(value).trim() !== '') {
-                    if (key === 'sort_by' && value === 'id') continue;
-                    if (key === 'sort_order' && value === 'asc') continue;
+                if (value && String(value).trim() !== "") {
+                    if (key === "sort_by" && value === "id") continue;
+                    if (key === "sort_order" && value === "asc") continue;
                     urlParams.append(key, value);
                 }
             }
             const queryString = urlParams.toString();
-            const newUrl = queryString ? `${globalThis.location.pathname}?${queryString}` : globalThis.location.pathname;
-            globalThis.history.pushState({ path: newUrl }, '', newUrl);
+            const newUrl = queryString
+                ? `${globalThis.location.pathname}?${queryString}`
+                : globalThis.location.pathname;
+            globalThis.history.pushState({ path: newUrl }, "", newUrl);
         };
 
-        watch(currentFilters, () => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(applyFiltersAndUrl, 500);
-        }, { deep: true });
-
-
+        watch(
+            currentFilters,
+            () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(applyFiltersAndUrl, 500);
+            },
+            { deep: true }
+        );
 
         let scrollDebounceTimer = null;
         let resizeDebounceTimer = null;
@@ -116,11 +135,11 @@ export default {
         const onScroll = () => {
             const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
             const scrollPosition = window.scrollY;
-            
-            if (scrollableHeight > 0 && (scrollPosition / scrollableHeight) > 0.85) {
+
+            if (scrollableHeight > 0 && scrollPosition / scrollableHeight > 0.85) {
                 fetchBooks();
             }
-            
+
             showScrollToTop.value = window.scrollY > 400;
         };
 
@@ -130,16 +149,16 @@ export default {
 
         const handleScroll = () => {
             clearTimeout(scrollDebounceTimer);
-            scrollDebounceTimer = setTimeout(onScroll, 100); 
+            scrollDebounceTimer = setTimeout(onScroll, 100);
         };
-        
+
         const handleResize = () => {
             clearTimeout(resizeDebounceTimer);
             resizeDebounceTimer = setTimeout(onResize, 100);
         };
 
         const handleKeyDown = (event) => {
-            if (event.key === 'Escape') {
+            if (event.key === "Escape") {
                 if (showGoogleBooksModal.value) {
                     showGoogleBooksModal.value = false;
                 } else if (selectedBookForEdit.value) {
@@ -151,7 +170,7 @@ export default {
         };
 
         const scrollToTop = () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: "smooth" });
         };
 
         const applyFiltersNow = () => {
@@ -160,13 +179,21 @@ export default {
         };
         const resetFiltersNow = () => {
             currentFilters.value = {
-                title: '', author: '', publisher: '', location: '',
-                sort_by: 'id', sort_order: 'asc'
+                title: "",
+                author: "",
+                publisher: "",
+                location: "",
+                sort_by: "id",
+                sort_order: "asc",
             };
             applyFiltersNow();
         };
-        const openEditModal = (book) => { selectedBookForEdit.value = book; };
-        const openDetailModal = (book) => { selectedBookForDetail.value = book; };
+        const openEditModal = (book) => {
+            selectedBookForEdit.value = book;
+        };
+        const openDetailModal = (book) => {
+            selectedBookForDetail.value = book;
+        };
         const openGoogleSearch = (searchTerms) => {
             googleSearchTerms.value = searchTerms;
             showGoogleBooksModal.value = true;
@@ -182,20 +209,26 @@ export default {
         };
         const resetNewBookData = () => {
             newBookData.value = {
-                title: '', author: '', isbn: '', publisher: '',
-                location: '', language: '', description: '', personal_comment: '',
-                cover_url: ''
+                title: "",
+                author: "",
+                isbn: "",
+                publisher: "",
+                location: "",
+                language: "",
+                description: "",
+                personal_comment: "",
+                cover_url: "",
             };
         };
         watch(showAddForm, (isShown) => {
             if (!isShown) {
                 resetNewBookData();
             }
-            localStorage.setItem('showAddForm', isShown);
+            localStorage.setItem("showAddForm", isShown);
         });
 
         watch(showFilters, (isShown) => {
-            localStorage.setItem('showFilters', isShown);
+            localStorage.setItem("showFilters", isShown);
         });
 
         onMounted(() => {
@@ -211,25 +244,34 @@ export default {
             lastAppliedFilters = JSON.stringify(currentFilters.value);
 
             fetchBooks();
-            
-            globalThis.addEventListener('scroll', handleScroll);
-            globalThis.addEventListener('resize', handleResize);
-            globalThis.addEventListener('keydown', handleKeyDown);
+
+            globalThis.addEventListener("scroll", handleScroll);
+            globalThis.addEventListener("resize", handleResize);
+            globalThis.addEventListener("keydown", handleKeyDown);
         });
 
         onUnmounted(() => {
-            globalThis.removeEventListener('scroll', handleScroll);
-            globalThis.removeEventListener('resize', handleResize);
-            globalThis.removeEventListener('keydown', handleKeyDown);
+            globalThis.removeEventListener("scroll", handleScroll);
+            globalThis.removeEventListener("resize", handleResize);
+            globalThis.removeEventListener("keydown", handleKeyDown);
         });
 
-
         return {
-            books, isLoading, fetchError, currentFilters,
-            showAddForm, showFilters, showScrollToTop,
-            selectedBookForEdit, selectedBookForDetail, showGoogleBooksModal,
-            newBookData, googleSearchTerms,
-            username, isAdmin, theme,
+            books,
+            isLoading,
+            fetchError,
+            currentFilters,
+            showAddForm,
+            showFilters,
+            showScrollToTop,
+            selectedBookForEdit,
+            selectedBookForDetail,
+            showGoogleBooksModal,
+            newBookData,
+            googleSearchTerms,
+            username,
+            isAdmin,
+            theme,
             isAnyModalOpen,
             csrfToken,
 
@@ -240,7 +282,7 @@ export default {
             openEditModal,
             openDetailModal,
             openGoogleSearch,
-            handleBookSelected
+            handleBookSelected,
         };
     },
     template: `
@@ -333,5 +375,5 @@ export default {
             </button>
         </transition>
     </div>
-    `
+    `,
 };

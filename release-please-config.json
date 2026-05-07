@@ -1,0 +1,14 @@
+{
+    "packages": {
+        ".": {
+            "release-type": "python",
+            "extra-files": [
+                {
+                    "type": "python",
+                    "path": "main.py",
+                    "version-filter": "version=\"([\\d\\.]+)\""
+                }
+            ]
+        }
+    }
+}

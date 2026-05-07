@@ -1,11 +1,11 @@
-import { ref, onMounted, computed } from 'vue';
-import BookSearchResult from './BookSearchResult.js';
+import { ref, onMounted, computed } from "vue";
+import BookSearchResult from "./BookSearchResult.js";
 
 export default {
-    name: 'GoogleBooksModal',
+    name: "GoogleBooksModal",
     components: { BookSearchResult },
-    props: ['isVisible', 'initialSearchTerms'],
-    emits: ['close', 'book-selected'],
+    props: ["isVisible", "initialSearchTerms"],
+    emits: ["close", "book-selected"],
     setup(props, { emit }) {
         const results = ref([]);
         const isLoading = ref(false);
@@ -14,14 +14,14 @@ export default {
         const startIndex = ref(0);
         const totalItems = ref(0);
         const resultsContainer = ref(null);
-        
+
         const formattedQuery = computed(() => {
             const { title, author, isbn } = props.initialSearchTerms;
             const parts = [];
             if (title) parts.push(`Titolo: "${title}"`);
             if (author) parts.push(`Autore: "${author}"`);
             if (isbn && isbn !== "N/D") parts.push(`ISBN: "${isbn}"`);
-            return parts.join(', ') || 'Nessun termine inserito';
+            return parts.join(", ") || "Nessun termine inserito";
         });
 
         const search = async (loadMore = false) => {
@@ -29,13 +29,15 @@ export default {
             const queryParts = [];
             if (title) queryParts.push(`intitle:${encodeURIComponent(title)}`);
             if (author) queryParts.push(`inauthor:${encodeURIComponent(author)}`);
-            if (isbn && isbn !== "N/D") queryParts.push(`isbn:${encodeURIComponent(isbn.replaceAll('-', ''))}`);
+            if (isbn && isbn !== "N/D")
+                queryParts.push(`isbn:${encodeURIComponent(isbn.replaceAll("-", ""))}`);
 
             if (queryParts.length === 0) {
-                error.value = "Inserisci almeno un termine di ricerca (titolo, autore o ISBN) nel form.";
+                error.value =
+                    "Inserisci almeno un termine di ricerca (titolo, autore o ISBN) nel form.";
                 return;
             }
-            const finalQuery = queryParts.join('+');
+            const finalQuery = queryParts.join("+");
 
             if (loadMore) {
                 if (isLoadingMore.value || results.value.length >= totalItems.value) return;
@@ -48,8 +50,10 @@ export default {
             error.value = null;
 
             try {
-                const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${finalQuery}&maxResults=20&startIndex=${startIndex.value}`);
-                if (!response.ok) throw new Error('Errore nella ricerca.');
+                const response = await fetch(
+                    `https://www.googleapis.com/books/v1/volumes?q=${finalQuery}&maxResults=20&startIndex=${startIndex.value}`
+                );
+                if (!response.ok) throw new Error("Errore nella ricerca.");
                 const data = await response.json();
                 totalItems.value = data.totalItems || 0;
                 const newItems = data.items || [];
@@ -60,7 +64,8 @@ export default {
                 }
 
                 startIndex.value += newItems.length;
-                if (!loadMore && newItems.length === 0) error.value = "Nessun libro trovato per questa ricerca.";
+                if (!loadMore && newItems.length === 0)
+                    error.value = "Nessun libro trovato per questa ricerca.";
             } catch (err) {
                 error.value = err.message;
             } finally {
@@ -68,7 +73,7 @@ export default {
                 isLoadingMore.value = false;
             }
         };
-        
+
         onMounted(() => {
             search(false);
         });
@@ -84,24 +89,40 @@ export default {
 
         const selectBook = (book) => {
             const info = book.volumeInfo;
-            const isbn13 = info.industryIdentifiers?.find(id => id.type === 'ISBN_13')?.identifier;
-            const isbn10 = info.industryIdentifiers?.find(id => id.type === 'ISBN_10')?.identifier;
+            const isbn13 = info.industryIdentifiers?.find(
+                (id) => id.type === "ISBN_13"
+            )?.identifier;
+            const isbn10 = info.industryIdentifiers?.find(
+                (id) => id.type === "ISBN_10"
+            )?.identifier;
             const selectedData = {
-                title: info.title || '',
-                author: (info.authors || []).join(', '),
-                publisher: info.publisher || '',
-                description: info.description || '',
-                language: info.language || '',
-                isbn: isbn13 || isbn10 || '',
-                cover_url: info.imageLinks?.thumbnail?.replace('http:', 'https:') || ''
+                title: info.title || "",
+                author: (info.authors || []).join(", "),
+                publisher: info.publisher || "",
+                description: info.description || "",
+                language: info.language || "",
+                isbn: isbn13 || isbn10 || "",
+                cover_url: info.imageLinks?.thumbnail?.replace("http:", "https:") || "",
             };
-            emit('book-selected', selectedData);
+            emit("book-selected", selectedData);
             close();
         };
 
-        const close = () => emit('close');
+        const close = () => emit("close");
 
-        return { results, isLoading, isLoadingMore, error, formattedQuery, resultsContainer, search, selectBook, close, handleScroll, startIndex };
+        return {
+            results,
+            isLoading,
+            isLoadingMore,
+            error,
+            formattedQuery,
+            resultsContainer,
+            search,
+            selectBook,
+            close,
+            handleScroll,
+            startIndex,
+        };
     },
     template: `
         <transition name="fade" appear>
@@ -130,5 +151,5 @@ export default {
                 </div>
             </div>
         </transition>
-    `
+    `,
 };

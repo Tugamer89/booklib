@@ -5,45 +5,46 @@ body {
 }
 
 @media (display-mode: window-controls-overlay) {
-  nav[class*="sticky"] {
-    padding-top: env(titlebar-area-height);
-    app-region: drag;
-  }
+    nav[class*="sticky"] {
+        padding-top: env(titlebar-area-height);
+        app-region: drag;
+    }
 
-  nav h1,
-  nav a,
-  nav button {
-    app-region: no-drag;
-  }
+    nav h1,
+    nav a,
+    nav button {
+        app-region: no-drag;
+    }
 
-  .pwa-drag-area {
-    top: 0 !important;
-    right: 0 !important;
-    left: 0;
-    width: 100%;
+    .pwa-drag-area {
+        top: 0 !important;
+        right: 0 !important;
+        left: 0;
+        width: 100%;
 
-    padding-top: env(titlebar-area-height);
-    
-    padding-right: 1rem; 
+        padding-top: env(titlebar-area-height);
 
-    app-region: drag;
+        padding-right: 1rem;
 
-    display: flex;
-    justify-content: flex-end;
-  }
+        app-region: drag;
 
-  .pwa-no-drag {
-    app-region: no-drag;
-  }
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .pwa-no-drag {
+        app-region: no-drag;
+    }
 }
 
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
     transition: opacity 0.2s ease;
 }
-.fade-enter-from, .fade-leave-to {
+.fade-enter-from,
+.fade-leave-to {
     opacity: 0;
 }
-
 
 ::-webkit-scrollbar {
     width: 8px;
@@ -62,12 +63,10 @@ html.dark ::-webkit-scrollbar-thumb {
     background: #64748b; /* slate-500 */
 }
 
-
 ::-webkit-resizer {
     background-color: transparent;
     border: none;
 }
-
 
 .slide-fade-enter-active {
     transition: all 0.3s ease-out;

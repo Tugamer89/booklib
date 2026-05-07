@@ -1,7 +1,17 @@
 import os
 import re
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Request, status, UploadFile
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Query,
+    Request,
+    UploadFile,
+    status,
+)
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi_csrf_protect import CsrfProtect
 from isbnlib import canonical, is_isbn10, is_isbn13
@@ -15,28 +25,33 @@ from core.templates import templates
 from db.crud import add_book as crud_add_book, delete_book as crud_delete_book
 from db.database import get_db
 from db.models import Book, User
-from utils.file_utils import validate_and_save_cover, validate_cover_url, delete_cover_from_cloudinary
+from utils.file_utils import (
+    delete_cover_from_cloudinary,
+    validate_and_save_cover,
+    validate_cover_url,
+)
 
 DEFAULT_COVER_PATH = "static/covers/default.jpg"
 
 router = APIRouter()
+
 
 @router.get("/", response_class=HTMLResponse)
 @router.head("/", response_class=HTMLResponse)
 def read_books_page(
     request: Request,
     csrf_protect: CsrfProtect = Depends(),
-    user: User = Depends(get_authenticated_user)
+    user: User = Depends(get_authenticated_user),
 ):
     csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-    response = templates.TemplateResponse("index.html", {
-        "request": request,
-        "user": {
-            "username": user.username,
-            "is_admin": user.username in settings.admin_users
+    response = templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "user": {"username": user.username, "is_admin": user.username in settings.admin_users},
+            "csrf_token": csrf_token,
         },
-        "csrf_token": csrf_token
-    })
+    )
     csrf_protect.set_csrf_cookie(signed_token, response)
     return response
 
@@ -53,7 +68,7 @@ def books_data(
     sort_by: str = Query("id"),
     sort_order: str = Query("asc"),
     limit: int = Query(20, ge=1, le=100),
-    offset: int = Query(0, ge=0)
+    offset: int = Query(0, ge=0),
 ):
     query = db.query(Book).filter(Book.user_id == user.id)
 
@@ -76,8 +91,8 @@ def books_data(
 
     if sort_by == "isbn":
         isbn_clean_col = case(
-            ((Book.isbn == 'N/A') | (Book.isbn == ''), null()),
-            else_=func.regexp_replace(Book.isbn, r'X$', '')
+            ((Book.isbn == "N/A") | (Book.isbn == ""), null()),
+            else_=func.regexp_replace(Book.isbn, r"X$", ""),
         )
         numeric_isbn = cast(isbn_clean_col, BigInteger)
         order_criteria.append(numeric_isbn)
@@ -90,13 +105,13 @@ def books_data(
         order_criteria = [desc(c) for c in order_criteria]
     else:
         order_criteria = [asc(c) for c in order_criteria]
-    
+
     order_criteria.append(asc(Book.id))
 
     books = query.order_by(*order_criteria).offset(offset).limit(limit + 1).all()
     has_more = len(books) > limit
     books = books[:limit]
-    
+
     books_data = [
         {
             "id": b.id,
@@ -108,13 +123,14 @@ def books_data(
             "cover_path": b.cover_path,
             "description": b.description,
             "language": b.language,
-            "personal_comment": b.personal_comment
-        } for b in books
+            "personal_comment": b.personal_comment,
+        }
+        for b in books
     ]
 
     return JSONResponse(
         content={"books": books_data, "has_more": has_more},
-        headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
+        headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"},
     )
 
 
@@ -150,11 +166,13 @@ async def add_book(
     csrf_protect: CsrfProtect = Depends(),
     user: User = Depends(get_authenticated_user),
     db: Session = Depends(get_db),
-    form_data: AddBookForm = Depends()
+    form_data: AddBookForm = Depends(),
 ):
     await csrf_protect.validate_csrf(request)
-    
-    isbn_canonical, location_cleaned, language_cleaned = _validate_book_fields(form_data.isbn, form_data.location, form_data.language)
+
+    isbn_canonical, location_cleaned, language_cleaned = _validate_book_fields(
+        form_data.isbn, form_data.location, form_data.language
+    )
 
     if form_data.cover_url:
         cover_path = validate_cover_url(form_data.cover_url)
@@ -172,8 +190,10 @@ async def add_book(
         cover_path=cover_path,
         description=form_data.description.strip() if form_data.description is not None else None,
         language=language_cleaned,
-        personal_comment=form_data.personal_comment.strip() if form_data.personal_comment is not None else None,
-        owner=user
+        personal_comment=form_data.personal_comment.strip()
+        if form_data.personal_comment is not None
+        else None,
+        owner=user,
     )
 
     crud_add_book(db, book)
@@ -187,25 +207,34 @@ async def add_book(
 def _validate_book_fields(isbn: str, location: str, language: str | None):
     isbn_canonical = canonical(isbn.strip())
     if isbn_canonical and not (is_isbn13(isbn_canonical) or is_isbn10(isbn_canonical)):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="ISBN non valido. Deve essere un ISBN-13 corretto.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="ISBN non valido. Deve essere un ISBN-13 corretto.",
+        )
 
     location_cleaned = location.strip()
-    if not re.fullmatch(r'[A-Z]+\d+', location_cleaned):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Formato location non valido. Deve essere lettere maiuscole seguite da cifre, es. A5")
+    if not re.fullmatch(r"[A-Z]+\d+", location_cleaned):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Formato location non valido. Deve essere lettere maiuscole seguite da cifre, es. A5",
+        )
 
     language_cleaned = None
     if language:
         language_cleaned = language.strip().upper()
-        if not re.fullmatch(r'[A-Z]{2,3}', language_cleaned):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Lingua non valida. Deve essere 2-3 lettere maiuscole (es. IT, EN)")
-    
+        if not re.fullmatch(r"[A-Z]{2,3}", language_cleaned):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Lingua non valida. Deve essere 2-3 lettere maiuscole (es. IT, EN)",
+            )
+
     return isbn_canonical, location_cleaned, language_cleaned
 
 
 def _delete_old_cover(cover_path: str):
     if cover_path == DEFAULT_COVER_PATH:
         return
-    
+
     if cover_path.startswith("https://res.cloudinary.com/"):
         delete_cover_from_cloudinary(cover_path)
     elif os.path.exists(cover_path):
@@ -224,7 +253,7 @@ class EditBookForm:
         description: str = Form(...),
         language: str = Form(...),
         personal_comment: str = Form(...),
-        cover: UploadFile = File(None)
+        cover: UploadFile = File(None),
     ):
         self.book_id = book_id
         self.title = title
@@ -244,15 +273,17 @@ async def edit_book(
     csrf_protect: CsrfProtect = Depends(),
     user: User = Depends(get_authenticated_user),
     db: Session = Depends(get_db),
-    form_data: EditBookForm = Depends()
+    form_data: EditBookForm = Depends(),
 ):
     await csrf_protect.validate_csrf(request)
-    
+
     book = db.query(Book).filter(Book.id == form_data.book_id, Book.user_id == user.id).first()
     if not book:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Libro non trovato")
 
-    isbn_canonical, location_cleaned, language_cleaned = _validate_book_fields(form_data.isbn, form_data.location, form_data.language)
+    isbn_canonical, location_cleaned, language_cleaned = _validate_book_fields(
+        form_data.isbn, form_data.location, form_data.language
+    )
 
     book.title = form_data.title.strip()
     book.author = form_data.author.strip()
@@ -269,7 +300,7 @@ async def edit_book(
         book.cover_path = new_cover
 
     db.commit()
-    
+
     referer = request.headers.get("referer")
     if referer:
         return RedirectResponse(url=referer, status_code=status.HTTP_303_SEE_OTHER)
@@ -282,10 +313,10 @@ async def delete_book(
     csrf_protect: CsrfProtect = Depends(),
     user: User = Depends(get_authenticated_user),
     db: Session = Depends(get_db),
-    book_id: int = Form(...)
+    book_id: int = Form(...),
 ):
     await csrf_protect.validate_csrf(request)
-    
+
     book = db.query(Book).filter(Book.id == book_id, Book.user_id == user.id).first()
     if not book:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Libro non trovato")
@@ -297,7 +328,7 @@ async def delete_book(
             os.remove(book.cover_path)
 
     crud_delete_book(db, book)
-    
+
     referer = request.headers.get("referer")
     if referer:
         return RedirectResponse(url=referer, status_code=status.HTTP_303_SEE_OTHER)

@@ -1,6 +1,6 @@
 import os
-import cloudinary
 
+import cloudinary
 from dotenv import load_dotenv
 from passlib.context import CryptContext
 from pydantic import Field
@@ -8,6 +8,7 @@ from pydantic_settings import BaseSettings
 from pydantic_settings.sources import PydanticBaseSettingsSource
 
 load_dotenv()
+
 
 class Settings(BaseSettings):
     database_url: str = os.getenv("DATABASE_URL")
@@ -19,25 +20,23 @@ class Settings(BaseSettings):
     cloudinary_api_key: str = os.getenv("CLOUDINARY_API_KEY")
     cloudinary_api_secret: str = os.getenv("CLOUDINARY_API_SECRET")
     allowed_extensions: set = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"}
-    allowed_mime_types: set = {
-        "image/jpeg", "image/png", "image/gif", "image/bmp", "image/webp"
-    }
+    allowed_mime_types: set = {"image/jpeg", "image/png", "image/gif", "image/bmp", "image/webp"}
     username_regex: str = r"^[a-zA-Z0-9_.-]{3,20}$"
     password_regex: str = r"^.{8,100}$"
     email_regex: str = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
-    
+
     db_max_retries: int = 3
     db_retry_delay_seconds: int = 1
     max_sessions_per_user: int = 5
     password_reset_token_expire_minutes: int = 15
-    
+
     session_cookie_max_age_days: int = 30
     session_cookie_max_age_seconds: int = Field(0, repr=False)
-    
+
     BREVO_API_KEY: str = os.getenv("BREVO_API_KEY", "")
     BREVO_EMAIL_FROM_ADDRESS: str = os.getenv("BREVO_EMAIL_FROM_ADDRESS", "noreply@example.com")
     BREVO_EMAIL_FROM_NAME: str = os.getenv("BREVO_EMAIL_FROM_NAME", "BookLib")
-    
+
     DEBUG: bool = os.getenv("DEBUG", "false").lower() == "true"
     admin_users_env: str = Field(default=os.getenv("ADMIN_USERS", ""), repr=False)
     admin_users: set[str] = set()
@@ -50,11 +49,7 @@ class Settings(BaseSettings):
 
     def __init__(self, **data):
         super().__init__(**data)
-        self.admin_users = {
-            u.strip()
-            for u in self.admin_users_env.split(",")
-            if u.strip()
-        }
+        self.admin_users = {u.strip() for u in self.admin_users_env.split(",") if u.strip()}
         self.session_cookie_max_age_seconds = self.session_cookie_max_age_days * 24 * 60 * 60
 
     @classmethod
@@ -73,5 +68,5 @@ settings = Settings()
 cloudinary.config(
     cloud_name=settings.cloudinary_cloud_name,
     api_key=settings.cloudinary_api_key,
-    api_secret=settings.cloudinary_api_secret
+    api_secret=settings.cloudinary_api_secret,
 )

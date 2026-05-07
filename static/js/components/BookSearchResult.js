@@ -1,20 +1,25 @@
 export default {
-    name: 'BookSearchResult',
-    props: ['book'],
-    emits: ['select'],
+    name: "BookSearchResult",
+    props: ["book"],
+    emits: ["select"],
     setup(props) {
         const info = props.book.volumeInfo;
-        const thumbnail = info.imageLinks?.thumbnail?.replace('http:', 'https:') || '/static/covers/default.jpg';
-        const title = info.title || 'Titolo non disponibile';
-        const authors = (info.authors || []).join(', ');
-        const publisher = info.publisher || '';
-        
-        let isbn = '';
+        const thumbnail =
+            info.imageLinks?.thumbnail?.replace("http:", "https:") || "/static/covers/default.jpg";
+        const title = info.title || "Titolo non disponibile";
+        const authors = (info.authors || []).join(", ");
+        const publisher = info.publisher || "";
+
+        let isbn = "";
         const ids = info.industryIdentifiers || [];
         if (Array.isArray(ids) && ids.length) {
-            const isbn13 = ids.find(i => i.type === 'ISBN_13' || i.type?.toUpperCase().includes('13'));
-            const isbn10 = ids.find(i => i.type === 'ISBN_10' || i.type?.toUpperCase().includes('10'));
-            isbn = isbn13?.identifier || isbn10?.identifier || '';
+            const isbn13 = ids.find(
+                (i) => i.type === "ISBN_13" || i.type?.toUpperCase().includes("13")
+            );
+            const isbn10 = ids.find(
+                (i) => i.type === "ISBN_10" || i.type?.toUpperCase().includes("10")
+            );
+            isbn = isbn13?.identifier || isbn10?.identifier || "";
         }
 
         return { thumbnail, title, authors, publisher, isbn };
@@ -30,5 +35,5 @@ export default {
             </div>
             <button class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition flex-shrink-0">Seleziona</button>
         </div>
-    `
+    `,
 };

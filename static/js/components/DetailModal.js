@@ -1,10 +1,10 @@
-import { formatISBN } from '../utils/formatters.js';
+import { formatISBN } from "../utils/formatters.js";
 
 export default {
-    props: ['book'],
-    emits: ['close'],
+    props: ["book"],
+    emits: ["close"],
     setup(props, { emit }) {
-        const close = () => emit('close');
+        const close = () => emit("close");
         return { close, formatISBN };
     },
     template: `
@@ -57,5 +57,5 @@ export default {
                 </div>
             </div>
         </transition>
-    `
+    `,
 };
