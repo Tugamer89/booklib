@@ -1,31 +1,30 @@
-import { computed } from 'vue';
+import { computed } from "vue";
 
 export default {
-    name: 'FilterPanel',
+    name: "FilterPanel",
     props: {
         modelValue: {
             type: Object,
-            required: true
-        }
+            required: true,
+        },
     },
-    emits: ['update:modelValue', 'applyNow', 'resetNow'],
+    emits: ["update:modelValue", "applyNow", "resetNow"],
     setup(props, { emit }) {
-        
         const filters = computed({
             get: () => props.modelValue,
             set: (newValue) => {
-                emit('update:modelValue', newValue);
-            }
+                emit("update:modelValue", newValue);
+            },
         });
 
         const reset = () => {
-            emit('resetNow');
+            emit("resetNow");
         };
 
         const apply = () => {
-            emit('applyNow');
+            emit("applyNow");
         };
-        
+
         return { filters, reset, apply };
     },
     template: `
@@ -81,5 +80,5 @@ export default {
                 </div>
             </form>
         </div>
-    `
+    `,
 };

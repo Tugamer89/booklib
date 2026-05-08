@@ -14,9 +14,7 @@
             "url": "/?protocol_data=%s"
         }
     ],
-    "display_override": [
-        "window-controls-overlay"
-    ],
+    "display_override": ["window-controls-overlay"],
     "icons": [
         {
             "src": "/static/icons/icon-48x48.png",
@@ -70,19 +68,19 @@
         }
     ],
     "screenshots": [
-    {
-        "src": "/static/screenshots/booklib-desktop-1.png",
-        "sizes": "1919x1079",
-        "type": "image/png",
-        "form_factor": "wide",
-        "label": "Vista Libreria Desktop"
-    },
-    {
-        "src": "/static/screenshots/booklib-mobile-1.png",
-        "sizes": "2160x3840",
-        "type": "image/png",
-        "form_factor": "narrow",
-        "label": "Vista Libreria Mobile"
-    }
-  ]
+        {
+            "src": "/static/screenshots/booklib-desktop-1.png",
+            "sizes": "1919x1079",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "Vista Libreria Desktop"
+        },
+        {
+            "src": "/static/screenshots/booklib-mobile-1.png",
+            "sizes": "2160x3840",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Vista Libreria Mobile"
+        }
+    ]
 }

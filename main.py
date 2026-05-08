@@ -1,6 +1,6 @@
 import os
-import uvicorn
 
+import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi_csrf_protect import CsrfProtect
@@ -13,8 +13,8 @@ from core.middleware import PreventSessionOverwriteMiddleware
 from routes import admin, auth, books, debug, errors, extras
 from utils.starter import lifespan
 
-
 app = FastAPI(lifespan=lifespan, title="BookLib", version="1.6.3")
+
 
 @CsrfProtect.load_config
 def get_config():
@@ -28,7 +28,7 @@ app.add_middleware(
     session_cookie="session",
     max_age=None,
     same_site="lax",
-    https_only=not settings.DEBUG
+    https_only=not settings.DEBUG,
 )
 
 # Middleware per gestire il "remember me"
@@ -38,7 +38,7 @@ app.add_middleware(PreventSessionOverwriteMiddleware)
 app.add_middleware(
     SecureCookiesMiddleware,
     secrets=[settings.csrf_secret_key],
-    included_cookies=["session", "fastapi-csrf-token"]
+    included_cookies=["session", "fastapi-csrf-token"],
 )
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -60,4 +60,5 @@ if settings.DEBUG:
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("main:app", host="0.0.0.0", port=port, workers=4)
+    host = os.environ.get("HOST", "localhost")
+    uvicorn.run("main:app", host=host, port=port, workers=4)

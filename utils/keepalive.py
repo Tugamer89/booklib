@@ -5,6 +5,7 @@ from core.config import settings
 from db.database import engine
 from utils.logger import logger
 
+
 async def keepalive_job():
     if not settings.keepalive_url:
         return
@@ -17,6 +18,7 @@ async def keepalive_job():
                 logger.warning(f"[KEEPALIVE] Status {resp.status_code} on {settings.keepalive_url}")
     except Exception as e:
         logger.error(f"[HTTP-KEEPALIVE]: {e}")
+
 
 def keepalive_db_job():
     if not settings.keepalive_db:

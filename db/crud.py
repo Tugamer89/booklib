@@ -1,27 +1,37 @@
-from sqlalchemy.orm import Session
-from sqlalchemy import func
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
-from db.models import User, Book, UserSession
+from sqlalchemy import func
+from sqlalchemy.orm import Session
+
 from core.config import settings
 from core.security import hash_password
+from db.models import Book, User, UserSession
 from utils.logger import logger
+
 
 def get_user_by_id(db: Session, user_id: int) -> User | None:
     return db.query(User).filter(User.id == user_id).first()
 
+
 def get_user_by_username(db: Session, username: str) -> User | None:
     return db.query(User).filter(User.username == username).first()
+
 
 def get_user_by_email(db: Session, email: str) -> User | None:
     return db.query(User).filter(User.email == email).first()
 
+
 def get_user_by_username_or_email(db: Session, identifier: str) -> User | None:
     identifier_lower = identifier.lower()
-    return db.query(User).filter(
-        (func.lower(User.username) == identifier_lower) |
-        (func.lower(User.email) == identifier_lower)
-    ).first()
+    return (
+        db.query(User)
+        .filter(
+            (func.lower(User.username) == identifier_lower)
+            | (func.lower(User.email) == identifier_lower)
+        )
+        .first()
+    )
+
 
 def create_user(db: Session, user_data: dict, verification_token: str) -> User:
     hashed_password = hash_password(user_data["password"])
@@ -30,7 +40,7 @@ def create_user(db: Session, user_data: dict, verification_token: str) -> User:
         email=user_data["email"].strip().lower(),
         password=hashed_password,
         is_verified=False,
-        verification_token=verification_token
+        verification_token=verification_token,
     )
     try:
         db.add(db_user)
@@ -42,6 +52,7 @@ def create_user(db: Session, user_data: dict, verification_token: str) -> User:
         db.rollback()
         return None
 
+
 def verify_user_email(db: Session, token: str) -> User | None:
     user = db.query(User).filter(User.verification_token == token).first()
     if user:
@@ -52,15 +63,20 @@ def verify_user_email(db: Session, token: str) -> User | None:
             db.refresh(user)
             return user
         except Exception as e:
-            logger.error(f"Errore durante la verifica email per user {user.id} con token {token}: {e}")
+            logger.error(
+                f"Errore durante la verifica email per user {user.id} con token {token}: {e}"
+            )
             db.rollback()
             return None
     return None
 
+
 def set_password_reset_token(db: Session, user: User, token: str) -> bool:
     try:
         user.reset_token = token
-        user.reset_token_expiry = datetime.now(timezone.utc) + timedelta(minutes=settings.password_reset_token_expire_minutes)
+        user.reset_token_expiry = datetime.now(UTC) + timedelta(
+            minutes=settings.password_reset_token_expire_minutes
+        )
         db.commit()
         return True
     except Exception as e:
@@ -68,12 +84,18 @@ def set_password_reset_token(db: Session, user: User, token: str) -> bool:
         db.rollback()
         return False
 
+
 def get_user_by_email_and_reset_token(db: Session, email: str, token: str) -> User | None:
-    return db.query(User).filter(
-        User.email == email,
-        User.reset_token == token,
-        User.reset_token_expiry > datetime.now(timezone.utc)
-    ).first()
+    return (
+        db.query(User)
+        .filter(
+            User.email == email,
+            User.reset_token == token,
+            User.reset_token_expiry > datetime.now(UTC),
+        )
+        .first()
+    )
+
 
 def reset_user_password(db: Session, user: User, new_password: str) -> bool:
     try:
@@ -87,17 +109,21 @@ def reset_user_password(db: Session, user: User, new_password: str) -> bool:
         db.rollback()
         return False
 
+
 def add_book(db: Session, book: Book):
     db.add(book)
     db.commit()
+
 
 def delete_book(db: Session, book: Book):
     db.delete(book)
     db.commit()
 
+
 def logout_current(db: Session, token: str):
     db.query(UserSession).filter(UserSession.token == token).delete()
     db.commit()
+
 
 def logout_all(db: Session, user_id: int):
     db.query(UserSession).filter(UserSession.user_id == user_id).delete()

@@ -1,16 +1,17 @@
-import os
+from contextlib import asynccontextmanager
+
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
-from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from sqlalchemy import text
 
 from core.config import settings
-from db.database import engine, Base, SessionLocal
-from utils.keepalive import keepalive_job, keepalive_db_job
+from db.database import Base, engine
+from utils.keepalive import keepalive_db_job, keepalive_job
 from utils.logger import logger
 
 scheduler = AsyncIOScheduler()
+
 
 def try_acquire_lock(lock_id: int = 12345) -> bool:
     with engine.begin() as conn:
@@ -18,9 +19,11 @@ def try_acquire_lock(lock_id: int = 12345) -> bool:
         acquired = result.scalar()
     return acquired
 
+
 def release_lock(lock_id: int = 12345):
     with engine.begin() as conn:
         conn.execute(text("SELECT pg_advisory_unlock(:id)"), {"id": lock_id})
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -29,14 +32,14 @@ async def lifespan(app: FastAPI):
     lock_acquired = try_acquire_lock()
     if lock_acquired:
         logger.info("[KEEPALIVE] Lock acquired, starting scheduler...")
-        
+
         # HTTP keepalive
         if settings.keepalive_url:
             scheduler.add_job(
                 keepalive_job,
                 trigger=CronTrigger.from_crontab(settings.keepalive_cron),
                 id="keepalive_http",
-                replace_existing=True
+                replace_existing=True,
             )
             logger.info(f"[KEEPALIVE] HTTP job started with cron: {settings.keepalive_cron}")
 
@@ -45,7 +48,7 @@ async def lifespan(app: FastAPI):
             keepalive_db_job,
             trigger=CronTrigger.from_crontab(settings.keepalive_db_cron),
             id="keepalive_db",
-            replace_existing=True
+            replace_existing=True,
         )
         logger.info(f"[KEEPALIVE] DB job started with cron: {settings.keepalive_db_cron}")
 

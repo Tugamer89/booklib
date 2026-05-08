@@ -1,8 +1,8 @@
-import { formatISBN } from '../utils/formatters.js';
+import { formatISBN } from "../utils/formatters.js";
 
 export default {
-    props: ['book', 'csrfToken'],
-    emits: ['edit-book', 'show-details'],
+    props: ["book", "csrfToken"],
+    emits: ["edit-book", "show-details"],
     setup() {
         return { formatISBN };
     },
@@ -37,10 +37,12 @@ export default {
     `,
     methods: {
         confirmDelete(event) {
-            const userConfirmed = globalThis.confirm(`Sei sicuro di voler eliminare "${this.book.title}"?`);
+            const userConfirmed = globalThis.confirm(
+                `Sei sicuro di voler eliminare "${this.book.title}"?`
+            );
             if (!userConfirmed) {
                 event.preventDefault();
             }
-        }
-    }
+        },
+    },
 };

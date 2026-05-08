@@ -1,71 +1,142 @@
-{% extends "_base.html" %}
-
-{% block title %}Accedi o Registrati - Libreria di Casa{% endblock %}
-{% block description %}Accedi o registrati a BookLib per iniziare subito a catalogare la tua libreria personale.{% endblock %}
-
-{% block content %}
+{% extends "_base.html" %} {% block title %}Accedi o Registrati - Libreria di Casa{% endblock %} {%
+block description %}Accedi o registrati a BookLib per iniziare subito a catalogare la tua libreria
+personale.{% endblock %} {% block content %}
 <div class="w-full max-w-md p-8 space-y-6 bg-white dark:bg-slate-800 shadow-xl rounded-2xl">
     <h1 class="text-3xl font-bold text-center text-slate-800 dark:text-slate-100">📚 BookLib</h1>
 
-    <div id="error-container" class="{% if not error %}hidden{% endif %} bg-red-100 dark:bg-red-900/50 border border-red-400 dark:border-red-500/50 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg text-sm" role="alert">
+    <div
+        id="error-container"
+        class="{% if not error %}hidden{% endif %} bg-red-100 dark:bg-red-900/50 border border-red-400 dark:border-red-500/50 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg text-sm"
+        role="alert"
+    >
         <span id="error-message">{{ error }}</span>
     </div>
-    <div id="msg-container" class="{% if not msg %}hidden{% endif %} bg-green-100 dark:bg-green-900/50 border border-green-400 dark:border-green-500/50 text-green-700 dark:text-green-300 px-4 py-3 rounded-lg text-sm" role="alert">
+    <div
+        id="msg-container"
+        class="{% if not msg %}hidden{% endif %} bg-green-100 dark:bg-green-900/50 border border-green-400 dark:border-green-500/50 text-green-700 dark:text-green-300 px-4 py-3 rounded-lg text-sm"
+        role="alert"
+    >
         <span id="msg-message">{{ msg }}</span>
     </div>
 
-
     <div class="flex border-b border-slate-200 dark:border-slate-700">
-        <button id="loginTab" class="flex-1 py-2 text-center font-semibold border-b-2 transition-colors duration-300">Accedi</button>
-        <button id="registerTab" class="flex-1 py-2 text-center font-semibold border-b-2 transition-colors duration-300">Registrati</button>
+        <button
+            id="loginTab"
+            class="flex-1 py-2 text-center font-semibold border-b-2 transition-colors duration-300"
+        >
+            Accedi
+        </button>
+        <button
+            id="registerTab"
+            class="flex-1 py-2 text-center font-semibold border-b-2 transition-colors duration-300"
+        >
+            Registrati
+        </button>
     </div>
 
     <form action="/auth" method="post" class="relative overflow-hidden">
-        <input type="hidden" name="auth_action" id="authAction" value="login">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="auth_action" id="authAction" value="login" />
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
 
         <div id="login-form" class="form-container space-y-4 pt-4">
             <div>
                 <label for="login-username" class="sr-only">Username o Email</label>
-                <input id="login-username" name="username" type="text" required placeholder="Username o Email" class="input-style">
+                <input
+                    id="login-username"
+                    name="username"
+                    type="text"
+                    required
+                    placeholder="Username o Email"
+                    class="input-style"
+                />
             </div>
             <div class="password-container">
                 <label for="login-password" class="sr-only">Password</label>
-                <input id="login-password" name="password" type="password" required placeholder="Password" class="input-style pr-10">
+                <input
+                    id="login-password"
+                    name="password"
+                    type="password"
+                    required
+                    placeholder="Password"
+                    class="input-style pr-10"
+                />
                 <span class="password-toggle-icon" data-target="login-password">
-                    <svg class="w-5 h-5 eye-closed" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L6.228 6.228" />
+                    <svg
+                        class="w-5 h-5 eye-closed"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L6.228 6.228"
+                        />
                     </svg>
-                    <svg class="w-5 h-5 eye-open hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    <svg
+                        class="w-5 h-5 eye-open hidden"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                        />
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                        />
                     </svg>
                 </span>
             </div>
             <div class="flex items-center justify-between pt-2">
                 <label for="remember-me" class="flex items-center cursor-pointer group">
-                    <input id="remember-me" name="remember_me" type="checkbox" value="true" class="sr-only peer">
-                    
-                    <span class="flex h-4 w-4 shrink-0 items-center justify-center rounded-md 
-                                 bg-slate-100 dark:bg-slate-700 
-                                 border border-slate-300 dark:border-slate-600 
-                                 transition-colors
-                                 group-hover:border-slate-400 dark:group-hover:border-slate-500
-                                 peer-checked:border-indigo-600 peer-checked:bg-indigo-600
-                                 peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-500 peer-focus-visible:ring-offset-2 dark:peer-focus-visible:ring-offset-slate-800">
-                        
-                        <svg class="h-3 w-3 hidden text-white peer-checked:block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" aria-hidden="true">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    <input
+                        id="remember-me"
+                        name="remember_me"
+                        type="checkbox"
+                        value="true"
+                        class="sr-only peer"
+                    />
+
+                    <span
+                        class="flex h-4 w-4 shrink-0 items-center justify-center rounded-md bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 transition-colors group-hover:border-slate-400 dark:group-hover:border-slate-500 peer-checked:border-indigo-600 peer-checked:bg-indigo-600 peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-500 peer-focus-visible:ring-offset-2 dark:peer-focus-visible:ring-offset-slate-800"
+                    >
+                        <svg
+                            class="h-3 w-3 hidden text-white peer-checked:block"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="3"
+                            stroke="currentColor"
+                            aria-hidden="true"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M4.5 12.75l6 6 9-13.5"
+                            />
                         </svg>
-                        </span>
+                    </span>
 
                     <span class="ml-2 block text-sm text-slate-900 dark:text-slate-300 select-none">
                         Ricordami
                     </span>
                 </label>
-                
+
                 <div class="text-sm">
-                    <a href="/forgot-password" class="font-medium text-indigo-600 hover:underline dark:text-indigo-400">Password dimenticata?</a>
+                    <a
+                        href="/forgot-password"
+                        class="font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+                        >Password dimenticata?</a
+                    >
                 </div>
             </div>
         </div>
@@ -73,26 +144,86 @@
         <div id="register-form" class="form-container form-inactive space-y-4 pt-4">
             <div>
                 <label for="register-username" class="sr-only">Username</label>
-                <input id="register-username" name="username" type="text" required placeholder="Scegli un Username" class="input-style" disabled>
+                <input
+                    id="register-username"
+                    name="username"
+                    type="text"
+                    required
+                    placeholder="Scegli un Username"
+                    class="input-style"
+                    disabled
+                />
             </div>
             <div>
                 <label for="register-email" class="sr-only">Email</label>
-                <input id="register-email" name="email" type="email" required placeholder="La tua Email" class="input-style" disabled>
+                <input
+                    id="register-email"
+                    name="email"
+                    type="email"
+                    required
+                    placeholder="La tua Email"
+                    class="input-style"
+                    disabled
+                />
             </div>
             <div class="password-container">
                 <label for="register-password" class="sr-only">Password</label>
-                <input id="register-password" name="password" type="password" required minlength="8" placeholder="Scegli una Password (min. 8)" class="input-style pr-10" disabled>
+                <input
+                    id="register-password"
+                    name="password"
+                    type="password"
+                    required
+                    minlength="8"
+                    placeholder="Scegli una Password (min. 8)"
+                    class="input-style pr-10"
+                    disabled
+                />
                 <span class="password-toggle-icon" data-target="register-password">
-                    <svg class="w-5 h-5 eye-closed" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L6.228 6.228" /></svg>
-                    <svg class="w-5 h-5 eye-open hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                    <svg
+                        class="w-5 h-5 eye-closed"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L6.228 6.228"
+                        />
+                    </svg>
+                    <svg
+                        class="w-5 h-5 eye-open hidden"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                        />
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                        />
+                    </svg>
                 </span>
             </div>
-             <div class="flex items-center justify-between pt-2">
+            <div class="flex items-center justify-between pt-2">
                 <div class="flex items-center">
-                    <input type="checkbox" id="remember_me" name="remember_me" class="h-4 w-4 opacity-0" disabled>
-                    <label for="remember_me" class="ml-2 block text-sm opacity-0">
-                        &nbsp;
-                    </label>
+                    <input
+                        type="checkbox"
+                        id="remember_me"
+                        name="remember_me"
+                        class="h-4 w-4 opacity-0"
+                        disabled
+                    />
+                    <label for="remember_me" class="ml-2 block text-sm opacity-0"> &nbsp; </label>
                 </div>
                 <div class="text-sm">
                     <a href="#" class="font-medium opacity-0">&nbsp;</a>
@@ -100,72 +231,78 @@
             </div>
         </div>
 
-        <button id="submitButton" type="submit" class="w-full mt-6 py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-slate-800 transition-colors duration-300">
+        <button
+            id="submitButton"
+            type="submit"
+            class="w-full mt-6 py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-slate-800 transition-colors duration-300"
+        >
             Accedi
         </button>
     </form>
 </div>
-{% endblock %}
-
-{% block scripts %}
-{% include "_password_toggle.js.html" %}
+{% endblock %} {% block scripts %} {% include "_password_toggle.js.html" %}
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const loginTab = document.getElementById('loginTab');
-        const registerTab = document.getElementById('registerTab');
-        const authAction = document.getElementById('authAction');
-        const submitButton = document.getElementById('submitButton');
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        const loginInputs = loginForm.querySelectorAll('input');
-        const registerInputs = registerForm.querySelectorAll('input');
+    document.addEventListener("DOMContentLoaded", () => {
+        const loginTab = document.getElementById("loginTab");
+        const registerTab = document.getElementById("registerTab");
+        const authAction = document.getElementById("authAction");
+        const submitButton = document.getElementById("submitButton");
+        const loginForm = document.getElementById("login-form");
+        const registerForm = document.getElementById("register-form");
+        const loginInputs = loginForm.querySelectorAll("input");
+        const registerInputs = registerForm.querySelectorAll("input");
 
         const setActiveTab = (mode) => {
-            const isLogin = mode === 'login';
+            const isLogin = mode === "login";
 
             authAction.value = mode;
-            submitButton.textContent = isLogin ? 'Accedi' : 'Registrati';
+            submitButton.textContent = isLogin ? "Accedi" : "Registrati";
 
-            loginTab.classList.toggle('border-indigo-500', isLogin);
-            loginTab.classList.toggle('text-indigo-600', isLogin);
-            loginTab.classList.toggle('dark:text-indigo-400', isLogin);
-            loginTab.classList.toggle('text-slate-500', !isLogin);
-            loginTab.classList.toggle('dark:text-slate-400', !isLogin);
-            loginTab.classList.toggle('border-transparent', !isLogin);
+            loginTab.classList.toggle("border-indigo-500", isLogin);
+            loginTab.classList.toggle("text-indigo-600", isLogin);
+            loginTab.classList.toggle("dark:text-indigo-400", isLogin);
+            loginTab.classList.toggle("text-slate-500", !isLogin);
+            loginTab.classList.toggle("dark:text-slate-400", !isLogin);
+            loginTab.classList.toggle("border-transparent", !isLogin);
 
-            registerTab.classList.toggle('border-indigo-500', !isLogin);
-            registerTab.classList.toggle('text-indigo-600', !isLogin);
-            registerTab.classList.toggle('dark:text-indigo-400', !isLogin);
-            registerTab.classList.toggle('text-slate-500', isLogin);
-            registerTab.classList.toggle('dark:text-slate-400', isLogin);
-            registerTab.classList.toggle('border-transparent', isLogin);
+            registerTab.classList.toggle("border-indigo-500", !isLogin);
+            registerTab.classList.toggle("text-indigo-600", !isLogin);
+            registerTab.classList.toggle("dark:text-indigo-400", !isLogin);
+            registerTab.classList.toggle("text-slate-500", isLogin);
+            registerTab.classList.toggle("dark:text-slate-400", isLogin);
+            registerTab.classList.toggle("border-transparent", isLogin);
 
             if (isLogin) {
-                registerForm.classList.add('form-inactive');
-                loginForm.classList.remove('form-inactive');
+                registerForm.classList.add("form-inactive");
+                loginForm.classList.remove("form-inactive");
             } else {
-                loginForm.classList.add('form-inactive');
-                registerForm.classList.remove('form-inactive');
+                loginForm.classList.add("form-inactive");
+                registerForm.classList.remove("form-inactive");
             }
 
             for (const input of loginInputs) input.disabled = !isLogin;
             for (const input of registerInputs) input.disabled = isLogin;
         };
 
-        loginTab.addEventListener('click', () => setActiveTab('login'));
-        registerTab.addEventListener('click', () => setActiveTab('register'));
+        loginTab.addEventListener("click", () => setActiveTab("login"));
+        registerTab.addEventListener("click", () => setActiveTab("register"));
 
-        const errorMsg = document.getElementById('error-message')?.textContent || '';
-        const successMsg = document.getElementById('msg-message')?.textContent || '';
-        
-        if (successMsg.includes('Registrazione completata') || successMsg.includes('Account verificato')) {
-            setActiveTab('login');
-        }
-        else if (errorMsg.includes('Username') || errorMsg.includes('Email') || (errorMsg && !successMsg)) {
-            setActiveTab('register');
-        }
-        else {
-            setActiveTab('login');
+        const errorMsg = document.getElementById("error-message")?.textContent || "";
+        const successMsg = document.getElementById("msg-message")?.textContent || "";
+
+        if (
+            successMsg.includes("Registrazione completata") ||
+            successMsg.includes("Account verificato")
+        ) {
+            setActiveTab("login");
+        } else if (
+            errorMsg.includes("Username") ||
+            errorMsg.includes("Email") ||
+            (errorMsg && !successMsg)
+        ) {
+            setActiveTab("register");
+        } else {
+            setActiveTab("login");
         }
     });
 </script>

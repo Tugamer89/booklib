@@ -1,8 +1,8 @@
-import { useTheme } from '../utils/theme.js';
+import { useTheme } from "../utils/theme.js";
 
 export default {
-    props: ['isAdmin', 'username'],
-    emits: ['toggle-theme'],
+    props: ["isAdmin", "username"],
+    emits: ["toggle-theme"],
     setup(props, { emit }) {
         const { toggleTheme, themeIcon } = useTheme();
         return { toggleTheme, themeIcon };
@@ -28,5 +28,5 @@ export default {
           </div>
         </div>
       </nav>
-    `
+    `,
 };

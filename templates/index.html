@@ -1,54 +1,73 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it" class="">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="BookLib - Gestisci la tua libreria di casa. Aggiungi, cataloga, filtra e ritrova i tuoi libri in modo semplice e veloce.">
-    <title>Libreria di Casa</title>
-    
-    <link rel="manifest" href="/manifest.json">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="BookLib - Gestisci la tua libreria di casa. Aggiungi, cataloga, filtra e ritrova i tuoi libri in modo semplice e veloce."
+        />
+        <title>Libreria di Casa</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script>
-        tailwind.config = {
-            darkMode: 'class'
-        }
-    </script>
-    
-    <style type="text/tailwindcss">
-        @layer components {
-          .input-style {
-            @apply w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500;
-          }
-        }
-    </style>
+        <link rel="manifest" href="/manifest.json" />
 
-    <script>
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && globalThis.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark')
-        } else {
-            document.documentElement.classList.remove('dark')
-        }
-    </script>
-    
-    <script type="importmap">
-        { 
-            "imports": {
-                "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js"
-            } 
-        }
-    </script>
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" integrity="sha512-r6rDA7W6ZeQhvl8S7yRVQUKVHdexq+GAlNkNNqVC7YyIV+NwqCTJe2hDWCiffTyRNOeGEzRRJ9ifvRm/HCzGYg==" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="/static/css/main.css">
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
-</head>
-<body class="bg-gradient-to-br from-slate-50 to-slate-200 dark:from-slate-800 dark:to-slate-900 text-slate-800 dark:text-slate-200 transition-colors duration-300">
-    <div id="app">
-        <div class="flex items-center justify-center min-h-screen"><p class="text-lg text-slate-500">Caricamento della libreria...</p></div>
-    </div>
-    <script id="user-data" type="application/json">{{ user | tojson }}</script>
-    <script id="csrf-token" type="application/json">{{ csrf_token | tojson }}</script>
-    <script type="module" src="/static/js/main.js"></script>
-</body>
+        <script src="https://cdn.tailwindcss.com"></script>
+
+        <script>
+            tailwind.config = {
+                darkMode: "class",
+            };
+        </script>
+
+        <style type="text/tailwindcss">
+            @layer components {
+                .input-style {
+                    @apply w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500;
+                }
+            }
+        </style>
+
+        <script>
+            if (
+                localStorage.theme === "dark" ||
+                (!("theme" in localStorage) &&
+                    globalThis.matchMedia("(prefers-color-scheme: dark)").matches)
+            ) {
+                document.documentElement.classList.add("dark");
+            } else {
+                document.documentElement.classList.remove("dark");
+            }
+        </script>
+
+        <script type="importmap">
+            {
+                "imports": {
+                    "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js"
+                }
+            }
+        </script>
+        <script
+            src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"
+            integrity="sha512-r6rDA7W6ZeQhvl8S7yRVQUKVHdexq+GAlNkNNqVC7YyIV+NwqCTJe2hDWCiffTyRNOeGEzRRJ9ifvRm/HCzGYg=="
+            crossorigin="anonymous"
+        ></script>
+        <link rel="stylesheet" href="/static/css/main.css" />
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    </head>
+    <body
+        class="bg-gradient-to-br from-slate-50 to-slate-200 dark:from-slate-800 dark:to-slate-900 text-slate-800 dark:text-slate-200 transition-colors duration-300"
+    >
+        <div id="app">
+            <div class="flex items-center justify-center min-h-screen">
+                <p class="text-lg text-slate-500">Caricamento della libreria...</p>
+            </div>
+        </div>
+        <script id="user-data" type="application/json">
+            {{ user | tojson }}
+        </script>
+        <script id="csrf-token" type="application/json">
+            {{ csrf_token | tojson }}
+        </script>
+        <script type="module" src="/static/js/main.js"></script>
+    </body>
 </html>

@@ -1,10 +1,10 @@
-import { formatISBN } from '../utils/formatters.js';
+import { formatISBN } from "../utils/formatters.js";
 
 export default {
-    props: ['book', 'csrfToken'],
-    emits: ['close'],
+    props: ["book", "csrfToken"],
+    emits: ["close"],
     setup(props, { emit }) {
-        const close = () => emit('close');
+        const close = () => emit("close");
         const locationPattern = "[A-Z]+[0-9]+";
         return { close, formatISBN, locationPattern };
     },
@@ -23,11 +23,11 @@ export default {
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
                             <div>
-                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Titolo</label>
+                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Titolo *</label>
                                 <input type="text" name="title" :value="book.title" required class="mt-1 input-style">
                             </div>
                              <div>
-                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Autore</label>
+                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Autore *</label>
                                 <input type="text" name="author" :value="book.author" required class="mt-1 input-style">
                             </div>
                              <div>
@@ -39,8 +39,8 @@ export default {
                                 <input type="text" name="publisher" :value="book.publisher" class="mt-1 input-style">
                             </div>
                              <div>
-                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Posizione</label>
-                                <input type="text" name="location" :value="book.location" class="mt-1 input-style" :pattern="locationPattern" title="Es: A5, LIBRERIA10" oninput="this.value = this.value.toUpperCase()">
+                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Posizione *</label>
+                                <input type="text" name="location" :value="book.location" required class="mt-1 input-style" :pattern="locationPattern" title="Es: A5, LIBRERIA10" oninput="this.value = this.value.toUpperCase()">
                             </div>
                              <div>
                                 <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Lingua</label>
@@ -68,5 +68,5 @@ export default {
                 </div>
             </div>
         </transition>
-    `
+    `,
 };
