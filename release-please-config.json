@@ -4,9 +4,8 @@
             "release-type": "python",
             "extra-files": [
                 {
-                    "type": "python",
-                    "path": "main.py",
-                    "version-filter": "version=\"([\\d\\.]+)\""
+                    "type": "generic",
+                    "path": "main.py"
                 },
                 {
                     "type": "toml",
