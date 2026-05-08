@@ -53,7 +53,10 @@ export default {
                 const response = await fetch(
                     `https://www.googleapis.com/books/v1/volumes?q=${finalQuery}&maxResults=20&startIndex=${startIndex.value}`
                 );
-                if (!response.ok) throw new Error("Errore nella ricerca.");
+                if (!response.ok) {
+                    const errorMessage = await extractErrorMessage(response);
+                    throw new Error(errorMessage);
+                }
                 const data = await response.json();
                 totalItems.value = data.totalItems || 0;
                 const newItems = data.items || [];
@@ -153,3 +156,11 @@ export default {
         </transition>
     `,
 };
+
+async function extractErrorMessage(response) {
+    const data = await response.json().catch(() => null);
+
+    return data?.error?.message
+        ? `Errore nella ricerca: ${data.error.message}`
+        : "Errore nella ricerca.";
+}
