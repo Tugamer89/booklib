@@ -1,20 +1,14 @@
-.PHONY: reqs dev-reqs format lint hook-update install
-
-reqs:
-	pip-compile --strip-extras requirements.in
-
-dev-reqs: reqs
-	pip-compile --strip-extras requirements-dev.in
+.PHONY: install format hook-update run
 
 install:
-	pip-sync requirements.txt requirements-dev.txt
+	uv sync
 
 format:
 	npx prettier --write "**/*.{js,css,html,json,md,yml,yaml}"
-	ruff format .
+	uv run ruff format .
 
 hook-update:
-	pre-commit autoupdate
+	uv run pre-commit autoupdate
 
 run:
-	uvicorn main:app --reload --port 8000
+	uv run uvicorn main:app --reload --port 8000

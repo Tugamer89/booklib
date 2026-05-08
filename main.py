@@ -60,4 +60,5 @@ if settings.DEBUG:
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("main:app", host="0.0.0.0", port=port, workers=4)
+    host = os.environ.get("HOST", "localhost")
+    uvicorn.run("main:app", host=host, port=port, workers=4)

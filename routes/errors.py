@@ -31,9 +31,9 @@ def http_exception_redirect(request: Request, exc: HTTPException | StarletteHTTP
         )
 
     return templates.TemplateResponse(
-        ERROR_PAGE,
-        {
-            "request": request,
+        request=request,
+        name=ERROR_PAGE,
+        context={
             "status_code": exc.status_code,
             "title": "Oops! Qualcosa è andato storto",
             "message": exc.detail,
@@ -51,9 +51,9 @@ def validation_exception_handler(request: Request, exc: RequestValidationError):
 
     referer = request.headers.get("referer")
     return templates.TemplateResponse(
-        ERROR_PAGE,
-        {
-            "request": request,
+        request=request,
+        name=ERROR_PAGE,
+        context={
             "status_code": status.HTTP_422_UNPROCESSABLE_ENTITY,
             "title": "Errore di validazione",
             "message": "I dati forniti non sono validi.",
@@ -75,9 +75,9 @@ def operational_error_handler(request: Request, exc: OperationalError):
     )
 
     return templates.TemplateResponse(
-        ERROR_PAGE,
-        {
-            "request": request,
+        request=request,
+        name=ERROR_PAGE,
+        context={
             "status_code": status.HTTP_503_SERVICE_UNAVAILABLE,
             "title": "Servizio Temporaneamente Non Disponibile",
             "message": message,
@@ -101,9 +101,9 @@ def csrf_protect_exception_handler(request: Request, exc: CsrfProtectError):
     referer = request.headers.get("referer")
 
     return templates.TemplateResponse(
-        ERROR_PAGE,
-        {
-            "request": request,
+        request=request,
+        name=ERROR_PAGE,
+        context={
             "status_code": status.HTTP_403_FORBIDDEN,
             "title": "Azione non valida",
             "message": error_message,
@@ -123,9 +123,9 @@ def generic_exception_handler(request: Request, exc: Exception):
     message = "Si è verificato un errore imprevisto. Riprova più tardi."
 
     return templates.TemplateResponse(
-        ERROR_PAGE,
-        {
-            "request": request,
+        request=request,
+        name=ERROR_PAGE,
+        context={
             "status_code": status.HTTP_500_INTERNAL_SERVER_ERROR,
             "title": "Errore interno",
             "message": message,

@@ -1,5 +1,6 @@
 import os
 import re
+from typing import Annotated
 
 from fastapi import (
     APIRouter,
@@ -40,14 +41,14 @@ router = APIRouter()
 @router.head("/", response_class=HTMLResponse)
 def read_books_page(
     request: Request,
-    csrf_protect: CsrfProtect = Depends(),
-    user: User = Depends(get_authenticated_user),
+    csrf_protect: Annotated[CsrfProtect, Depends()],
+    user: Annotated[User, Depends(get_authenticated_user)],
 ):
     csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
     response = templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request,
+        request=request,
+        name="index.html",
+        context={
             "user": {"username": user.username, "is_admin": user.username in settings.admin_users},
             "csrf_token": csrf_token,
         },
@@ -58,17 +59,17 @@ def read_books_page(
 
 @router.get("/books-data")
 def books_data(
-    user: User = Depends(get_authenticated_user),
-    db: Session = Depends(get_db),
-    title: str = Query(None),
-    author: str = Query(None),
-    isbn: str = Query(None),
-    publisher: str = Query(None),
-    location: str = Query(None),
-    sort_by: str = Query("id"),
-    sort_order: str = Query("asc"),
-    limit: int = Query(20, ge=1, le=100),
-    offset: int = Query(0, ge=0),
+    user: Annotated[User, Depends(get_authenticated_user)],
+    db: Annotated[Session, Depends(get_db)],
+    title: Annotated[str | None, Query()] = None,
+    author: Annotated[str | None, Query()] = None,
+    isbn: Annotated[str | None, Query()] = None,
+    publisher: Annotated[str | None, Query()] = None,
+    location: Annotated[str | None, Query()] = None,
+    sort_by: Annotated[str, Query()] = "id",
+    sort_order: Annotated[str, Query()] = "asc",
+    limit: Annotated[int, Query(ge=1, le=100)] = 20,
+    offset: Annotated[int, Query(ge=0)] = 0,
 ):
     query = db.query(Book).filter(Book.user_id == user.id)
 
@@ -137,16 +138,16 @@ def books_data(
 class AddBookForm:
     def __init__(
         self,
-        title: str = Form(...),
-        author: str = Form(...),
-        isbn: str = Form(...),
-        publisher: str = Form(...),
-        location: str = Form(...),
-        description: str = Form(None),
-        language: str = Form(None),
-        personal_comment: str = Form(None),
-        cover: UploadFile = File(None),
-        cover_url: str = Form(None),
+        title: Annotated[str, Form(...)],
+        author: Annotated[str, Form(...)],
+        location: Annotated[str, Form(...)],
+        isbn: Annotated[str, Form()] = "",
+        publisher: Annotated[str, Form()] = "",
+        description: Annotated[str | None, Form()] = None,
+        language: Annotated[str, Form()] = "",
+        personal_comment: Annotated[str | None, Form()] = None,
+        cover: Annotated[UploadFile | None, File()] = None,
+        cover_url: Annotated[str | None, Form()] = None,
     ):
         self.title = title
         self.author = author
@@ -163,10 +164,10 @@ class AddBookForm:
 @router.post("/add", response_class=HTMLResponse)
 async def add_book(
     request: Request,
-    csrf_protect: CsrfProtect = Depends(),
-    user: User = Depends(get_authenticated_user),
-    db: Session = Depends(get_db),
-    form_data: AddBookForm = Depends(),
+    csrf_protect: Annotated[CsrfProtect, Depends()],
+    user: Annotated[User, Depends(get_authenticated_user)],
+    db: Annotated[Session, Depends(get_db)],
+    form_data: Annotated[AddBookForm, Depends()],
 ):
     await csrf_protect.validate_csrf(request)
 
@@ -188,11 +189,9 @@ async def add_book(
         publisher=form_data.publisher.strip(),
         location=location_cleaned,
         cover_path=cover_path,
-        description=form_data.description.strip() if form_data.description is not None else None,
+        description=form_data.description.strip() if form_data.description else None,
         language=language_cleaned,
-        personal_comment=form_data.personal_comment.strip()
-        if form_data.personal_comment is not None
-        else None,
+        personal_comment=form_data.personal_comment.strip() if form_data.personal_comment else None,
         owner=user,
     )
 
@@ -244,16 +243,16 @@ def _delete_old_cover(cover_path: str):
 class EditBookForm:
     def __init__(
         self,
-        book_id: int = Form(...),
-        title: str = Form(...),
-        author: str = Form(...),
-        isbn: str = Form(...),
-        publisher: str = Form(...),
-        location: str = Form(...),
-        description: str = Form(...),
-        language: str = Form(...),
-        personal_comment: str = Form(...),
-        cover: UploadFile = File(None),
+        book_id: Annotated[int, Form(...)],
+        title: Annotated[str, Form(...)],
+        author: Annotated[str, Form(...)],
+        location: Annotated[str, Form(...)],
+        isbn: Annotated[str, Form()] = "",
+        publisher: Annotated[str, Form()] = "",
+        description: Annotated[str, Form()] = "",
+        language: Annotated[str, Form()] = "",
+        personal_comment: Annotated[str, Form()] = "",
+        cover: Annotated[UploadFile | None, File()] = None,
     ):
         self.book_id = book_id
         self.title = title
@@ -270,10 +269,10 @@ class EditBookForm:
 @router.post("/edit", response_class=HTMLResponse)
 async def edit_book(
     request: Request,
-    csrf_protect: CsrfProtect = Depends(),
-    user: User = Depends(get_authenticated_user),
-    db: Session = Depends(get_db),
-    form_data: EditBookForm = Depends(),
+    csrf_protect: Annotated[CsrfProtect, Depends()],
+    user: Annotated[User, Depends(get_authenticated_user)],
+    db: Annotated[Session, Depends(get_db)],
+    form_data: Annotated[EditBookForm, Depends()],
 ):
     await csrf_protect.validate_csrf(request)
 
@@ -310,10 +309,10 @@ async def edit_book(
 @router.post("/delete", response_class=HTMLResponse)
 async def delete_book(
     request: Request,
-    csrf_protect: CsrfProtect = Depends(),
-    user: User = Depends(get_authenticated_user),
-    db: Session = Depends(get_db),
-    book_id: int = Form(...),
+    csrf_protect: Annotated[CsrfProtect, Depends()],
+    user: Annotated[User, Depends(get_authenticated_user)],
+    db: Annotated[Session, Depends(get_db)],
+    book_id: Annotated[int, Form(...)],
 ):
     await csrf_protect.validate_csrf(request)
 

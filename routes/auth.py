@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi_csrf_protect import CsrfProtect
@@ -42,7 +44,9 @@ router = APIRouter()
 @router.get("/auth", response_class=HTMLResponse)
 @router.head("/auth", response_class=HTMLResponse)
 def auth_page(
-    request: Request, db: Session = Depends(get_db), csrf_protect: CsrfProtect = Depends()
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    csrf_protect: Annotated[CsrfProtect, Depends()],
 ):
     try:
         get_authenticated_user(request, db)
@@ -50,7 +54,9 @@ def auth_page(
     except HTTPException:
         csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
         response = templates.TemplateResponse(
-            AUTH_PAGE, {"request": request, "msg": None, "error": None, "csrf_token": csrf_token}
+            request=request,
+            name=AUTH_PAGE,
+            context={"msg": None, "error": None, "csrf_token": csrf_token},
         )
         csrf_protect.set_csrf_cookie(signed_token, response)
         return response
@@ -103,13 +109,13 @@ def _handle_register(
 @router.post("/auth")
 async def auth_auction_post(
     request: Request,
-    db: Session = Depends(get_db),
-    csrf_protect: CsrfProtect = Depends(),
-    auth_action: str = Form(...),
-    username: str = Form(...),
-    password: str = Form(...),
-    email: str = Form(None),
-    remember_me: bool = Form(False),
+    db: Annotated[Session, Depends(get_db)],
+    csrf_protect: Annotated[CsrfProtect, Depends()],
+    auth_action: Annotated[str, Form(...)],
+    username: Annotated[str, Form(...)],
+    password: Annotated[str, Form(...)],
+    email: Annotated[str | None, Form()] = None,
+    remember_me: Annotated[bool, Form()] = False,
 ):
     await csrf_protect.validate_csrf(request)
 
@@ -133,8 +139,9 @@ async def auth_auction_post(
         csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
         status_code = status.HTTP_400_BAD_REQUEST if error else status.HTTP_200_OK
         response = templates.TemplateResponse(
-            AUTH_PAGE,
-            {"request": request, "error": error, "msg": msg, "csrf_token": csrf_token},
+            request=request,
+            name=AUTH_PAGE,
+            context={"error": error, "msg": msg, "csrf_token": csrf_token},
             status_code=status_code,
         )
         csrf_protect.set_csrf_cookie(signed_token, response)
@@ -144,9 +151,9 @@ async def auth_auction_post(
         error = "Si è verificato un errore imprevisto."
         csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
         response = templates.TemplateResponse(
-            AUTH_PAGE,
-            {
-                "request": request,
+            request=request,
+            name=AUTH_PAGE,
+            context={
                 "error": error,
                 "csrf_token": csrf_token,
             },
@@ -160,9 +167,9 @@ async def auth_auction_post(
         error = "Impossibile creare la sessione. Riprova."
         csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
         response = templates.TemplateResponse(
-            AUTH_PAGE,
-            {
-                "request": request,
+            request=request,
+            name=AUTH_PAGE,
+            context={
                 "error": error,
                 "csrf_token": csrf_token,
             },
@@ -179,9 +186,9 @@ async def auth_auction_post(
 @router.get("/verify-email", response_class=HTMLResponse)
 async def verify_email_route(
     request: Request,
-    db: Session = Depends(get_db),
-    csrf_protect: CsrfProtect = Depends(),
-    token: str = Query(...),
+    db: Annotated[Session, Depends(get_db)],
+    csrf_protect: Annotated[CsrfProtect, Depends()],
+    token: Annotated[str, Query(...)],
 ):
     email = verify_verification_token(token)
     error = None
@@ -208,7 +215,9 @@ async def verify_email_route(
 
     csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
     response = templates.TemplateResponse(
-        AUTH_PAGE, {"request": request, "msg": msg, "error": error, "csrf_token": csrf_token}
+        request=request,
+        name=AUTH_PAGE,
+        context={"msg": msg, "error": error, "csrf_token": csrf_token},
     )
     csrf_protect.set_csrf_cookie(signed_token, response)
     return response
@@ -216,7 +225,9 @@ async def verify_email_route(
 
 @router.get("/forgot-password", response_class=HTMLResponse)
 def forgot_password_page(
-    request: Request, db: Session = Depends(get_db), csrf_protect: CsrfProtect = Depends()
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+    csrf_protect: Annotated[CsrfProtect, Depends()],
 ):
     try:
         get_authenticated_user(request, db)
@@ -224,8 +235,9 @@ def forgot_password_page(
     except HTTPException:
         csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
         response = templates.TemplateResponse(
-            FORGOT_PASSWORD_PAGE,
-            {"request": request, "msg": None, "error": None, "csrf_token": csrf_token},
+            request=request,
+            name=FORGOT_PASSWORD_PAGE,
+            context={"msg": None, "error": None, "csrf_token": csrf_token},
         )
         csrf_protect.set_csrf_cookie(signed_token, response)
         return response
@@ -234,9 +246,9 @@ def forgot_password_page(
 @router.post("/forgot-password")
 async def handle_forgot_password(
     request: Request,
-    db: Session = Depends(get_db),
-    csrf_protect: CsrfProtect = Depends(),
-    email: str = Form(...),
+    db: Annotated[Session, Depends(get_db)],
+    csrf_protect: Annotated[CsrfProtect, Depends()],
+    email: Annotated[str, Form(...)],
 ):
     await csrf_protect.validate_csrf(request)
 
@@ -255,7 +267,7 @@ async def handle_forgot_password(
 
     csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
     response = templates.TemplateResponse(
-        FORGOT_PASSWORD_PAGE, {"request": request, "msg": msg, "csrf_token": csrf_token}
+        request=request, name=FORGOT_PASSWORD_PAGE, context={"msg": msg, "csrf_token": csrf_token}
     )
     csrf_protect.set_csrf_cookie(signed_token, response)
     return response
@@ -264,9 +276,9 @@ async def handle_forgot_password(
 @router.get("/reset-password", response_class=HTMLResponse)
 def reset_password_page(
     request: Request,
-    db: Session = Depends(get_db),
-    csrf_protect: CsrfProtect = Depends(),
-    token: str = Query(...),
+    db: Annotated[Session, Depends(get_db)],
+    csrf_protect: Annotated[CsrfProtect, Depends()],
+    token: Annotated[str, Query(...)],
 ):
     email = verify_password_reset_token(token)
     error = "Link di reset non valido o scaduto. Richiedine uno nuovo."
@@ -274,7 +286,9 @@ def reset_password_page(
     if not email:
         csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
         response = templates.TemplateResponse(
-            FORGOT_PASSWORD_PAGE, {"request": request, "error": error, "csrf_token": csrf_token}
+            request=request,
+            name=FORGOT_PASSWORD_PAGE,
+            context={"error": error, "csrf_token": csrf_token},
         )
         csrf_protect.set_csrf_cookie(signed_token, response)
         return response
@@ -283,15 +297,18 @@ def reset_password_page(
     if not user:
         csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
         response = templates.TemplateResponse(
-            FORGOT_PASSWORD_PAGE, {"request": request, "error": error, "csrf_token": csrf_token}
+            request=request,
+            name=FORGOT_PASSWORD_PAGE,
+            context={"error": error, "csrf_token": csrf_token},
         )
         csrf_protect.set_csrf_cookie(signed_token, response)
         return response
 
     csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
     response = templates.TemplateResponse(
-        RESET_PASSWORD_PAGE,
-        {"request": request, "token": token, "error": None, "msg": None, "csrf_token": csrf_token},
+        request=request,
+        name=RESET_PASSWORD_PAGE,
+        context={"token": token, "error": None, "msg": None, "csrf_token": csrf_token},
     )
     csrf_protect.set_csrf_cookie(signed_token, response)
     return response
@@ -300,11 +317,11 @@ def reset_password_page(
 @router.post("/reset-password")
 async def handle_reset_password(
     request: Request,
-    db: Session = Depends(get_db),
-    csrf_protect: CsrfProtect = Depends(),
-    token: str = Form(...),
-    password: str = Form(...),
-    confirm_password: str = Form(...),
+    db: Annotated[Session, Depends(get_db)],
+    csrf_protect: Annotated[CsrfProtect, Depends()],
+    token: Annotated[str, Form(...)],
+    password: Annotated[str, Form(...)],
+    confirm_password: Annotated[str, Form(...)],
 ):
     await csrf_protect.validate_csrf(request)
 
@@ -320,9 +337,9 @@ async def handle_reset_password(
     if error:
         csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
         response = templates.TemplateResponse(
-            RESET_PASSWORD_PAGE,
-            {
-                "request": request,
+            request=request,
+            name=RESET_PASSWORD_PAGE,
+            context={
                 "token": token,
                 "error": error,
                 "msg": None,
@@ -338,7 +355,9 @@ async def handle_reset_password(
         error = "Link di reset non valido o scaduto. Richiedine uno nuovo."
         csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
         response = templates.TemplateResponse(
-            FORGOT_PASSWORD_PAGE, {"request": request, "error": error, "csrf_token": csrf_token}
+            request=request,
+            name=FORGOT_PASSWORD_PAGE,
+            context={"error": error, "csrf_token": csrf_token},
         )
         csrf_protect.set_csrf_cookie(signed_token, response)
         return response
@@ -349,7 +368,9 @@ async def handle_reset_password(
         error = "Link di reset non valido o scaduto (utente non trovato o token non corrispondente). Richiedine uno nuovo."
         csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
         response = templates.TemplateResponse(
-            FORGOT_PASSWORD_PAGE, {"request": request, "error": error, "csrf_token": csrf_token}
+            request=request,
+            name=FORGOT_PASSWORD_PAGE,
+            context={"error": error, "csrf_token": csrf_token},
         )
         csrf_protect.set_csrf_cookie(signed_token, response)
         return response
@@ -358,9 +379,9 @@ async def handle_reset_password(
         error = "Errore interno durante l'aggiornamento della password. Riprova."
         csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
         response = templates.TemplateResponse(
-            RESET_PASSWORD_PAGE,
-            {
-                "request": request,
+            request=request,
+            name=RESET_PASSWORD_PAGE,
+            context={
                 "token": token,
                 "error": error,
                 "msg": None,
@@ -377,7 +398,9 @@ async def handle_reset_password(
     msg = "Password aggiornata con successo. Ora puoi accedere."
     csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
     response = templates.TemplateResponse(
-        AUTH_PAGE, {"request": request, "msg": msg, "error": None, "csrf_token": csrf_token}
+        request=request,
+        name=AUTH_PAGE,
+        context={"msg": msg, "error": None, "csrf_token": csrf_token},
     )
     csrf_protect.set_csrf_cookie(signed_token, response)
     return response
@@ -386,9 +409,9 @@ async def handle_reset_password(
 @router.get("/logout")
 def logout(
     request: Request,
-    user: User = Depends(get_authenticated_user),
-    db: Session = Depends(get_db),
-    csrf_protect: CsrfProtect = Depends(),
+    user: Annotated[User, Depends(get_authenticated_user)],
+    db: Annotated[Session, Depends(get_db)],
+    csrf_protect: Annotated[CsrfProtect, Depends()],
 ):
     token = request.session.get("session_token")
     if token:

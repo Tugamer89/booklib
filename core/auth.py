@@ -41,7 +41,7 @@ def create_session(db: Session, user_id: int, remember_me: bool = False) -> str:
     return token
 
 
-def get_authenticated_user(request: Request, db: Session = Depends(get_db)):
+def get_authenticated_user(request: Request, db: Session = Depends(get_db)) -> User:
     user_id = request.session.get("user_id")
     session_token = request.session.get("session_token")
 
@@ -71,7 +71,7 @@ def get_authenticated_user(request: Request, db: Session = Depends(get_db)):
     return user
 
 
-def admin_required(user: User = Depends(get_authenticated_user)):
+def admin_required(user: User = Depends(get_authenticated_user)) -> User:
     if user.username not in settings.admin_users:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Accesso negato")
     return user

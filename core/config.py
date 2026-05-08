@@ -2,7 +2,8 @@ import os
 
 import cloudinary
 from dotenv import load_dotenv
-from passlib.context import CryptContext
+from pwdlib import PasswordHash
+from pwdlib.hashers.bcrypt import BcryptHasher
 from pydantic import Field
 from pydantic_settings import BaseSettings
 from pydantic_settings.sources import PydanticBaseSettingsSource
@@ -45,7 +46,7 @@ class Settings(BaseSettings):
     keepalive_db: str = os.getenv("KEEPALIVE_DB", "")
     keepalive_db_cron: str = os.getenv("KEEPALIVE_DB_CRON", "0 0 */5 * *")
 
-    pwd_context: CryptContext = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    password_hash: PasswordHash = PasswordHash((BcryptHasher(),))
 
     def __init__(self, **data):
         super().__init__(**data)

@@ -64,8 +64,8 @@ def verify_verification_token(token: str) -> str | None:
 
 
 def hash_password(password: str) -> str:
-    return settings.pwd_context.hash(password)
+    return settings.password_hash.hash(password)
 
 
 def verify_password(secret: str, password: str) -> bool:
-    return settings.pwd_context.verify(secret, password)
+    return settings.password_hash.verify(secret, password)

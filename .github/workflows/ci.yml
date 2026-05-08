@@ -18,6 +18,14 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Generate uv.lock
+        run: uv lock
+
       - name: Setup Python 3.13
         uses: actions/setup-python@v5
         with:
@@ -28,17 +36,15 @@ jobs:
         with:
           node-version: "20"
 
-      - name: pre-commit installation
-        run: |
-          python -m pip install pip==26
-          pip install pre-commit==4.5 --only-binary :all:
+      - name: Install dependencies from lockfile
+        run: uv sync --all-extras --dev
 
       - name: Linting and Formatting Execution
-        run: pre-commit run --all-files
+        run: uv run pre-commit run --all-files
 
-      - name: Push formatting changes
+      - name: Push formatting changes and lockfile changes
         if: always()
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "style: auto-format code"
+          commit_message: "chore: auto-format code and update lockfile"
           branch: ${{ github.head_ref }}

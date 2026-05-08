@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, status
 from fastapi_csrf_protect import CsrfProtect
 from sqlalchemy.orm import Session
@@ -17,18 +19,19 @@ router = APIRouter()
 @router.get("/admin/users")
 def admin_users_list(
     request: Request,
-    db: Session = Depends(get_db),
-    csrf_protect: CsrfProtect = Depends(),
-    admin: User = Depends(admin_required),
-    msg: str = Query(None),
-    error: str = Query(None),
+    db: Annotated[Session, Depends(get_db)],
+    csrf_protect: Annotated[CsrfProtect, Depends()],
+    admin: Annotated[User, Depends(admin_required)],
+    msg: Annotated[str | None, Query()] = None,
+    error: Annotated[str | None, Query()] = None,
 ):
     users = db.query(User).order_by(User.id).all()
 
     csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
     response = templates.TemplateResponse(
-        ADMIN_USERS_PAGE,
-        {"request": request, "users": users, "msg": msg, "error": error, "csrf_token": csrf_token},
+        request=request,
+        name=ADMIN_USERS_PAGE,
+        context={"users": users, "msg": msg, "error": error, "csrf_token": csrf_token},
     )
     csrf_protect.set_csrf_cookie(signed_token, response)
     return response
@@ -37,11 +40,11 @@ def admin_users_list(
 @router.post("/admin/users/reset-password")
 async def admin_reset_password(
     request: Request,
-    db: Session = Depends(get_db),
-    csrf_protect: CsrfProtect = Depends(),
-    admin=Depends(admin_required),
-    user_id: int = Form(...),
-    new_password: str = Form(...),
+    db: Annotated[Session, Depends(get_db)],
+    csrf_protect: Annotated[CsrfProtect, Depends()],
+    admin: Annotated[User, Depends(admin_required)],
+    user_id: Annotated[int, Form(...)],
+    new_password: Annotated[str, Form(...)],
 ):
     await csrf_protect.validate_csrf(request)
 
@@ -49,9 +52,9 @@ async def admin_reset_password(
         users = db.query(User).order_by(User.id).all()
         csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
         response = templates.TemplateResponse(
-            ADMIN_USERS_PAGE,
-            {
-                "request": request,
+            request=request,
+            name=ADMIN_USERS_PAGE,
+            context={
                 "users": users,
                 "msg": "",
                 "error": "Password troppo corta",
@@ -73,9 +76,9 @@ async def admin_reset_password(
     users = db.query(User).order_by(User.id).all()
     csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
     response = templates.TemplateResponse(
-        ADMIN_USERS_PAGE,
-        {
-            "request": request,
+        request=request,
+        name=ADMIN_USERS_PAGE,
+        context={
             "users": users,
             "msg": "Password aggiornata",
             "error": "",
@@ -89,10 +92,10 @@ async def admin_reset_password(
 @router.post("/admin/users/delete")
 async def admin_delete_user(
     request: Request,
-    db: Session = Depends(get_db),
-    csrf_protect: CsrfProtect = Depends(),
-    admin=Depends(admin_required),
-    user_id: int = Form(...),
+    db: Annotated[Session, Depends(get_db)],
+    csrf_protect: Annotated[CsrfProtect, Depends()],
+    admin: Annotated[User, Depends(admin_required)],
+    user_id: Annotated[int, Form(...)],
 ):
     await csrf_protect.validate_csrf(request)
 
@@ -104,9 +107,9 @@ async def admin_delete_user(
         users = db.query(User).order_by(User.id).all()
         csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
         response = templates.TemplateResponse(
-            ADMIN_USERS_PAGE,
-            {
-                "request": request,
+            request=request,
+            name=ADMIN_USERS_PAGE,
+            context={
                 "users": users,
                 "msg": "",
                 "error": "Non puoi eliminare te stesso.",
@@ -123,9 +126,9 @@ async def admin_delete_user(
     users = db.query(User).order_by(User.id).all()
     csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
     response = templates.TemplateResponse(
-        ADMIN_USERS_PAGE,
-        {
-            "request": request,
+        request=request,
+        name=ADMIN_USERS_PAGE,
+        context={
             "users": users,
             "msg": "Utente eliminato",
             "error": "",
