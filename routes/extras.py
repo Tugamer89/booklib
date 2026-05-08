@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, Response, status
 from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy import text
@@ -9,7 +11,7 @@ router = APIRouter()
 
 
 @router.head("/keepalive")
-async def keepalive(db: Session = Depends(get_db)):
+async def keepalive(db: Annotated[Session, Depends(get_db)]):
     try:
         db.execute(text("SELECT 1"))
         return Response(status_code=status.HTTP_200_OK)
