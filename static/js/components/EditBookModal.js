@@ -1,8 +1,10 @@
 import { formatISBN } from "../utils/formatters.js";
+import { X } from "lucide-vue-next";
 
 export default {
     props: ["book", "csrfToken"],
     emits: ["close"],
+    components: { X },
     setup(props, { emit }) {
         const close = () => emit("close");
         const locationPattern = "[A-Z]+[0-9]+";
@@ -15,7 +17,9 @@ export default {
                     <form action="/edit" method="post" enctype="multipart/form-data" class="p-6">
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100">Modifica Libro</h3>
-                            <button @click.prevent="close" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-2xl">&times;</button>
+                            <button @click.prevent="close" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-2xl">
+                                <X class="w-6 h-6" />
+                            </button>
                         </div>
                         
                         <input type="hidden" name="book_id" :value="book.id">

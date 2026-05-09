@@ -18,6 +18,11 @@
         <script>
             tailwind.config = { darkMode: "class" };
         </script>
+        <script
+            src="https://unpkg.com/lucide@latest"
+            integrity="sha384-jB6ZXxyEV94yzTxgLMvrwwNbn/pTTqwrMDI+v8FV5o5FnId/yn3DJwSdrDujU9A7"
+            crossorigin="anonymous"
+        ></script>
 
         <style type="text/tailwindcss">
             @layer components {
@@ -90,10 +95,15 @@
                     const applyTheme = (theme) => {
                         if (theme === "dark") {
                             html.classList.add("dark");
-                            themeToggle.innerHTML = "☀️";
+                            themeToggle.innerHTML =
+                                '<i data-lucide="sun" class="w-6 h-6 text-yellow-500"></i>';
                         } else {
                             html.classList.remove("dark");
-                            themeToggle.innerHTML = "🌙";
+                            themeToggle.innerHTML =
+                                '<i data-lucide="moon" class="w-6 h-6 text-slate-500"></i>';
+                        }
+                        if (globalThis.lucide) {
+                            lucide.createIcons();
                         }
                     };
 
