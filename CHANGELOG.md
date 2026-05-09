@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/Tugamer89/booklib/compare/v1.7.0...v1.8.0) (2026-05-09)
+
+
+### Features
+
+* migrate to Lucide icons and improve UI consistency ([#6](https://github.com/Tugamer89/booklib/issues/6)) ([3a2e366](https://github.com/Tugamer89/booklib/commit/3a2e366a9a7983482f64a6951e8502caa1f95770))
+
 ## [1.7.0](https://github.com/Tugamer89/booklib/compare/v1.6.3...v1.7.0) (2026-05-08)
 
 
