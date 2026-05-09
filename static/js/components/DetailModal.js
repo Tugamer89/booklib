@@ -1,8 +1,10 @@
 import { formatISBN } from "../utils/formatters.js";
+import { X } from "lucide-vue-next";
 
 export default {
     props: ["book"],
     emits: ["close"],
+    components: { X },
     setup(props, { emit }) {
         const close = () => emit("close");
         return { close, formatISBN };
@@ -18,7 +20,9 @@ export default {
                             <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-1">{{ book.title }}</h2>
                             <p class="text-lg text-slate-500 dark:text-slate-400">{{ book.author }}</p>
                         </div>
-                        <button @click="close" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-3xl -mt-2 -mr-2 flex-shrink-0">&times;</button>
+                        <button @click="close" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-3xl -mt-2 -mr-2 flex-shrink-0">
+                            <X class="w-6 h-6" />
+                        </button>
                     </div>
 
                     <div class="flex-grow flex flex-col md:flex-row gap-6 px-6 overflow-y-auto">

@@ -1,8 +1,8 @@
 import { ref, onMounted, onUnmounted, computed, watch } from "vue";
-import { useTheme } from "../utils/theme.js";
 import { useBodyScrollLock } from "../utils/useBodyScrollLock.js";
 import { api } from "../services/api.js";
 import { formatISBN } from "../utils/formatters.js";
+import { ChevronUp } from "lucide-vue-next";
 
 import Navbar from "../components/Navbar.js";
 import BookCard from "../components/BookCard.js";
@@ -21,6 +21,7 @@ export default {
         DetailModal,
         FilterPanel,
         GoogleBooksModal,
+        ChevronUp,
     },
     setup() {
         const books = ref([]);
@@ -63,7 +64,6 @@ export default {
         const username = ref(userData.username);
         const isAdmin = ref(userData.is_admin);
 
-        const { theme, toggleTheme } = useTheme();
         const isAnyModalOpen = computed(
             () =>
                 !!selectedBookForEdit.value ||
@@ -271,11 +271,9 @@ export default {
             googleSearchTerms,
             username,
             isAdmin,
-            theme,
             isAnyModalOpen,
             csrfToken,
 
-            toggleTheme,
             scrollToTop,
             applyFiltersNow,
             resetFiltersNow,
@@ -287,7 +285,7 @@ export default {
     },
     template: `
     <div class="flex flex-col min-h-[100svh]">
-        <Navbar :is-admin="isAdmin" :username="username" :theme="theme" @toggle-theme="toggleTheme" />
+        <Navbar :is-admin="isAdmin" :username="username" />
 
         <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div v-if="fetchError" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
@@ -369,9 +367,7 @@ export default {
                 :disabled="isAnyModalOpen"
                 aria-label="Torna in cima"
             >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-                </svg>
+                <ChevronUp class="w-6 h-6" />
             </button>
         </transition>
     </div>

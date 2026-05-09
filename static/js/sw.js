@@ -1,4 +1,4 @@
-const CACHE_NAME = "booklib-cache-v1.3";
+const CACHE_NAME = "booklib-cache-v1.7.0"; // x-release-please-version
 
 const URLS_TO_CACHE = [
     "/",

@@ -1,5 +1,6 @@
 import { ref, watch } from "vue";
 import { formatISBN, liveFormatISBN } from "../utils/formatters.js";
+import { Camera, Search } from "lucide-vue-next";
 import GoogleBooksModal from "./GoogleBooksModal.js";
 
 export default {
@@ -12,7 +13,7 @@ export default {
         csrfToken: String,
     },
     emits: ["open-google-search"],
-    components: { GoogleBooksModal },
+    components: { GoogleBooksModal, Camera, Search },
     setup(props, { emit }) {
         const coverPreview = ref(props.bookData.cover_url || "/static/covers/default.jpg");
         const isScanning = ref(false);
@@ -130,7 +131,9 @@ export default {
                             <label for="isbn" class="block text-sm font-medium text-slate-600 dark:text-slate-300">ISBN</label>
                             <div class="flex gap-2 mt-1">
                                 <input :value="bookData.isbn" @input="onIsbnInput" type="text" name="isbn" id="isbn" class="input-style flex-grow">
-                                <button type="button" @click="startIsbnScanner" class="px-3 py-2 rounded-md text-white transition-colors" :class="isScanning ? 'bg-red-500 hover:bg-red-600' : 'bg-teal-500 hover:bg-teal-600'" title="Scansiona ISBN">📷</button>
+                                <button type="button" @click="startIsbnScanner" class="px-3 py-2 rounded-md text-white transition-colors" :class="isScanning ? 'bg-red-500 hover:bg-red-600' : 'bg-teal-500 hover:bg-teal-600'" title="Scansiona ISBN">
+                                    <Camera class="w-5 h-5" />
+                                </button>
                             </div>
                             <div id="isbn-scanner-reader" class="mt-2 hidden w-full rounded-md overflow-hidden border dark:border-slate-600"></div>
                         </div>
@@ -164,7 +167,7 @@ export default {
                 
                 <div class="mt-8 flex flex-col-reverse sm:flex-row justify-between items-center gap-4 border-t border-slate-200 dark:border-slate-700 pt-6">
                     <button type="button" @click="openGoogleSearch" class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors font-semibold">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M8.5 2.5a6 6 0 105.293 8.793l4.207 4.207a.5.5 0 01-.707.707L13.086 12A6 6 0 008.5 2.5zM6 8.5a2.5 2.5 0 115 0 2.5 2.5 0 01-5 0z"/></svg>
+                        <Search class="w-5 h-5" />
                         <span>Compila con Google Books</span>
                     </button>
                     <button type="submit" class="w-full sm:w-auto bg-indigo-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-indigo-700 transition-colors font-semibold">
