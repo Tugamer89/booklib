@@ -16,7 +16,7 @@ jobs:
       - name: Code checkout
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.head_ref || github.ref }}
 
       - name: Setup uv
         uses: astral-sh/setup-uv@v7
