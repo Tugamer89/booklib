@@ -27,30 +27,30 @@ export default {
 
                     <div class="flex-grow flex flex-col md:flex-row gap-6 px-6 overflow-y-auto">
                         <div class="w-full md:w-1/3 flex-shrink-0">
-                            <img :src="book.cover_path" :alt="'Copertina di ' + book.title" class="w-full h-auto object-contain rounded-lg shadow-md sticky top-0">
+                            <img :src="book.cover_path" :alt="'Cover of ' + book.title" class="w-full h-auto object-contain rounded-lg shadow-md sticky top-0">
                         </div>
                         
                         <div class="w-full md:w-2/3 text-sm text-left">
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-3 border-t border-slate-200 dark:border-slate-700 pt-4">
-                                <strong class="text-slate-500 dark:text-slate-400">Editore:</strong>
-                                <span class="sm:col-span-2">{{ book.publisher || 'N/D' }}</span>
+                                <strong class="text-slate-500 dark:text-slate-400">Publisher:</strong>
+                                <span class="sm:col-span-2">{{ book.publisher || 'N/A' }}</span>
                                 
                                 <strong class="text-slate-500 dark:text-slate-400">ISBN:</strong>
                                 <span class="sm:col-span-2 font-mono">{{ formatISBN(book.isbn) }}</span>
                                 
-                                <strong class="text-slate-500 dark:text-slate-400">Posizione:</strong>
+                                <strong class="text-slate-500 dark:text-slate-400">Location:</strong>
                                 <span class="sm:col-span-2 font-mono">{{ book.location }}</span>
 
-                                <strong class="text-slate-500 dark:text-slate-400">Lingua:</strong>
-                                <span class="sm:col-span-2">{{ book.language || 'N/D' }}</span>
+                                <strong class="text-slate-500 dark:text-slate-400">Language:</strong>
+                                <span class="sm:col-span-2">{{ book.language || 'N/A' }}</span>
                             </div>
 
                             <div class="mt-4" v-if="book.description">
-                                <h4 class="font-semibold border-t border-slate-200 dark:border-slate-700 pt-3 mt-3">Descrizione</h4>
+                                <h4 class="font-semibold border-t border-slate-200 dark:border-slate-700 pt-3 mt-3">Description</h4>
                                 <p class="mt-1 text-slate-600 dark:text-slate-300 whitespace-pre-wrap">{{ book.description }}</p>
                             </div>
                              <div class="mt-4" v-if="book.personal_comment">
-                                <h4 class="font-semibold border-t border-slate-200 dark:border-slate-700 pt-3 mt-3">Commento personale</h4>
+                                <h4 class="font-semibold border-t border-slate-200 dark:border-slate-700 pt-3 mt-3">Personal comment</h4>
                                 <p class="mt-1 text-slate-600 dark:text-slate-300 italic whitespace-pre-wrap">{{ book.personal_comment }}</p>
                             </div>
                         </div>

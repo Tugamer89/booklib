@@ -57,7 +57,7 @@ async def admin_reset_password(
             context={
                 "users": users,
                 "msg": "",
-                "error": "Password troppo corta",
+                "error": "Password too short",
                 "csrf_token": csrf_token,
             },
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -67,7 +67,7 @@ async def admin_reset_password(
 
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Utente non trovato")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     user.password = hash_password(new_password)
     db.commit()
@@ -80,7 +80,7 @@ async def admin_reset_password(
         name=ADMIN_USERS_PAGE,
         context={
             "users": users,
-            "msg": "Password aggiornata",
+            "msg": "Password updated",
             "error": "",
             "csrf_token": csrf_token,
         },
@@ -101,7 +101,7 @@ async def admin_delete_user(
 
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Utente non trovato")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     if user_id == admin.id:
         users = db.query(User).order_by(User.id).all()
@@ -112,7 +112,7 @@ async def admin_delete_user(
             context={
                 "users": users,
                 "msg": "",
-                "error": "Non puoi eliminare te stesso.",
+                "error": "You cannot delete yourself.",
                 "csrf_token": csrf_token,
             },
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -130,7 +130,7 @@ async def admin_delete_user(
         name=ADMIN_USERS_PAGE,
         context={
             "users": users,
-            "msg": "Utente eliminato",
+            "msg": "User deleted",
             "error": "",
             "csrf_token": csrf_token,
         },

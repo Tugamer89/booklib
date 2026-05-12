@@ -91,7 +91,7 @@ export default {
                 hasMore.value = data.has_more;
                 currentOffset.value += data.books.length;
             } catch (error) {
-                fetchError.value = "Impossibile caricare i libri. Riprova più tardi.";
+                fetchError.value = "Unable to load books. Please try again later.";
                 console.error(error);
             } finally {
                 isLoading.value = false;
@@ -294,11 +294,11 @@ export default {
             </div>
 
             <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
-                 <h1 class="text-3xl font-bold text-slate-800 dark:text-slate-100">La mia Libreria</h1>
+                 <h1 class="text-3xl font-bold text-slate-800 dark:text-slate-100">My Library</h1>
                  <div class="flex items-center gap-2">
-                     <button @click="showFilters = !showFilters" class="bg-slate-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-slate-700 transition-colors">Filtra & Ordina</button>
+                     <button @click="showFilters = !showFilters" class="bg-slate-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-slate-700 transition-colors">Filter & Sort</button>
                      <button @click="showAddForm = !showAddForm" class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 transition-colors">
-                        {{ showAddForm ? 'Annulla' : 'Aggiungi Libro' }}
+                        {{ showAddForm ? 'Cancel' : 'Add Book' }}
                     </button>
                  </div>
             </div>
@@ -322,10 +322,10 @@ export default {
             </transition>
 
             <div v-if="isLoading && books.length === 0" class="text-center py-12 text-slate-500 dark:text-slate-400">
-                <p>Caricamento in corso...</p>
+                <p>Loading...</p>
             </div>
              <div v-else-if="books.length === 0" class="text-center py-12 text-slate-500 dark:text-slate-400">
-                <p>Nessun libro trovato. Prova a cambiare i filtri o aggiungine uno nuovo!</p>
+                <p>No books found. Try changing the filters or add a new one!</p>
             </div>
             <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                 <BookCard
@@ -338,7 +338,7 @@ export default {
                 />
             </div>
              <div v-if="isLoading && books.length > 0" class="text-center py-8 text-slate-500 dark:text-slate-400">
-                <p>Caricamento altri libri...</p>
+                <p>Loading more books...</p>
             </div>
         </main>
 
@@ -365,7 +365,7 @@ export default {
                 class="fixed bottom-8 right-8 z-30 w-12 h-12 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-lg hover:bg-indigo-700 transition-all"
                 :class="{ 'opacity-50 cursor-not-allowed': isAnyModalOpen }"
                 :disabled="isAnyModalOpen"
-                aria-label="Torna in cima"
+                aria-label="Back to top"
             >
                 <ChevronUp class="w-6 h-6" />
             </button>

@@ -1,6 +1,6 @@
-{% extends "_base.html" %} {% block title %}Accedi o Registrati - Libreria di Casa{% endblock %} {%
-block description %}Accedi o registrati a BookLib per iniziare subito a catalogare la tua libreria
-personale.{% endblock %} {% block content %}
+{% extends "_base.html" %} {% block title %}Login or Register - Home Library{% endblock %} {%
+block description %}Log in or register to BookLib to start cataloguing your personal library
+right away.{% endblock %} {% block content %}
 <div class="w-full max-w-md p-8 space-y-6 bg-white dark:bg-slate-800 shadow-xl rounded-2xl">
     <h1
         class="flex items-center justify-center text-3xl font-bold text-center text-slate-800 dark:text-slate-100"
@@ -29,13 +29,13 @@ personale.{% endblock %} {% block content %}
             id="loginTab"
             class="flex-1 py-2 text-center font-semibold border-b-2 transition-colors duration-300"
         >
-            Accedi
+            Login
         </button>
         <button
             id="registerTab"
             class="flex-1 py-2 text-center font-semibold border-b-2 transition-colors duration-300"
         >
-            Registrati
+            Register
         </button>
     </div>
 
@@ -45,13 +45,13 @@ personale.{% endblock %} {% block content %}
 
         <div id="login-form" class="form-container space-y-4 pt-4">
             <div>
-                <label for="login-username" class="sr-only">Username o Email</label>
+                <label for="login-username" class="sr-only">Username or Email</label>
                 <input
                     id="login-username"
                     name="username"
                     type="text"
                     required
-                    placeholder="Username o Email"
+                    placeholder="Username or Email"
                     class="input-style"
                 />
             </div>
@@ -87,7 +87,7 @@ personale.{% endblock %} {% block content %}
                     </span>
 
                     <span class="ml-2 block text-sm text-slate-900 dark:text-slate-300 select-none">
-                        Ricordami
+                        Remember me
                     </span>
                 </label>
 
@@ -95,7 +95,7 @@ personale.{% endblock %} {% block content %}
                     <a
                         href="/forgot-password"
                         class="font-medium text-indigo-600 hover:underline dark:text-indigo-400"
-                        >Password dimenticata?</a
+                        >Forgot your password?</a
                     >
                 </div>
             </div>
@@ -109,7 +109,7 @@ personale.{% endblock %} {% block content %}
                     name="username"
                     type="text"
                     required
-                    placeholder="Scegli un Username"
+                    placeholder="Choose a Username"
                     class="input-style"
                     disabled
                 />
@@ -121,7 +121,7 @@ personale.{% endblock %} {% block content %}
                     name="email"
                     type="email"
                     required
-                    placeholder="La tua Email"
+                    placeholder="Your Email"
                     class="input-style"
                     disabled
                 />
@@ -134,7 +134,7 @@ personale.{% endblock %} {% block content %}
                     type="password"
                     required
                     minlength="8"
-                    placeholder="Scegli una Password (min. 8)"
+                    placeholder="Choose a Password (min. 8)"
                     class="input-style pr-10"
                     disabled
                 />
@@ -165,7 +165,7 @@ personale.{% endblock %} {% block content %}
             type="submit"
             class="w-full mt-6 py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-slate-800 transition-colors duration-300"
         >
-            Accedi
+            Login
         </button>
     </form>
 </div>
@@ -185,7 +185,7 @@ personale.{% endblock %} {% block content %}
             const isLogin = mode === "login";
 
             authAction.value = mode;
-            submitButton.textContent = isLogin ? "Accedi" : "Registrati";
+            submitButton.textContent = isLogin ? "Login" : "Register";
 
             loginTab.classList.toggle("border-indigo-500", isLogin);
             loginTab.classList.toggle("text-indigo-600", isLogin);
@@ -220,8 +220,8 @@ personale.{% endblock %} {% block content %}
         const successMsg = document.getElementById("msg-message")?.textContent || "";
 
         if (
-            successMsg.includes("Registrazione completata") ||
-            successMsg.includes("Account verificato")
+            successMsg.includes("Registration complete") ||
+            successMsg.includes("Account verified")
         ) {
             setActiveTab("login");
         } else if (

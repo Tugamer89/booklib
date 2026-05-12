@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="it" class="">
+<html lang="en" class="">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         {% block meta %}
         <meta
             name="description"
-            content="{% block description %}BookLib - Gestisci la tua libreria di casa.{% endblock %}"
+            content="{% block description %}BookLib - Manage your home library.{% endblock %}"
         />
         {% endblock %}
         <title>{% block title %}BookLib{% endblock %}</title>
@@ -30,28 +30,28 @@
                     @apply w-full px-4 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500;
                     font-weight: normal;
                 }
-                /* Contenitore per input password + icona */
+                /* Container for password input + icon */
                 .password-container {
                     @apply relative;
                 }
-                /* Icona occhio per mostrare/nascondere password */
+                /* Eye icon to show/hide password */
                 .password-toggle-icon {
                     @apply absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer text-slate-400 hover:text-slate-600 dark:hover:text-slate-200;
                 }
             }
-            /* Stili per la pagina di login/registrazione */
+            /* Styles for the login/register page */
             .form-container {
                 transition:
                     opacity 0.2s ease-in-out,
                     max-height 0.3s ease-in-out;
                 overflow: hidden;
-                max-height: 500px; /* Abbastanza grande per contenere il form */
+                max-height: 500px; /* Large enough to hold the form */
                 opacity: 1;
             }
             .form-inactive {
                 max-height: 0px !important;
                 opacity: 0 !important;
-                /* Rimuove padding e margin quando è collassato per evitare spazi extra */
+                /* Remove padding and margin when collapsed to avoid extra space */
                 margin: 0 !important;
                 padding: 0 !important;
             }

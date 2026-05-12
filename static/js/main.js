@@ -2,9 +2,9 @@ if ("serviceWorker" in navigator) {
     window.addEventListener("load", async () => {
         try {
             const registration = await navigator.serviceWorker.register("/sw.js");
-            console.log("ServiceWorker: Registrazione riuscita, scope:", registration.scope);
+            console.log("ServiceWorker: Registration successful, scope:", registration.scope);
         } catch (error) {
-            console.log("ServiceWorker: Registrazione fallita:", error);
+            console.log("ServiceWorker: Registration failed:", error);
         }
     });
 }

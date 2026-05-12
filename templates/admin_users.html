@@ -1,11 +1,11 @@
-{% extends "_base.html" %} {% block title %}Admin - Gestione Utenti{% endblock %} {% block meta %}
+{% extends "_base.html" %} {% block title %}Admin - User Management{% endblock %} {% block meta %}
 <meta name="robots" content="noindex, nofollow" />
 {% endblock %} {% block content %}
 <div class="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
-        <h1 class="text-3xl font-bold text-slate-800 dark:text-slate-100">Gestione Utenti</h1>
+        <h1 class="text-3xl font-bold text-slate-800 dark:text-slate-100">User Management</h1>
         <a href="/" class="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
-            >Torna alla Libreria</a
+            >Back to Library</a
         >
     </div>
 
@@ -52,13 +52,13 @@
                             scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider"
                         >
-                            Stato
+                            Status
                         </th>
                         <th
                             scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider"
                         >
-                            Azioni
+                            Actions
                         </th>
                     </tr>
                 </thead>
@@ -87,13 +87,13 @@
                             <span
                                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-100"
                             >
-                                Verificato
+                                Verified
                             </span>
                             {% else %}
                             <span
                                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-100"
                             >
-                                Non Verificato
+                                Not Verified
                             </span>
                             {% endif %}
                         </td>
@@ -110,7 +110,7 @@
                                     <input
                                         type="password"
                                         name="new_password"
-                                        placeholder="Nuova password"
+                                        placeholder="New password"
                                         minlength="8"
                                         required
                                         class="input-style !py-1.5 !text-sm !w-40 pr-8"
@@ -134,7 +134,7 @@
                             <form
                                 method="post"
                                 action="/admin/users/delete"
-                                onsubmit="return confirm('Sei sicuro di voler eliminare l\'utente {{ user.username }}? Questa azione è irreversibile.');"
+                                onsubmit="return confirm('Are you sure you want to delete user {{ user.username }}? This action is irreversible.');"
                                 class="ml-2"
                             >
                                 <input type="hidden" name="user_id" value="{{ user.id }}" />
@@ -143,7 +143,7 @@
                                     type="submit"
                                     class="px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded-md hover:bg-red-700 shadow-sm"
                                 >
-                                    Elimina
+                                    Delete
                                 </button>
                             </form>
                         </td>

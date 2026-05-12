@@ -48,7 +48,7 @@ def create_user(db: Session, user_data: dict, verification_token: str) -> User:
         db.refresh(db_user)
         return db_user
     except Exception as e:
-        logger.error(f"Errore durante la creazione dell'utente {user_data.get('username')}: {e}")
+        logger.error(f"Error creating user {user_data.get('username')}: {e}")
         db.rollback()
         return None
 
@@ -64,7 +64,7 @@ def verify_user_email(db: Session, token: str) -> User | None:
             return user
         except Exception as e:
             logger.error(
-                f"Errore durante la verifica email per user {user.id} con token {token}: {e}"
+                f"Error verifying email for user {user.id} with token {token}: {e}"
             )
             db.rollback()
             return None
@@ -80,7 +80,7 @@ def set_password_reset_token(db: Session, user: User, token: str) -> bool:
         db.commit()
         return True
     except Exception as e:
-        logger.error(f"Errore durante il salvataggio del reset token per user {user.id}: {e}")
+        logger.error(f"Error saving reset token for user {user.id}: {e}")
         db.rollback()
         return False
 
@@ -105,7 +105,7 @@ def reset_user_password(db: Session, user: User, new_password: str) -> bool:
         db.commit()
         return True
     except Exception as e:
-        logger.error(f"Errore durante il reset della password per user {user.id}: {e}")
+        logger.error(f"Error resetting password for user {user.id}: {e}")
         db.rollback()
         return False
 

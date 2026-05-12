@@ -1,86 +1,86 @@
-# 📚 BookLib - Libreria di Casa
+# 📚 BookLib - Home Library
 
 ![WakaTime](https://wakatime.com/badge/user/423e1479-325a-4958-8d21-2d5f97c11efb/project/272222e8-abdd-452c-afa2-6d56e77b1387.svg)
 
-Applicazione web full-stack per gestire e catalogare la propria libreria di casa. Permette di aggiungere, filtrare, cercare e ordinare libri, con caricamento copertine (tramite upload o Cloudinary), scansione ISBN via webcam e un sistema completo di gestione dell'account utente.
+A full-stack web application to manage and catalogue your home library. Allows you to add, filter, search and sort books, with cover image management (via file upload or Cloudinary), barcode scanning via webcam, and a complete user account management system.
 
 ---
 
-## ✨ Tecnologie Utilizzate
+## ✨ Technologies Used
 
 ### 🖥️ Backend
 
 - **Python 3.13+**
-- **uv**: Per la gestione ultra-rapida delle dipendenze e degli ambienti virtuali.
-- **FastAPI**: Per l'API RESTful ad alte prestazioni.
-- **Uvicorn**: Come server ASGI.
-- **SQLAlchemy & PostgreSQL**: Per l'ORM e l'interazione con il database relazionale.
-- **Jinja2**: Per il rendering dei template HTML lato server (autenticazione, admin, email).
-- **Cloudinary**: Per l'hosting e la gestione delle copertine dei libri.
-- **pwdlib[bcrypt]**: Per l'hashing sicuro delle password (sostituisce Passlib).
-- **Brevo API (sib-api-v3-sdk)**: Per l'invio di email transazionali (verifica account, reset password).
-- **Pydantic**: Per la validazione e la gestione delle impostazioni.
+- **uv**: For ultra-fast dependency and virtual environment management.
+- **FastAPI**: For the high-performance RESTful API.
+- **Uvicorn**: As the ASGI server.
+- **SQLAlchemy & PostgreSQL**: For ORM and relational database interaction.
+- **Jinja2**: For server-side HTML template rendering (authentication, admin, email).
+- **Cloudinary**: For hosting and managing book cover images.
+- **pwdlib[bcrypt]**: For secure password hashing (replaces Passlib).
+- **Brevo API (sib-api-v3-sdk)**: For sending transactional emails (account verification, password reset).
+- **Pydantic**: For settings validation and management.
 
 ### 🎨 Frontend
 
-- **Vue.js 3**: Utilizzato tramite CDN e `importmap` per un frontend reattivo.
-- **TailwindCSS**: Utilizzato tramite CDN per lo styling rapido e responsive.
-- **html5-qrcode**: Libreria per la scansione di codici a barre/QR via webcam.
-- **Javascript (ESM)**: Logica frontend moderna strutturata in moduli.
+- **Vue.js 3**: Used via CDN and `importmap` for a reactive frontend.
+- **TailwindCSS**: Used via CDN for rapid and responsive styling.
+- **html5-qrcode**: Library for scanning barcodes/QR codes via webcam.
+- **Javascript (ESM)**: Modern frontend logic structured in modules.
 
 ### 🛠️ Tooling & CI/CD
 
-- **Pre-commit, Ruff & Prettier**: Per il linting e la formattazione automatica del codice (Python, JS, CSS, HTML, YAML).
-- **GitHub Actions**: Pipeline CI per validazione codice, auto-formattazione e gestione automatica delle release tramite **Release Please**.
+- **Pre-commit, Ruff & Prettier**: For automatic linting and code formatting (Python, JS, CSS, HTML, YAML).
+- **GitHub Actions**: CI pipeline for code validation, auto-formatting, and automatic release management via **Release Please**.
 
 ---
 
-## 🚀 Funzionalità Principali
+## 🚀 Key Features
 
-- ✅ **Gestione Account Avanzata**: Registrazione, Login sicuro, Verifica dell'indirizzo Email e procedura di Reset Password.
-- ✅ **Gestione Sessioni**: Sessioni sicure basate su cookie con limite massimo per utente.
-- ✅ **Pannello Admin**: Sezione per amministratori (`/admin/users`) per la gestione degli utenti.
-- ✅ **CRUD Libri**: Funzionalità complete di Aggiungi, Modifica, Elimina e Visualizza libri.
-- ✅ **Gestione Copertine**: Caricamento tramite file upload o incollando un URL (appoggiandosi a Cloudinary).
-- ✅ **Integrazione Google Books**: Modal per cercare libri su Google Books e pre-compilare i form.
-- ✅ **Scansione ISBN**: Scansione diretta tramite la webcam/fotocamera del dispositivo.
-- ✅ **Filtri e Ordinamento**: Ricerca multi-campo e ordinamento dinamico con paginazione "Infinite Scroll".
-- ✅ **Interfaccia Responsive & Dark Mode**: Ottimizzazione mobile/desktop e tema scuro salvato in `localStorage`.
-- ✅ **Servizi Keep-Alive**: Job programmati opzionali tramite APScheduler per mantenere attivi il servizio web e il database.
+- ✅ **Advanced Account Management**: Registration, secure Login, Email verification, and Password Reset flow.
+- ✅ **Session Management**: Secure cookie-based sessions with a maximum limit per user.
+- ✅ **Admin Panel**: Section for administrators (`/admin/users`) for user management.
+- ✅ **Book CRUD**: Full Add, Edit, Delete and View functionality for books.
+- ✅ **Cover Management**: Upload via file or by pasting a URL (backed by Cloudinary).
+- ✅ **Google Books Integration**: Modal to search Google Books and pre-fill forms.
+- ✅ **ISBN Scanning**: Direct scanning via the device's webcam/camera.
+- ✅ **Filters and Sorting**: Multi-field search and dynamic sorting with Infinite Scroll pagination.
+- ✅ **Responsive UI & Dark Mode**: Mobile/desktop optimisation and dark theme saved in `localStorage`.
+- ✅ **Keep-Alive Services**: Optional scheduled jobs via APScheduler to keep the web service and database alive.
 
 ---
 
-## 📦 Installazione
+## 📦 Installation
 
-### 1️⃣ Clona il repository
+### 1️⃣ Clone the repository
 
 ```bash
-git clone [https://github.com/Tugamer89/booklib.git](https://github.com/Tugamer89/booklib.git)
+git clone https://github.com/Tugamer89/booklib.git
 cd booklib
 ```
 
-### 2️⃣ Installa `uv` (se non lo possiedi)
+### 2️⃣ Install `uv` (if you don't have it)
 
-Il progetto utilizza [uv](https://github.com/astral-sh/uv) per gestire l'ambiente Python. Puoi installarlo seguendo la documentazione ufficiale o tramite:
+The project uses [uv](https://github.com/astral-sh/uv) to manage the Python environment. You can install it by following the official documentation or via:
 
 ```bash
-curl -LsSf [https://astral.sh/uv/install.sh](https://astral.sh/uv/install.sh) | sh
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-### Installa le dipendenze
+### Install dependencies
 
-Grazie al `Makefile` incluso, puoi sincronizzare l'ambiente virtuale e installare tutte le dipendenze (incluse quelle di sviluppo) con un solo comando:
+Thanks to the included `Makefile`, you can sync the virtual environment and install all dependencies (including dev ones) with a single command:
 
 ```bash
 make install
 ```
 
-_(In alternativa: `uv sync`)_
+_(Alternative: `uv sync`)_
 
-### 4️⃣ Installa e configura PostgreSQL
+### 4️⃣ Install and configure PostgreSQL
 
-- Assicurati di avere un server PostgreSQL in esecuzione.
-- Crea un utente e un database:
+- Make sure you have a running PostgreSQL server.
+- Create a user and a database:
 
 ```sql
 CREATE USER bookuser WITH PASSWORD 'password';
@@ -88,11 +88,11 @@ CREATE DATABASE booklib OWNER bookuser;
 GRANT ALL PRIVILEGES ON DATABASE booklib TO bookuser;
 ```
 
-### 5️⃣ Configura e inizializza il progetto
+### 5️⃣ Configure and initialise the project
 
-Apri il file `setup.py` e modifica le variabili nella sezione `# --- CONFIGURAZIONE DA MODIFICARE ---` con i tuoi dati (credenziali DB, chiavi API Cloudinary, chiavi Brevo per le email, ecc.).
+Open `setup.py` and modify the variables in the `# --- CONFIGURATION TO EDIT ---` section with your details (DB credentials, Cloudinary API keys, Brevo keys for emails, etc.).
 
-Esegui lo script `setup.py` tramite `uv`. Questo creerà il file `.env` con le chiavi segrete e configurerà le tabelle nel database:
+Run the `setup.py` script via `uv`. This will create the `.env` file with the secret keys and set up the database tables:
 
 ```bash
 uv run python setup.py
@@ -100,49 +100,49 @@ uv run python setup.py
 
 ---
 
-## ▶️ Avvio in locale
+## ▶️ Local startup
 
-Puoi avviare rapidamente l'applicazione usando il comando `make`:
+You can quickly start the application using the `make` command:
 
 ```bash
 make run
 ```
 
-_(Questo eseguirà `uv run uvicorn main:app --reload --port 8000`)_
+_(This will execute `uv run uvicorn main:app --reload --port 8000`)_
 
-L'app sarà disponibile su:
+The app will be available at:
 ➡️ [`http://127.0.0.1:8000`](http://127.0.0.1:8000)
 
-### 🛠️ Comandi di Sviluppo Utili
+### 🛠️ Useful Development Commands
 
-- `make format`: Formatta tutto il codice sorgente lanciando Prettier (HTML, CSS, JS, YAML) e Ruff (Python).
-- `make hook-update`: Aggiorna le versioni dei tool all'interno di `pre-commit`.
+- `make format`: Formats all source code by running Prettier (HTML, CSS, JS, YAML) and Ruff (Python).
+- `make hook-update`: Updates tool versions inside `pre-commit`.
 
 ---
 
-## 📁 Struttura del progetto
+## 📁 Project Structure
 
 ```
 .
-├── .github/               # Workflow CI/CD (GitHub Actions, dependabot, release-please)
-├── core/                  # Configurazione base, sicurezza, middleware, email, template
-├── db/                    # Logica Database SQLAlchemy (modelli, database.py, crud.py)
-├── routes/                # Router FastAPI (auth, books, admin, errors)
-├── static/                # File statici (JS Vue.js, CSS Tailwind, Immagini)
-├── templates/             # Template HTML Jinja2 (pagine web e template email)
-├── utils/                 # Script di utility (keepalive, starter, logger, ecc.)
-├── main.py                # Entry point FastAPI
-├── setup.py               # Script interattivo per generare .env e tabelle
-├── Makefile               # Comandi rapidi (install, format, run)
-├── pyproject.toml         # Configurazione pacchetti e tool (uv, ruff)
-├── uv.lock                # Lockfile delle dipendenze Python
-├── .pre-commit-config.yaml# Configurazione per gli hook di commit (linting/format)
-├── .prettierrc            # Regole di formattazione Prettier
+├── .github/               # CI/CD Workflows (GitHub Actions, dependabot, release-please)
+├── core/                  # Base configuration, security, middleware, email, templates
+├── db/                    # SQLAlchemy Database logic (models, database.py, crud.py)
+├── routes/                # FastAPI Routers (auth, books, admin, errors)
+├── static/                # Static files (Vue.js JS, Tailwind CSS, Images)
+├── templates/             # Jinja2 HTML Templates (web pages and email templates)
+├── utils/                 # Utility scripts (keepalive, starter, logger, etc.)
+├── main.py                # FastAPI entry point
+├── setup.py               # Interactive script to generate .env and tables
+├── Makefile               # Quick commands (install, format, run)
+├── pyproject.toml         # Package and tool configuration (uv, ruff)
+├── uv.lock                # Python dependency lockfile
+├── .pre-commit-config.yaml# Configuration for commit hooks (linting/format)
+├── .prettierrc            # Prettier formatting rules
 └── README.md
 ```
 
 ---
 
-## 📜 Licenza
+## 📜 License
 
-MIT License — sentiti libero di usare e modificare.
+MIT License — feel free to use and modify.

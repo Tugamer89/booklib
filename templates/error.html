@@ -1,4 +1,4 @@
-{% extends "_base.html" %} {% block title %}Errore {{ status_code }}{% endblock %} {% block meta %}
+{% extends "_base.html" %} {% block title %}Error {{ status_code }}{% endblock %} {% block meta %}
 <meta name="robots" content="noindex, nofollow" />
 {% endblock %} {% block content %}
 <div>
@@ -9,7 +9,7 @@
         href="{{ referer or '/' }}"
         class="mt-6 inline-block bg-indigo-600 text-white px-6 py-2 rounded-md shadow hover:bg-indigo-700 transition"
     >
-        Torna indietro
+        Go back
     </a>
 </div>
 {% endblock %}

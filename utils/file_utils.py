@@ -14,7 +14,7 @@ def validate_and_save_cover(cover):
     size = cover.file.tell()
     if size > 10 * 1024 * 1024:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="File troppo grande, massimo 10 MB"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="File too large, maximum 10 MB"
         )
 
     cover.file.seek(0)
@@ -22,14 +22,14 @@ def validate_and_save_cover(cover):
     ext = os.path.splitext(cover.filename)[-1].lower()
     if ext not in settings.allowed_extensions:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=f"Estensione file non valida: {ext}"
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid file extension: {ext}"
         )
 
     sample = cover.file.read(2048)
     mime_type = magic.from_buffer(sample, mime=True)
     if mime_type not in settings.allowed_mime_types:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=f"Tipo MIME non valido: {mime_type}"
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid MIME type: {mime_type}"
         )
 
     cover.file.seek(0)
@@ -43,7 +43,7 @@ def validate_cover_url(cover_url: str) -> str:
 
     if not cover_path.startswith(("http://", "https://")):
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="URL della copertina non valido"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid cover URL"
         )
 
     try:
@@ -52,13 +52,13 @@ def validate_cover_url(cover_url: str) -> str:
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Errore durante la verifica dell'URL dell'immagine: {e}.",
+            detail=f"Error verifying image URL: {e}.",
         ) from None
 
     if content_type not in settings.allowed_mime_types:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"URL non valido: tipo MIME non valido ({content_type}).",
+            detail=f"Invalid URL: unsupported MIME type ({content_type}).",
         )
 
     return cover_path
