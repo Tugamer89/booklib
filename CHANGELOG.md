@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://github.com/Tugamer89/booklib/compare/v1.8.0...v1.9.0) (2026-05-13)
+
+
+### Features
+
+* translate project content to English ([#8](https://github.com/Tugamer89/booklib/issues/8)) ([862843f](https://github.com/Tugamer89/booklib/commit/862843fd81bd448755c5cdbdadf171b85b07f80f))
+
 ## [1.8.0](https://github.com/Tugamer89/booklib/compare/v1.7.0...v1.8.0) (2026-05-09)
 
 
