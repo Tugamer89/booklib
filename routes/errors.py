@@ -70,9 +70,7 @@ def operational_error_handler(request: Request, exc: OperationalError):
     )
 
     referer = request.headers.get("referer")
-    message = (
-        "The service is temporarily busy or unavailable. Please try again in a moment."
-    )
+    message = "The service is temporarily busy or unavailable. Please try again in a moment."
 
     return templates.TemplateResponse(
         request=request,

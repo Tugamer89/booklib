@@ -1,9 +1,9 @@
-{% extends "emails/_base_email.html" %} {% block title %}Verify your BookLib Account{% endblock
-%} {% block header_title %}BookLib - Account Verification{% endblock %} {% block content %}
+{% extends "emails/_base_email.html" %} {% block title %}Verify your BookLib Account{% endblock %}
+{% block header_title %}BookLib - Account Verification{% endblock %} {% block content %}
 <p>Hello {{ username }},</p>
 <p>
-    Thank you for registering with BookLib! To complete your registration and activate your
-    account, please click the button below:
+    Thank you for registering with BookLib! To complete your registration and activate your account,
+    please click the button below:
 </p>
 <p style="text-align: center">
     <a href="{{ verification_link }}" class="button">Verify my Account</a>

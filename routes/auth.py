@@ -100,7 +100,9 @@ def _handle_register(
     if email_sent:
         msg = "Registration complete! Check your email to verify your account."
     else:
-        logger.error(f"Failed to send verification email to {created_user.email} after registration.")
+        logger.error(
+            f"Failed to send verification email to {created_user.email} after registration."
+        )
         msg = "Registration complete, but there was a problem sending the verification email. Please contact support if needed."
 
     return msg, None

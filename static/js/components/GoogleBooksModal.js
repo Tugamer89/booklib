@@ -160,7 +160,5 @@ export default {
 async function extractErrorMessage(response) {
     const data = await response.json().catch(() => null);
 
-    return data?.error?.message
-        ? `Search error: ${data.error.message}`
-        : "Search error.";
+    return data?.error?.message ? `Search error: ${data.error.message}` : "Search error.";
 }

@@ -8,9 +8,7 @@ from utils.logger import logger
 
 def _send_email_brevo(to_email: str, subject: str, html_content: str) -> bool:
     if not settings.BREVO_API_KEY or not settings.BREVO_EMAIL_FROM_ADDRESS:
-        logger.error(
-            "BREVO_API_KEY or BREVO_EMAIL_FROM_ADDRESS not configured. Cannot send email."
-        )
+        logger.error("BREVO_API_KEY or BREVO_EMAIL_FROM_ADDRESS not configured. Cannot send email.")
         return False
 
     configuration = sib_api_v3_sdk.Configuration()

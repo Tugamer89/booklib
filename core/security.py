@@ -28,9 +28,7 @@ def validate_username_and_password(username: str, password: str):
 
 def validate_email(email: str):
     if not re.match(settings.email_regex, email):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid email format."
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid email format.")
 
 
 def generate_password_reset_token(email: str) -> str:

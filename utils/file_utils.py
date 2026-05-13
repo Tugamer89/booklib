@@ -42,9 +42,7 @@ def validate_cover_url(cover_url: str) -> str:
     cover_path = cover_url.strip()
 
     if not cover_path.startswith(("http://", "https://")):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid cover URL"
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid cover URL")
 
     try:
         response = requests.head(cover_path, timeout=5)

@@ -63,9 +63,7 @@ def verify_user_email(db: Session, token: str) -> User | None:
             db.refresh(user)
             return user
         except Exception as e:
-            logger.error(
-                f"Error verifying email for user {user.id} with token {token}: {e}"
-            )
+            logger.error(f"Error verifying email for user {user.id} with token {token}: {e}")
             db.rollback()
             return None
     return None
