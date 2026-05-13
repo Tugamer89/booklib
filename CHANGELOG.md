@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.1](https://github.com/Tugamer89/booklib/compare/v1.9.0...v1.9.1) (2026-05-13)
+
+
+### Bug Fixes
+
+* rename title from 'Library' to 'BookLib' ([4f714de](https://github.com/Tugamer89/booklib/commit/4f714de8f29061354fe344581290493958aa9aed))
+
 ## [1.9.0](https://github.com/Tugamer89/booklib/compare/v1.8.0...v1.9.0) (2026-05-13)
 
 
