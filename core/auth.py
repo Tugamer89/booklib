@@ -46,7 +46,7 @@ def get_authenticated_user(request: Request, db: Session = Depends(get_db)) -> U
     session_token = request.session.get("session_token")
 
     if not user_id or not session_token:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Non autenticato")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
 
     db_session = (
         db.query(UserSession)
@@ -56,22 +56,22 @@ def get_authenticated_user(request: Request, db: Session = Depends(get_db)) -> U
 
     if not db_session:
         request.session.clear()
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Sessione non valida")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid session")
 
     if db_session.expires_at and db_session.expires_at < datetime.now(UTC):
         request.session.clear()
         db.delete(db_session)
         db.commit()
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Sessione scaduta")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Session expired")
 
     user = get_user_by_id(db, user_id)
     if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Utente non trovato")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
 
     return user
 
 
 def admin_required(user: User = Depends(get_authenticated_user)) -> User:
     if user.username not in settings.admin_users:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Accesso negato")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
     return user

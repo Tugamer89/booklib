@@ -73,7 +73,7 @@ def books_data(
 ):
     query = db.query(Book).filter(Book.user_id == user.id)
 
-    # Filtri
+    # Filters
     if title:
         query = query.filter(Book.title.ilike(f"%{title}%"))
     if author:
@@ -86,7 +86,7 @@ def books_data(
     if location:
         query = query.filter(Book.location.ilike(f"%{location}%"))
 
-    # Ordinamento dinamico
+    # Dynamic sorting
     sort_column = getattr(Book, sort_by, Book.id)
     order_criteria = []
 
@@ -208,14 +208,14 @@ def _validate_book_fields(isbn: str, location: str, language: str | None):
     if isbn_canonical and not (is_isbn13(isbn_canonical) or is_isbn10(isbn_canonical)):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ISBN non valido. Deve essere un ISBN-13 corretto.",
+            detail="Invalid ISBN. Must be a valid ISBN-13.",
         )
 
     location_cleaned = location.strip()
     if not re.fullmatch(r"[A-Z]+\d+", location_cleaned):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Formato location non valido. Deve essere lettere maiuscole seguite da cifre, es. A5",
+            detail="Invalid location format. Must be uppercase letters followed by digits, e.g. A5",
         )
 
     language_cleaned = None
@@ -224,7 +224,7 @@ def _validate_book_fields(isbn: str, location: str, language: str | None):
         if not re.fullmatch(r"[A-Z]{2,3}", language_cleaned):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Lingua non valida. Deve essere 2-3 lettere maiuscole (es. IT, EN)",
+                detail="Invalid language. Must be 2-3 uppercase letters (e.g. IT, EN)",
             )
 
     return isbn_canonical, location_cleaned, language_cleaned
@@ -278,7 +278,7 @@ async def edit_book(
 
     book = db.query(Book).filter(Book.id == form_data.book_id, Book.user_id == user.id).first()
     if not book:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Libro non trovato")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Book not found")
 
     isbn_canonical, location_cleaned, language_cleaned = _validate_book_fields(
         form_data.isbn, form_data.location, form_data.language
@@ -318,7 +318,7 @@ async def delete_book(
 
     book = db.query(Book).filter(Book.id == book_id, Book.user_id == user.id).first()
     if not book:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Libro non trovato")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
 
     if book.cover_path != DEFAULT_COVER_PATH:
         if book.cover_path.startswith("https://res.cloudinary.com/"):

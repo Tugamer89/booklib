@@ -2,12 +2,12 @@ async function fetchApi(url, options = {}) {
     try {
         const response = await fetch(url, options);
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ detail: "Errore sconosciuto" }));
-            throw new Error(errorData.detail || `Errore: ${response.statusText}`);
+            const errorData = await response.json().catch(() => ({ detail: "Unknown error" }));
+            throw new Error(errorData.detail || `Error: ${response.statusText}`);
         }
         return response.json();
     } catch (error) {
-        console.error("Errore API:", error);
+        console.error("API error:", error);
         throw error;
     }
 }

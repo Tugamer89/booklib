@@ -1,14 +1,14 @@
-{% extends "emails/_base_email.html" %} {% block title %}Verifica il tuo Account BookLib{% endblock
-%} {% block header_title %}BookLib - Verifica Account{% endblock %} {% block content %}
-<p>Ciao {{ username }},</p>
+{% extends "emails/_base_email.html" %} {% block title %}Verify your BookLib Account{% endblock
+%} {% block header_title %}BookLib - Account Verification{% endblock %} {% block content %}
+<p>Hello {{ username }},</p>
 <p>
-    Grazie per esserti registrato a BookLib! Per completare la registrazione e attivare il tuo
-    account, per favore clicca sul pulsante qui sotto:
+    Thank you for registering with BookLib! To complete your registration and activate your
+    account, please click the button below:
 </p>
 <p style="text-align: center">
-    <a href="{{ verification_link }}" class="button">Verifica il mio Account</a>
+    <a href="{{ verification_link }}" class="button">Verify my Account</a>
 </p>
-<p>Se il pulsante non funziona, puoi copiare e incollare il seguente link nel tuo browser:</p>
+<p>If the button doesn't work, you can copy and paste the following link into your browser:</p>
 <p><a href="{{ verification_link }}">{{ verification_link }}</a></p>
-<p>Se non hai creato tu questo account, puoi ignorare questa email.</p>
+<p>If you did not create this account, you can ignore this email.</p>
 {% endblock %}

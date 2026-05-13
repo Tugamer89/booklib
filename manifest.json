@@ -1,7 +1,7 @@
 {
-    "name": "BookLib - La tua Libreria",
+    "name": "BookLib - Your Library",
     "short_name": "BookLib",
-    "description": "Un'applicazione per gestire la tua libreria personale.",
+    "description": "An application to manage your personal library.",
     "start_url": "/",
     "id": "/",
     "display": "standalone",
@@ -73,14 +73,14 @@
             "sizes": "1919x1079",
             "type": "image/png",
             "form_factor": "wide",
-            "label": "Vista Libreria Desktop"
+            "label": "Desktop Library View"
         },
         {
             "src": "/static/screenshots/booklib-mobile-1.png",
             "sizes": "2160x3840",
             "type": "image/png",
             "form_factor": "narrow",
-            "label": "Vista Libreria Mobile"
+            "label": "Mobile Library View"
         }
     ]
 }

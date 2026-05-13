@@ -11,13 +11,13 @@ serializer = URLSafeTimedSerializer(settings.session_secret_key)
 
 def validate_username(username: str):
     if not re.match(settings.username_regex, username):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username non valido.")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid username.")
 
 
 def validate_password(password: str):
     if not re.match(settings.password_regex, password):
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Password troppo corta o non valida."
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Password too short or invalid."
         )
 
 
@@ -29,7 +29,7 @@ def validate_username_and_password(username: str, password: str):
 def validate_email(email: str):
     if not re.match(settings.email_regex, email):
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Formato email non valido."
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid email format."
         )
 
 

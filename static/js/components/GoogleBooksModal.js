@@ -18,10 +18,10 @@ export default {
         const formattedQuery = computed(() => {
             const { title, author, isbn } = props.initialSearchTerms;
             const parts = [];
-            if (title) parts.push(`Titolo: "${title}"`);
-            if (author) parts.push(`Autore: "${author}"`);
-            if (isbn && isbn !== "N/D") parts.push(`ISBN: "${isbn}"`);
-            return parts.join(", ") || "Nessun termine inserito";
+            if (title) parts.push(`Title: "${title}"`);
+            if (author) parts.push(`Author: "${author}"`);
+            if (isbn && isbn !== "N/A") parts.push(`ISBN: "${isbn}"`);
+            return parts.join(", ") || "No search terms entered";
         });
 
         const search = async (loadMore = false) => {
@@ -29,12 +29,12 @@ export default {
             const queryParts = [];
             if (title) queryParts.push(`intitle:${encodeURIComponent(title)}`);
             if (author) queryParts.push(`inauthor:${encodeURIComponent(author)}`);
-            if (isbn && isbn !== "N/D")
+            if (isbn && isbn !== "N/A")
                 queryParts.push(`isbn:${encodeURIComponent(isbn.replaceAll("-", ""))}`);
 
             if (queryParts.length === 0) {
                 error.value =
-                    "Inserisci almeno un termine di ricerca (titolo, autore o ISBN) nel form.";
+                    "Please enter at least one search term (title, author or ISBN) in the form.";
                 return;
             }
             const finalQuery = queryParts.join("+");
@@ -68,7 +68,7 @@ export default {
 
                 startIndex.value += newItems.length;
                 if (!loadMore && newItems.length === 0)
-                    error.value = "Nessun libro trovato per questa ricerca.";
+                    error.value = "No books found for this search.";
             } catch (err) {
                 error.value = err.message;
             } finally {
@@ -134,22 +134,22 @@ export default {
                     <div class="p-4 border-b dark:border-slate-700 flex-shrink-0">
                         <div class="flex justify-between items-center">
                             <div>
-                                <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100">Risultati per:</h3>
+                                <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100">Results for:</h3>
                                 <p class="text-sm text-slate-500 dark:text-slate-400 truncate">{{ formattedQuery }}</p>
                             </div>
                             <button @click="close" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-2xl">&times;</button>
                         </div>
                     </div>
                     <div ref="resultsContainer" @scroll="handleScroll" class="overflow-y-auto p-4 flex-grow">
-                        <div v-if="isLoading" class="text-center text-slate-500">Caricamento...</div>
+                        <div v-if="isLoading" class="text-center text-slate-500">Loading...</div>
                         <div v-else-if="error" class="text-center text-red-500">{{ error }}</div>
                         <div v-else-if="results.length > 0">
                             <div class="space-y-3">
                                 <BookSearchResult v-for="(book, index) in results" :key="book.id + '-' + index" :book="book" @select="selectBook" />
                             </div>
-                            <div v-if="isLoadingMore" class="text-center text-slate-500 mt-4">Caricamento altri risultati...</div>
+                            <div v-if="isLoadingMore" class="text-center text-slate-500 mt-4">Loading more results...</div>
                         </div>
-                         <div v-else class="text-center text-slate-500 pt-8">Usa la barra di ricerca per trovare un libro.</div>
+                         <div v-else class="text-center text-slate-500 pt-8">Use the search to find a book.</div>
                     </div>
                 </div>
             </div>
@@ -161,6 +161,6 @@ async function extractErrorMessage(response) {
     const data = await response.json().catch(() => null);
 
     return data?.error?.message
-        ? `Errore nella ricerca: ${data.error.message}`
-        : "Errore nella ricerca.";
+        ? `Search error: ${data.error.message}`
+        : "Search error.";
 }

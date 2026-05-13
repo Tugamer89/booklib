@@ -27,7 +27,7 @@ def http_exception_redirect(request: Request, exc: HTTPException | StarletteHTTP
     if wants_json(request):
         return JSONResponse(
             status_code=exc.status_code,
-            content={"detail": exc.detail or "Errore"},
+            content={"detail": exc.detail or "Error"},
         )
 
     return templates.TemplateResponse(
@@ -35,7 +35,7 @@ def http_exception_redirect(request: Request, exc: HTTPException | StarletteHTTP
         name=ERROR_PAGE,
         context={
             "status_code": exc.status_code,
-            "title": "Oops! Qualcosa è andato storto",
+            "title": "Oops! Something went wrong",
             "message": exc.detail,
             "referer": request.headers.get("referer", "/"),
         },
@@ -43,7 +43,7 @@ def http_exception_redirect(request: Request, exc: HTTPException | StarletteHTTP
     )
 
 
-# Gestione errori di validazione (422)
+# Validation error handler (422)
 def validation_exception_handler(request: Request, exc: RequestValidationError):
     logger.warning(
         f"[VALIDATION EXCEPTION] {''.join(traceback.format_exception(type(exc), exc, exc.__traceback__))}"
@@ -55,15 +55,15 @@ def validation_exception_handler(request: Request, exc: RequestValidationError):
         name=ERROR_PAGE,
         context={
             "status_code": status.HTTP_422_UNPROCESSABLE_ENTITY,
-            "title": "Errore di validazione",
-            "message": "I dati forniti non sono validi.",
+            "title": "Validation error",
+            "message": "The provided data is not valid.",
             "referer": referer,
         },
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
     )
 
 
-# Gestione OperationalError
+# OperationalError handler
 def operational_error_handler(request: Request, exc: OperationalError):
     logger.error(
         f"[OPERATIONAL ERROR] {''.join(traceback.format_exception(type(exc), exc, exc.__traceback__))}"
@@ -71,7 +71,7 @@ def operational_error_handler(request: Request, exc: OperationalError):
 
     referer = request.headers.get("referer")
     message = (
-        "Il servizio è temporaneamente occupato o non disponibile. Riprova tra qualche istante."
+        "The service is temporarily busy or unavailable. Please try again in a moment."
     )
 
     return templates.TemplateResponse(
@@ -79,7 +79,7 @@ def operational_error_handler(request: Request, exc: OperationalError):
         name=ERROR_PAGE,
         context={
             "status_code": status.HTTP_503_SERVICE_UNAVAILABLE,
-            "title": "Servizio Temporaneamente Non Disponibile",
+            "title": "Service Temporarily Unavailable",
             "message": message,
             "referer": referer,
         },
@@ -87,11 +87,11 @@ def operational_error_handler(request: Request, exc: OperationalError):
     )
 
 
-# Gestione eccezioni per CSRF errato
+# CSRF error handler
 def csrf_protect_exception_handler(request: Request, exc: CsrfProtectError):
     logger.warning(f"CSRF error: {getattr(exc, 'message', str(exc))} | Path: {request.url.path}")
 
-    error_message = "Azione non valida. Torna indietro e riprova."
+    error_message = "Invalid action. Go back and try again."
 
     if wants_json(request):
         return JSONResponse(
@@ -105,7 +105,7 @@ def csrf_protect_exception_handler(request: Request, exc: CsrfProtectError):
         name=ERROR_PAGE,
         context={
             "status_code": status.HTTP_403_FORBIDDEN,
-            "title": "Azione non valida",
+            "title": "Invalid action",
             "message": error_message,
             "referer": referer or "/",
         },
@@ -113,21 +113,21 @@ def csrf_protect_exception_handler(request: Request, exc: CsrfProtectError):
     )
 
 
-# Gestione eccezioni generiche
+# Generic exception handler
 def generic_exception_handler(request: Request, exc: Exception):
     logger.error(
         f"[GENERIC ERROR] {''.join(traceback.format_exception(type(exc), exc, exc.__traceback__))}"
     )
 
     referer = request.headers.get("referer")
-    message = "Si è verificato un errore imprevisto. Riprova più tardi."
+    message = "An unexpected error occurred. Please try again later."
 
     return templates.TemplateResponse(
         request=request,
         name=ERROR_PAGE,
         context={
             "status_code": status.HTTP_500_INTERNAL_SERVER_ERROR,
-            "title": "Errore interno",
+            "title": "Internal error",
             "message": message,
             "referer": referer,
         },

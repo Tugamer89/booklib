@@ -4,64 +4,64 @@ from urllib.parse import quote_plus
 
 ENV_FILE = ".env"
 
-print("📚 Avvio script di setup per BookLib...")
+print("📚 Starting BookLib setup script...")
 
 
 def generate_base64_key(length=32):
-    """Genera una chiave sicura codificata in Base64."""
+    """Generates a secure Base64-encoded key."""
     return base64.b64encode(os.urandom(length)).decode("utf-8")
 
 
 def create_env_file():
-    """Crea il file .env se non esiste, utilizzando le configurazioni
-    specificate in questo script.
+    """Creates the .env file if it doesn't exist, using the configuration
+    specified in this script.
     """
     if os.path.exists(ENV_FILE):
-        print(f"Il file {ENV_FILE} esiste già. Assicurati che sia configurato correttamente.")
-        print("Saltando la creazione del .env...")
+        print(f"The {ENV_FILE} file already exists. Make sure it is configured correctly.")
+        print("Skipping .env creation...")
         return
 
-    print(f"Creazione del file {ENV_FILE}...")
+    print(f"Creating {ENV_FILE} file...")
 
-    # --- CONFIGURAZIONE DA MODIFICARE ---
-    # Modifica queste variabili con i tuoi valori prima di eseguire lo script.
+    # --- CONFIGURATION TO EDIT ---
+    # Modify these variables with your values before running the script.
 
-    # Configurazione Database PostgreSQL
+    # PostgreSQL Database Configuration
     DB_USER = "bookuser"
-    DB_PASSWORD = "password"  # Assicurati di usare una password sicura
+    DB_PASSWORD = "password"  # Make sure to use a strong password
     DB_HOST = "localhost"
     DB_PORT = "5432"
     DB_NAME = "booklib"
 
-    # Configurazione Cloudinary (per le copertine)
+    # Cloudinary Configuration (for cover images)
     CLOUDINARY_CLOUD_NAME = "your_cloud_name"
     CLOUDINARY_API_KEY = "your_api_key"
     CLOUDINARY_API_SECRET = "your_api_secret"
 
-    # Amministratori dell'applicazione (elenco di stringhe)
+    # Application administrators (list of strings)
     ADMIN_USERS_LIST = ["admin", "admin2"]
 
-    # Keepalive (opzionale, lascia stringa vuota "" per disabilitare)
-    # Esempio: 'https://mia-app.onrender.com/'
+    # Keepalive (optional, leave empty string "" to disable)
+    # Example: 'https://my-app.onrender.com/'
     KEEPALIVE_URL = ""
     KEEPALIVE_CRON = "*/10 * * * *"
-    KEEPALIVE_DB = ""  # Es. 'test' (un nome qualsiasi per attivare il keepalive DB)
+    KEEPALIVE_DB = ""  # E.g. 'test' (any name to enable DB keepalive)
     KEEPALIVE_DB_CRON = "0 0 */5 * *"
 
-    # --- FINE CONFIGURAZIONE ---
+    # --- END OF CONFIGURATION ---
 
-    # Generazione chiavi segrete
+    # Generate secret keys
     session_secret = generate_base64_key()
     csrf_secret = generate_base64_key()
 
-    # Creazione URL database sicuro
+    # Create secure database URL
     safe_password = quote_plus(DB_PASSWORD)
     database_url = f"postgresql://{DB_USER}:{safe_password}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
-    # Conversione lista admin
+    # Convert admin list
     admin_users_str = ",".join(ADMIN_USERS_LIST)
 
-    # Scrittura del file .env
+    # Write the .env file
     with open(ENV_FILE, "w") as f:
         f.write(f"SESSION_SECRET='{session_secret}'\n")
         f.write(f"CSRF_SECRET='{csrf_secret}'\n")
@@ -76,43 +76,43 @@ def create_env_file():
         f.write(f"KEEPALIVE_DB_CRON='{KEEPALIVE_DB_CRON}'\n")
         f.write("DEBUG='False'\n")
 
-    print(f"File {ENV_FILE} creato con chiavi generate automaticamente.")
+    print(f"{ENV_FILE} file created with auto-generated keys.")
 
 
 def create_tables(engine, base):
-    """Crea tutte le tabelle definite nei modelli SQLAlchemy."""
-    print("Creazione tabelle nel database...")
+    """Creates all tables defined in the SQLAlchemy models."""
+    print("Creating database tables...")
     try:
         base.metadata.create_all(bind=engine)
-        print("Tabelle create con successo.")
+        print("Tables created successfully.")
     except Exception as e:
-        print(f"Errore durante la creazione delle tabelle: {e}")
+        print(f"Error creating tables: {e}")
         print(
-            "Assicurati che il database sia in esecuzione e le credenziali in .env (o nello script) siano corrette."
+            "Make sure the database is running and the credentials in .env (or in the script) are correct."
         )
 
 
 if __name__ == "__main__":
-    # 1. Crea il file .env
+    # 1. Create the .env file
     create_env_file()
 
-    # 2. Importa la configurazione del DB (che ora legge da .env)
-    #    e i modelli solo DOPO che .env è stato creato.
-    print("\nImportazione configurazione e modelli DB...")
+    # 2. Import DB configuration (which now reads from .env)
+    #    and models only AFTER .env has been created.
+    print("\nImporting DB configuration and models...")
     try:
         from db.database import Base, engine
     except ImportError as e:
-        print(f"Errore di importazione: {e}")
-        print("Assicurati di eseguire questo script dalla directory principale del progetto.")
+        print(f"Import error: {e}")
+        print("Make sure you run this script from the project root directory.")
         exit(1)
     except Exception as e:
-        print(f"Errore durante l'importazione dei moduli DB: {e}")
-        print("Controlla la configurazione del database e le dipendenze installate.")
+        print(f"Error importing DB modules: {e}")
+        print("Check the database configuration and installed dependencies.")
         exit(1)
 
-    # 3. Crea le tabelle
+    # 3. Create the tables
     create_tables(engine, Base)
 
-    print("\n✅ Setup completato con successo!")
-    print("Ora puoi avviare l'applicazione con:")
+    print("\n✅ Setup completed successfully!")
+    print("You can now start the application with:")
     print("uvicorn main:app --reload")

@@ -6,7 +6,7 @@ export default {
         const info = props.book.volumeInfo;
         const thumbnail =
             info.imageLinks?.thumbnail?.replace("http:", "https:") || "/static/covers/default.jpg";
-        const title = info.title || "Titolo non disponibile";
+        const title = info.title || "Title not available";
         const authors = (info.authors || []).join(", ");
         const publisher = info.publisher || "";
 
@@ -33,7 +33,7 @@ export default {
                 <p class="text-xs text-slate-500 truncate">{{ publisher }}</p>
                 <p v-if="isbn" class="text-xs text-slate-500">ISBN: {{ isbn }}</p>
             </div>
-            <button class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition flex-shrink-0">Seleziona</button>
+            <button class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition flex-shrink-0">Select</button>
         </div>
     `,
 };
