@@ -15,7 +15,7 @@ export default {
           <div class="flex items-center justify-between h-16">
             <div class="flex-shrink-0 flex items-center gap-2">
               <BookMarked class="w-7 h-7 text-indigo-600 dark:text-indigo-400" />
-              <h1 class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">Library</h1>
+              <h1 class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">BookLib</h1>
             </div>
             <div class="flex items-center space-x-4">
               <a v-if="isAdmin" href="/admin/users" class="text-sm font-medium text-slate-600 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400 transition">
