@@ -33,7 +33,7 @@ def get_user_by_username_or_email(db: Session, identifier: str) -> User | None:
     )
 
 
-def create_user(db: Session, user_data: dict, verification_token: str) -> User:
+def create_user(db: Session, user_data: dict, verification_token: str) -> User | None:
     hashed_password = hash_password(user_data["password"])
     db_user = User(
         username=user_data["username"].strip(),
