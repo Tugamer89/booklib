@@ -43,11 +43,13 @@ jobs:
         run: uv sync --all-extras --dev
 
       - name: Linting and Formatting Execution
+        continue-on-error: true
         run: uv run pre-commit run --all-files
 
       - name: Push formatting changes and lockfile changes
-        if: always()
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "chore: auto-format code and update lockfile"
-          branch: ${{ github.head_ref }}
+
+      - name: Verify no unfixable errors remain
+        run: uv run pre-commit run --all-files
