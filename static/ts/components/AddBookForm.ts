@@ -2,6 +2,7 @@ import { ref, watch } from "vue";
 import { formatISBN, liveFormatISBN } from "../utils/formatters.js";
 import { Camera, Search } from "lucide-vue-next";
 import GoogleBooksModal from "./GoogleBooksModal.js";
+
 export default {
     name: "AddBookForm",
     props: {
@@ -17,14 +18,18 @@ export default {
         const coverPreview = ref(props.bookData.cover_url || "/static/covers/default.jpg");
         const isScanning = ref(false);
         let html5QrCode = null;
-        watch(() => props.bookData.cover_url, (newUrl) => {
-            if (newUrl) {
-                coverPreview.value = newUrl;
+
+        watch(
+            () => props.bookData.cover_url,
+            (newUrl) => {
+                if (newUrl) {
+                    coverPreview.value = newUrl;
+                } else {
+                    coverPreview.value = "/static/covers/default.jpg";
+                }
             }
-            else {
-                coverPreview.value = "/static/covers/default.jpg";
-            }
-        });
+        );
+
         const handleFileChange = (event) => {
             const file = event.target.files[0];
             if (file) {
@@ -32,6 +37,7 @@ export default {
                 props.bookData.cover_url = "";
             }
         };
+
         const startIsbnScanner = () => {
             if (isScanning.value) {
                 stopScanner();
@@ -40,47 +46,56 @@ export default {
             isScanning.value = true;
             const readerElement = document.getElementById("isbn-scanner-reader");
             readerElement.classList.remove("hidden");
+
             html5QrCode = new Html5Qrcode("isbn-scanner-reader");
             html5QrCode
-                .start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 150 } }, (decodedText) => {
-                props.bookData.isbn = formatISBN(decodedText);
-                stopScanner();
-            }, (errorMessage) => {
-                /* ignore errors */
-            })
+                .start(
+                    { facingMode: "environment" },
+                    { fps: 10, qrbox: { width: 250, height: 150 } },
+                    (decodedText) => {
+                        props.bookData.isbn = formatISBN(decodedText);
+                        stopScanner();
+                    },
+                    (errorMessage) => {
+                        /* ignore errors */
+                    }
+                )
                 .catch((err) => {
-                console.error("Error starting camera. Make sure you have granted the necessary permissions.");
-                stopScanner();
-            });
+                    console.error(
+                        "Error starting camera. Make sure you have granted the necessary permissions."
+                    );
+                    stopScanner();
+                });
         };
+
         const stopScanner = () => {
             if (html5QrCode?.isScanning) {
                 html5QrCode
                     .stop()
                     .then(() => {
-                    const readerElement = document.getElementById("isbn-scanner-reader");
-                    if (readerElement)
-                        readerElement.classList.add("hidden");
-                    isScanning.value = false;
-                })
+                        const readerElement = document.getElementById("isbn-scanner-reader");
+                        if (readerElement) readerElement.classList.add("hidden");
+                        isScanning.value = false;
+                    })
                     .catch((err) => {
-                    console.error("Error stopping the scanner.", err);
-                    isScanning.value = false;
-                });
-            }
-            else {
+                        console.error("Error stopping the scanner.", err);
+                        isScanning.value = false;
+                    });
+            } else {
                 isScanning.value = false;
                 const readerElement = document.getElementById("isbn-scanner-reader");
-                if (readerElement)
-                    readerElement.classList.add("hidden");
+                if (readerElement) readerElement.classList.add("hidden");
             }
         };
+
         const onIsbnInput = (event) => {
             props.bookData.isbn = liveFormatISBN(event.target.value);
         };
+
         const openGoogleSearch = () => {
             emit("open-google-search", props.bookData);
         };
+
         return {
             coverPreview,
             isScanning,
@@ -98,7 +113,7 @@ export default {
                 <input type="hidden" name="csrf_token" :value="csrfToken">
                 <input type="hidden" name="cover_url" v-model="bookData.cover_url">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    
+
                     <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="sm:col-span-2">
                             <label for="title" class="block text-sm font-medium text-slate-600 dark:text-slate-300">Title *</label>
@@ -149,7 +164,7 @@ export default {
                             <input type="file" name="cover" id="cover-upload" @change="handleFileChange" accept="image/*" class="hidden"/>
                     </div>
                 </div>
-                
+
                 <div class="mt-8 flex flex-col-reverse sm:flex-row justify-between items-center gap-4 border-t border-slate-200 dark:border-slate-700 pt-6">
                     <button type="button" @click="openGoogleSearch" class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors font-semibold">
                         <Search class="w-5 h-5" />

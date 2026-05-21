@@ -3,6 +3,7 @@ import { useBodyScrollLock } from "../utils/useBodyScrollLock.js";
 import { api } from "../services/api.js";
 import { formatISBN } from "../utils/formatters.js";
 import { ChevronUp } from "lucide-vue-next";
+
 import Navbar from "../components/Navbar.js";
 import BookCard from "../components/BookCard.js";
 import AddBookForm from "../components/AddBookForm.js";
@@ -10,6 +11,7 @@ import EditBookModal from "../components/EditBookModal.js";
 import DetailModal from "../components/DetailModal.js";
 import FilterPanel from "../components/FilterPanel.js";
 import GoogleBooksModal from "../components/GoogleBooksModal.js";
+
 export default {
     components: {
         Navbar,
@@ -27,6 +29,7 @@ export default {
         const hasMore = ref(true);
         const currentOffset = ref(0);
         const fetchError = ref(null);
+
         const currentFilters = ref({
             title: "",
             author: "",
@@ -35,9 +38,11 @@ export default {
             sort_by: "id",
             sort_order: "asc",
         });
+
         const showAddForm = ref(localStorage.getItem("showAddForm") === "true");
         const showFilters = ref(localStorage.getItem("showFilters") === "true");
         const showScrollToTop = ref(false);
+
         const selectedBookForEdit = ref(null);
         const selectedBookForDetail = ref(null);
         const showGoogleBooksModal = ref(false);
@@ -53,19 +58,25 @@ export default {
             personal_comment: "",
             cover_url: "",
         });
+
         const userData = JSON.parse(document.getElementById("user-data").textContent);
         const csrfToken = ref(JSON.parse(document.getElementById("csrf-token").textContent));
         const username = ref(userData.username);
         const isAdmin = ref(userData.is_admin);
-        const isAnyModalOpen = computed(() => !!selectedBookForEdit.value ||
-            !!selectedBookForDetail.value ||
-            showGoogleBooksModal.value);
+
+        const isAnyModalOpen = computed(
+            () =>
+                !!selectedBookForEdit.value ||
+                !!selectedBookForDetail.value ||
+                showGoogleBooksModal.value
+        );
         useBodyScrollLock(isAnyModalOpen);
+
         let debounceTimer = null;
         let lastAppliedFilters = JSON.stringify(currentFilters.value);
+
         const fetchBooks = async (reset = false) => {
-            if (isLoading.value || (!reset && !hasMore.value))
-                return;
+            if (isLoading.value || (!reset && !hasMore.value)) return;
             isLoading.value = true;
             if (reset) {
                 currentOffset.value = 0;
@@ -79,28 +90,26 @@ export default {
                 books.value.push(...data.books);
                 hasMore.value = data.has_more;
                 currentOffset.value += data.books.length;
-            }
-            catch (error) {
+            } catch (error) {
                 fetchError.value = "Unable to load books. Please try again later.";
                 console.error(error);
-            }
-            finally {
+            } finally {
                 isLoading.value = false;
             }
         };
+
         const applyFiltersAndUrl = () => {
             const currentFiltersString = JSON.stringify(currentFilters.value);
-            if (lastAppliedFilters === currentFiltersString)
-                return;
+            if (lastAppliedFilters === currentFiltersString) return;
+
             fetchBooks(true);
             lastAppliedFilters = currentFiltersString;
+
             const urlParams = new URLSearchParams();
             for (const [key, value] of Object.entries(currentFilters.value)) {
                 if (value && String(value).trim() !== "") {
-                    if (key === "sort_by" && value === "id")
-                        continue;
-                    if (key === "sort_order" && value === "asc")
-                        continue;
+                    if (key === "sort_by" && value === "id") continue;
+                    if (key === "sort_order" && value === "asc") continue;
                     urlParams.append(key, value);
                 }
             }
@@ -110,47 +119,60 @@ export default {
                 : globalThis.location.pathname;
             globalThis.history.pushState({ path: newUrl }, "", newUrl);
         };
-        watch(currentFilters, () => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(applyFiltersAndUrl, 500);
-        }, { deep: true });
+
+        watch(
+            currentFilters,
+            () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(applyFiltersAndUrl, 500);
+            },
+            { deep: true }
+        );
+
         let scrollDebounceTimer = null;
         let resizeDebounceTimer = null;
+
         const onScroll = () => {
             const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
             const scrollPosition = window.scrollY;
+
             if (scrollableHeight > 0 && scrollPosition / scrollableHeight > 0.85) {
                 fetchBooks();
             }
+
             showScrollToTop.value = window.scrollY > 400;
         };
+
         const onResize = () => {
             showScrollToTop.value = window.scrollY > 400;
         };
+
         const handleScroll = () => {
             clearTimeout(scrollDebounceTimer);
             scrollDebounceTimer = setTimeout(onScroll, 100);
         };
+
         const handleResize = () => {
             clearTimeout(resizeDebounceTimer);
             resizeDebounceTimer = setTimeout(onResize, 100);
         };
+
         const handleKeyDown = (event) => {
             if (event.key === "Escape") {
                 if (showGoogleBooksModal.value) {
                     showGoogleBooksModal.value = false;
-                }
-                else if (selectedBookForEdit.value) {
+                } else if (selectedBookForEdit.value) {
                     selectedBookForEdit.value = null;
-                }
-                else if (selectedBookForDetail.value) {
+                } else if (selectedBookForDetail.value) {
                     selectedBookForDetail.value = null;
                 }
             }
         };
+
         const scrollToTop = () => {
             window.scrollTo({ top: 0, behavior: "smooth" });
         };
+
         const applyFiltersNow = () => {
             clearTimeout(debounceTimer);
             applyFiltersAndUrl();
@@ -204,28 +226,36 @@ export default {
             }
             localStorage.setItem("showAddForm", String(isShown));
         });
+
         watch(showFilters, (isShown) => {
             localStorage.setItem("showFilters", String(isShown));
         });
+
         onMounted(() => {
             window.scrollTo(0, 0);
+
             const urlParams = new URLSearchParams(globalThis.location.search);
             const filtersFromUrl = {};
             for (const [key, value] of urlParams.entries()) {
                 filtersFromUrl[key] = value;
             }
             currentFilters.value = { ...currentFilters.value, ...filtersFromUrl };
+
             lastAppliedFilters = JSON.stringify(currentFilters.value);
+
             fetchBooks();
+
             globalThis.addEventListener("scroll", handleScroll);
             globalThis.addEventListener("resize", handleResize);
             globalThis.addEventListener("keydown", handleKeyDown);
         });
+
         onUnmounted(() => {
             globalThis.removeEventListener("scroll", handleScroll);
             globalThis.removeEventListener("resize", handleResize);
             globalThis.removeEventListener("keydown", handleKeyDown);
         });
+
         return {
             books,
             isLoading,
@@ -243,6 +273,7 @@ export default {
             isAdmin,
             isAnyModalOpen,
             csrfToken,
+
             scrollToTop,
             applyFiltersNow,
             resetFiltersNow,

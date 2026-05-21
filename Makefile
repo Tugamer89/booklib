@@ -1,14 +1,18 @@
-.PHONY: install format hook-update run
+.PHONY: install build-ts format hook-update run
 
 install:
 	uv sync
+	npm install
+
+build-ts:
+	npx tsc
 
 format:
-	npx prettier --write "**/*.{js,css,html,json,md,yml,yaml}"
+	npx prettier --write "**/*.{ts,js,css,html,json,md,yml,yaml}"
 	uv run ruff format .
 
 hook-update:
 	uv run pre-commit autoupdate
 
-run:
+run: build-ts
 	uv run uvicorn main:app --reload --port 8000

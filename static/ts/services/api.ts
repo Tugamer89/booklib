@@ -6,12 +6,12 @@ async function fetchApi(url, options = {}) {
             throw new Error(errorData.detail || `Error: ${response.statusText}`);
         }
         return response.json();
-    }
-    catch (error) {
+    } catch (error) {
         console.error("API error:", error);
         throw error;
     }
 }
+
 export const api = {
     getBooks: (params) => {
         const urlParams = new URLSearchParams(params);

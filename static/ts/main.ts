@@ -3,15 +3,17 @@ if ("serviceWorker" in navigator) {
         try {
             const registration = await navigator.serviceWorker.register("/sw.js");
             console.log("ServiceWorker: Registration successful, scope:", registration.scope);
-        }
-        catch (error) {
+        } catch (error) {
             console.log("ServiceWorker: Registration failed:", error);
         }
     });
 }
+
 import { createApp } from "vue";
 import Home from "./views/Home.js";
+
 const app = createApp(Home);
+
 app.directive("click-outside", {
     beforeMount(el, binding) {
         el.clickOutsideEvent = function (event) {
@@ -25,4 +27,5 @@ app.directive("click-outside", {
         document.body.removeEventListener("click", el.clickOutsideEvent);
     },
 });
+
 app.mount("#app");

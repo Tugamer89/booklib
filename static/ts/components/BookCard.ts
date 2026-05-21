@@ -1,5 +1,6 @@
 import { formatISBN } from "../utils/formatters.js";
 import { Pencil, Trash2 } from "lucide-vue-next";
+
 export default {
     props: ["book", "csrfToken"],
     emits: ["edit-book", "show-details"],
@@ -24,7 +25,7 @@ export default {
                         <button @click.stop="$emit('edit-book', book)" class="flex items-center justify-center text-indigo-500 hover:text-indigo-700" title="Edit">
                             <Pencil class="w-5 h-5" />
                         </button>
-                        
+
                         <form action="/delete" method="post" @submit="confirmDelete" @click.stop class="flex items-center m-0">
                             <input type="hidden" name="book_id" :value="book.id">
                             <input type="hidden" name="csrf_token" :value="csrfToken">
@@ -39,7 +40,9 @@ export default {
     `,
     methods: {
         confirmDelete(event) {
-            const userConfirmed = globalThis.confirm(`Are you sure you want to delete "${this.book.title}"?`);
+            const userConfirmed = globalThis.confirm(
+                `Are you sure you want to delete "${this.book.title}"?`
+            );
             if (!userConfirmed) {
                 event.preventDefault();
             }

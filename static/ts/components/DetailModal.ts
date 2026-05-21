@@ -1,5 +1,6 @@
 import { formatISBN } from "../utils/formatters.js";
 import { X } from "lucide-vue-next";
+
 export default {
     props: ["book"],
     emits: ["close"],
@@ -11,9 +12,9 @@ export default {
     template: `
         <transition name="fade" appear>
             <div class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" @click.self="close">
-                
+
                 <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
-                    
+
                     <div class="p-6 pb-4 flex-shrink-0 flex justify-between items-start gap-4">
                         <div class="flex-grow">
                             <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-1">{{ book.title }}</h2>
@@ -28,15 +29,15 @@ export default {
                         <div class="w-full md:w-1/3 flex-shrink-0">
                             <img :src="book.cover_path" :alt="'Cover of ' + book.title" class="w-full h-auto object-contain rounded-lg shadow-md sticky top-0">
                         </div>
-                        
+
                         <div class="w-full md:w-2/3 text-sm text-left">
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-3 border-t border-slate-200 dark:border-slate-700 pt-4">
                                 <strong class="text-slate-500 dark:text-slate-400">Publisher:</strong>
                                 <span class="sm:col-span-2">{{ book.publisher || 'N/A' }}</span>
-                                
+
                                 <strong class="text-slate-500 dark:text-slate-400">ISBN:</strong>
                                 <span class="sm:col-span-2 font-mono">{{ formatISBN(book.isbn) }}</span>
-                                
+
                                 <strong class="text-slate-500 dark:text-slate-400">Location:</strong>
                                 <span class="sm:col-span-2 font-mono">{{ book.location }}</span>
 

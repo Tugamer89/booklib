@@ -42,3 +42,4 @@ htmlcov/
 
 # Wakatime config
 .wakatime.cfg
+node_modules/

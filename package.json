@@ -1,0 +1,15 @@
+{
+    "name": "booklib-ts",
+    "version": "1.0.0",
+    "description": "TS build for BookLib frontend",
+    "scripts": {
+        "build": "tsc"
+    },
+    "devDependencies": {
+        "@types/dom-mediacapture-record": "^1.0.22",
+        "@types/serviceworker": "^0.0.197",
+        "lucide-vue-next": "^1.0.0",
+        "typescript": "^5.0.0",
+        "vue": "^3.5.34"
+    }
+}

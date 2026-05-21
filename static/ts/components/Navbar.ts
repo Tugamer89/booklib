@@ -1,5 +1,6 @@
 import { useTheme } from "../utils/theme.js";
 import { BookMarked, Sun, Moon } from "lucide-vue-next";
+
 export default {
     props: ["isAdmin", "username"],
     emits: ["toggle-theme"],

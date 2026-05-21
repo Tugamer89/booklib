@@ -1,6 +1,9 @@
 /// <reference lib="webworker" />
-const sw = self;
+
+const sw = self as unknown as ServiceWorkerGlobalScope;
+
 const CACHE_NAME = "booklib-cache-v1.9.1"; // x-release-please-version
+
 const URLS_TO_CACHE = [
     "/",
     "/manifest.json",
@@ -21,6 +24,7 @@ const URLS_TO_CACHE = [
     "/static/js/services/api.js",
     "/static/covers/default.jpg",
     "/favicon.ico",
+
     "/static/icons/icon-48x48.png",
     "/static/icons/icon-72x72.png",
     "/static/icons/icon-96x96.png",
@@ -31,12 +35,15 @@ const URLS_TO_CACHE = [
     "/static/icons/icon-256x256.png",
     "/static/icons/icon-384x384.png",
     "/static/icons/icon-512x512.png",
+
     "https://corsproxy.io/?url=https://cdn.tailwindcss.com",
     "https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js",
     "https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js",
 ];
-sw.addEventListener("install", (event) => {
+
+sw.addEventListener("install", (event: ExtendableEvent) => {
     console.log("[ServiceWorker] Installed");
+
     const precache = async () => {
         try {
             const cache = await caches.open(CACHE_NAME);
@@ -49,68 +56,81 @@ sw.addEventListener("install", (event) => {
             });
             await Promise.all(cachePromises);
             await sw.skipWaiting();
-        }
-        catch (error) {
+        } catch (error) {
             console.error("[ServiceWorker] Pre-caching failed:", error);
         }
     };
+
     event.waitUntil(precache());
 });
-sw.addEventListener("activate", (event) => {
+
+sw.addEventListener("activate", (event: ExtendableEvent) => {
     console.log("[ServiceWorker] Activated");
+
     const cleanup = async () => {
         try {
             const cacheNames = await caches.keys();
-            await Promise.all(cacheNames
-                .filter((cacheName) => cacheName !== CACHE_NAME)
-                .map((cacheName) => {
-                console.log("[ServiceWorker] Removing old cache:", cacheName);
-                return caches.delete(cacheName);
-            }));
+            await Promise.all(
+                cacheNames
+                    .filter((cacheName) => cacheName !== CACHE_NAME)
+                    .map((cacheName) => {
+                        console.log("[ServiceWorker] Removing old cache:", cacheName);
+                        return caches.delete(cacheName);
+                    })
+            );
             await sw.clients.claim();
-        }
-        catch (error) {
+        } catch (error) {
             console.error("[ServiceWorker] Cache cleanup failed:", error);
         }
     };
+
     event.waitUntil(cleanup());
 });
-sw.addEventListener("fetch", (event) => {
+
+sw.addEventListener("fetch", (event: FetchEvent) => {
     const { request } = event;
+
     if (request.method !== "GET") {
         return;
     }
+
     if (request.mode === "navigate" || request.url.includes("/books-data")) {
         event.respondWith(networkFirst(request));
         return;
     }
-    event.respondWith(cacheFirst(request));
+
+    event.respondWith(cacheFirst(request) as Promise<Response>);
 });
-const networkFirst = async (request) => {
+
+const networkFirst = async (request: Request) => {
     try {
         const networkResponse = await fetch(request);
+
         const cache = await caches.open(CACHE_NAME);
         cache.put(request, networkResponse.clone());
+
         return networkResponse;
-    }
-    catch (error) {
+    } catch (error) {
         console.warn("[ServiceWorker] Network failed, trying cache for:", request.url, error);
         const cachedResponse = await caches.match(request);
-        return cachedResponse;
+        return cachedResponse as Response;
     }
 };
-const cacheFirst = async (request) => {
+
+const cacheFirst = async (request: Request) => {
     const cachedResponse = await caches.match(request);
     if (cachedResponse) {
         return cachedResponse;
     }
+
     try {
         const networkResponse = await fetch(request);
+
         const cache = await caches.open(CACHE_NAME);
         cache.put(request, networkResponse.clone());
+
         return networkResponse;
-    }
-    catch (error) {
+    } catch (error) {
         console.error("[ServiceWorker] Fetch failed, not in cache:", request.url, error);
     }
 };

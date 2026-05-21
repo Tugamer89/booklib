@@ -1,4 +1,5 @@
 import { computed } from "vue";
+
 export default {
     name: "FilterPanel",
     props: {
@@ -15,12 +16,15 @@ export default {
                 emit("update:modelValue", newValue);
             },
         });
+
         const reset = () => {
             emit("resetNow");
         };
+
         const apply = () => {
             emit("applyNow");
         };
+
         return { filters, reset, apply };
     },
     template: `
@@ -69,7 +73,7 @@ export default {
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="flex justify-end space-x-3 mt-6 border-t border-slate-200 dark:border-slate-700 pt-4">
                      <button @click="reset" type="button" class="bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-md hover:bg-slate-300 dark:hover:bg-slate-500 transition">Reset</button>
                      <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md shadow hover:bg-indigo-700 transition">Apply</button>
