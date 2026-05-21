@@ -4,15 +4,20 @@ export default {
     emits: ["select"],
     setup(props) {
         const info = props.book.volumeInfo;
-        const thumbnail = info.imageLinks?.thumbnail?.replace("http:", "https:") || "/static/covers/default.jpg";
+        const thumbnail =
+            info.imageLinks?.thumbnail?.replace("http:", "https:") || "/static/covers/default.jpg";
         const title = info.title || "Title not available";
         const authors = (info.authors || []).join(", ");
         const publisher = info.publisher || "";
         let isbn = "";
         const ids = info.industryIdentifiers || [];
         if (Array.isArray(ids) && ids.length) {
-            const isbn13 = ids.find((i) => i.type === "ISBN_13" || i.type?.toUpperCase().includes("13"));
-            const isbn10 = ids.find((i) => i.type === "ISBN_10" || i.type?.toUpperCase().includes("10"));
+            const isbn13 = ids.find(
+                (i) => i.type === "ISBN_13" || i.type?.toUpperCase().includes("13")
+            );
+            const isbn10 = ids.find(
+                (i) => i.type === "ISBN_10" || i.type?.toUpperCase().includes("10")
+            );
             isbn = isbn13?.identifier || isbn10?.identifier || "";
         }
         return { thumbnail, title, authors, publisher, isbn };

@@ -17,14 +17,16 @@ export default {
         const coverPreview = ref(props.bookData.cover_url || "/static/covers/default.jpg");
         const isScanning = ref(false);
         let html5QrCode = null;
-        watch(() => props.bookData.cover_url, (newUrl) => {
-            if (newUrl) {
-                coverPreview.value = newUrl;
+        watch(
+            () => props.bookData.cover_url,
+            (newUrl) => {
+                if (newUrl) {
+                    coverPreview.value = newUrl;
+                } else {
+                    coverPreview.value = "/static/covers/default.jpg";
+                }
             }
-            else {
-                coverPreview.value = "/static/covers/default.jpg";
-            }
-        });
+        );
         const handleFileChange = (event) => {
             const file = event.target.files[0];
             if (file) {
@@ -42,37 +44,41 @@ export default {
             readerElement.classList.remove("hidden");
             html5QrCode = new Html5Qrcode("isbn-scanner-reader");
             html5QrCode
-                .start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 150 } }, (decodedText) => {
-                props.bookData.isbn = formatISBN(decodedText);
-                stopScanner();
-            }, (errorMessage) => {
-                /* ignore errors */
-            })
+                .start(
+                    { facingMode: "environment" },
+                    { fps: 10, qrbox: { width: 250, height: 150 } },
+                    (decodedText) => {
+                        props.bookData.isbn = formatISBN(decodedText);
+                        stopScanner();
+                    },
+                    (errorMessage) => {
+                        /* ignore errors */
+                    }
+                )
                 .catch((err) => {
-                console.error("Error starting camera. Make sure you have granted the necessary permissions.");
-                stopScanner();
-            });
+                    console.error(
+                        "Error starting camera. Make sure you have granted the necessary permissions."
+                    );
+                    stopScanner();
+                });
         };
         const stopScanner = () => {
             if (html5QrCode?.isScanning) {
                 html5QrCode
                     .stop()
                     .then(() => {
-                    const readerElement = document.getElementById("isbn-scanner-reader");
-                    if (readerElement)
-                        readerElement.classList.add("hidden");
-                    isScanning.value = false;
-                })
+                        const readerElement = document.getElementById("isbn-scanner-reader");
+                        if (readerElement) readerElement.classList.add("hidden");
+                        isScanning.value = false;
+                    })
                     .catch((err) => {
-                    console.error("Error stopping the scanner.", err);
-                    isScanning.value = false;
-                });
-            }
-            else {
+                        console.error("Error stopping the scanner.", err);
+                        isScanning.value = false;
+                    });
+            } else {
                 isScanning.value = false;
                 const readerElement = document.getElementById("isbn-scanner-reader");
-                if (readerElement)
-                    readerElement.classList.add("hidden");
+                if (readerElement) readerElement.classList.add("hidden");
             }
         };
         const onIsbnInput = (event) => {

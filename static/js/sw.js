@@ -49,8 +49,7 @@ sw.addEventListener("install", (event) => {
             });
             await Promise.all(cachePromises);
             await sw.skipWaiting();
-        }
-        catch (error) {
+        } catch (error) {
             console.error("[ServiceWorker] Pre-caching failed:", error);
         }
     };
@@ -61,15 +60,16 @@ sw.addEventListener("activate", (event) => {
     const cleanup = async () => {
         try {
             const cacheNames = await caches.keys();
-            await Promise.all(cacheNames
-                .filter((cacheName) => cacheName !== CACHE_NAME)
-                .map((cacheName) => {
-                console.log("[ServiceWorker] Removing old cache:", cacheName);
-                return caches.delete(cacheName);
-            }));
+            await Promise.all(
+                cacheNames
+                    .filter((cacheName) => cacheName !== CACHE_NAME)
+                    .map((cacheName) => {
+                        console.log("[ServiceWorker] Removing old cache:", cacheName);
+                        return caches.delete(cacheName);
+                    })
+            );
             await sw.clients.claim();
-        }
-        catch (error) {
+        } catch (error) {
             console.error("[ServiceWorker] Cache cleanup failed:", error);
         }
     };
@@ -92,8 +92,7 @@ const networkFirst = async (request) => {
         const cache = await caches.open(CACHE_NAME);
         cache.put(request, networkResponse.clone());
         return networkResponse;
-    }
-    catch (error) {
+    } catch (error) {
         console.warn("[ServiceWorker] Network failed, trying cache for:", request.url, error);
         const cachedResponse = await caches.match(request);
         return cachedResponse;
@@ -109,8 +108,7 @@ const cacheFirst = async (request) => {
         const cache = await caches.open(CACHE_NAME);
         cache.put(request, networkResponse.clone());
         return networkResponse;
-    }
-    catch (error) {
+    } catch (error) {
         console.error("[ServiceWorker] Fetch failed, not in cache:", request.url, error);
     }
 };

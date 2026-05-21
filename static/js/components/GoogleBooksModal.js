@@ -16,21 +16,16 @@ export default {
         const formattedQuery = computed(() => {
             const { title, author, isbn } = props.initialSearchTerms;
             const parts = [];
-            if (title)
-                parts.push(`Title: "${title}"`);
-            if (author)
-                parts.push(`Author: "${author}"`);
-            if (isbn && isbn !== "N/A")
-                parts.push(`ISBN: "${isbn}"`);
+            if (title) parts.push(`Title: "${title}"`);
+            if (author) parts.push(`Author: "${author}"`);
+            if (isbn && isbn !== "N/A") parts.push(`ISBN: "${isbn}"`);
             return parts.join(", ") || "No search terms entered";
         });
         const search = async (loadMore = false) => {
             const { title, author, isbn } = props.initialSearchTerms;
             const queryParts = [];
-            if (title)
-                queryParts.push(`intitle:${encodeURIComponent(title)}`);
-            if (author)
-                queryParts.push(`inauthor:${encodeURIComponent(author)}`);
+            if (title) queryParts.push(`intitle:${encodeURIComponent(title)}`);
+            if (author) queryParts.push(`inauthor:${encodeURIComponent(author)}`);
             if (isbn && isbn !== "N/A")
                 queryParts.push(`isbn:${encodeURIComponent(isbn.replaceAll("-", ""))}`);
             if (queryParts.length === 0) {
@@ -40,18 +35,18 @@ export default {
             }
             const finalQuery = queryParts.join("+");
             if (loadMore) {
-                if (isLoadingMore.value || results.value.length >= totalItems.value)
-                    return;
+                if (isLoadingMore.value || results.value.length >= totalItems.value) return;
                 isLoadingMore.value = true;
-            }
-            else {
+            } else {
                 isLoading.value = true;
                 results.value = [];
                 startIndex.value = 0;
             }
             error.value = null;
             try {
-                const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${finalQuery}&maxResults=20&startIndex=${startIndex.value}`);
+                const response = await fetch(
+                    `https://www.googleapis.com/books/v1/volumes?q=${finalQuery}&maxResults=20&startIndex=${startIndex.value}`
+                );
                 if (!response.ok) {
                     const errorMessage = await extractErrorMessage(response);
                     throw new Error(errorMessage);
@@ -61,18 +56,15 @@ export default {
                 const newItems = data.items || [];
                 if (loadMore) {
                     results.value.push(...newItems);
-                }
-                else {
+                } else {
                     results.value = newItems;
                 }
                 startIndex.value += newItems.length;
                 if (!loadMore && newItems.length === 0)
                     error.value = "No books found for this search.";
-            }
-            catch (err) {
+            } catch (err) {
                 error.value = err.message;
-            }
-            finally {
+            } finally {
                 isLoading.value = false;
                 isLoadingMore.value = false;
             }
@@ -82,8 +74,7 @@ export default {
         });
         const handleScroll = () => {
             const el = resultsContainer.value;
-            if (!el)
-                return;
+            if (!el) return;
             const isAtBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 150;
             if (isAtBottom && results.value.length < totalItems.value) {
                 search(true);
@@ -91,8 +82,12 @@ export default {
         };
         const selectBook = (book) => {
             const info = book.volumeInfo;
-            const isbn13 = info.industryIdentifiers?.find((id) => id.type === "ISBN_13")?.identifier;
-            const isbn10 = info.industryIdentifiers?.find((id) => id.type === "ISBN_10")?.identifier;
+            const isbn13 = info.industryIdentifiers?.find(
+                (id) => id.type === "ISBN_13"
+            )?.identifier;
+            const isbn10 = info.industryIdentifiers?.find(
+                (id) => id.type === "ISBN_10"
+            )?.identifier;
             const selectedData = {
                 title: info.title || "",
                 author: (info.authors || []).join(", "),

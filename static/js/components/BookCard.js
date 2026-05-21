@@ -39,7 +39,9 @@ export default {
     `,
     methods: {
         confirmDelete(event) {
-            const userConfirmed = globalThis.confirm(`Are you sure you want to delete "${this.book.title}"?`);
+            const userConfirmed = globalThis.confirm(
+                `Are you sure you want to delete "${this.book.title}"?`
+            );
             if (!userConfirmed) {
                 event.preventDefault();
             }

@@ -57,15 +57,17 @@ export default {
         const csrfToken = ref(JSON.parse(document.getElementById("csrf-token").textContent));
         const username = ref(userData.username);
         const isAdmin = ref(userData.is_admin);
-        const isAnyModalOpen = computed(() => !!selectedBookForEdit.value ||
-            !!selectedBookForDetail.value ||
-            showGoogleBooksModal.value);
+        const isAnyModalOpen = computed(
+            () =>
+                !!selectedBookForEdit.value ||
+                !!selectedBookForDetail.value ||
+                showGoogleBooksModal.value
+        );
         useBodyScrollLock(isAnyModalOpen);
         let debounceTimer = null;
         let lastAppliedFilters = JSON.stringify(currentFilters.value);
         const fetchBooks = async (reset = false) => {
-            if (isLoading.value || (!reset && !hasMore.value))
-                return;
+            if (isLoading.value || (!reset && !hasMore.value)) return;
             isLoading.value = true;
             if (reset) {
                 currentOffset.value = 0;
@@ -79,28 +81,23 @@ export default {
                 books.value.push(...data.books);
                 hasMore.value = data.has_more;
                 currentOffset.value += data.books.length;
-            }
-            catch (error) {
+            } catch (error) {
                 fetchError.value = "Unable to load books. Please try again later.";
                 console.error(error);
-            }
-            finally {
+            } finally {
                 isLoading.value = false;
             }
         };
         const applyFiltersAndUrl = () => {
             const currentFiltersString = JSON.stringify(currentFilters.value);
-            if (lastAppliedFilters === currentFiltersString)
-                return;
+            if (lastAppliedFilters === currentFiltersString) return;
             fetchBooks(true);
             lastAppliedFilters = currentFiltersString;
             const urlParams = new URLSearchParams();
             for (const [key, value] of Object.entries(currentFilters.value)) {
                 if (value && String(value).trim() !== "") {
-                    if (key === "sort_by" && value === "id")
-                        continue;
-                    if (key === "sort_order" && value === "asc")
-                        continue;
+                    if (key === "sort_by" && value === "id") continue;
+                    if (key === "sort_order" && value === "asc") continue;
                     urlParams.append(key, value);
                 }
             }
@@ -110,10 +107,14 @@ export default {
                 : globalThis.location.pathname;
             globalThis.history.pushState({ path: newUrl }, "", newUrl);
         };
-        watch(currentFilters, () => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(applyFiltersAndUrl, 500);
-        }, { deep: true });
+        watch(
+            currentFilters,
+            () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(applyFiltersAndUrl, 500);
+            },
+            { deep: true }
+        );
         let scrollDebounceTimer = null;
         let resizeDebounceTimer = null;
         const onScroll = () => {
@@ -139,11 +140,9 @@ export default {
             if (event.key === "Escape") {
                 if (showGoogleBooksModal.value) {
                     showGoogleBooksModal.value = false;
-                }
-                else if (selectedBookForEdit.value) {
+                } else if (selectedBookForEdit.value) {
                     selectedBookForEdit.value = null;
-                }
-                else if (selectedBookForDetail.value) {
+                } else if (selectedBookForDetail.value) {
                     selectedBookForDetail.value = null;
                 }
             }

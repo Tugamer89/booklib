@@ -3,8 +3,7 @@ if ("serviceWorker" in navigator) {
         try {
             const registration = await navigator.serviceWorker.register("/sw.js");
             console.log("ServiceWorker: Registration successful, scope:", registration.scope);
-        }
-        catch (error) {
+        } catch (error) {
             console.log("ServiceWorker: Registration failed:", error);
         }
     });
