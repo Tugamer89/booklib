@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.2](https://github.com/Tugamer89/booklib/compare/v1.9.1...v1.9.2) (2026-05-22)
+
+
+### Bug Fixes
+
+* pin lucide version to 1.16.0 for stability ([992e18c](https://github.com/Tugamer89/booklib/commit/992e18ce1122f64ea723619069a50cee0591092f))
+
 ## [1.9.1](https://github.com/Tugamer89/booklib/compare/v1.9.0...v1.9.1) (2026-05-13)
 
 
