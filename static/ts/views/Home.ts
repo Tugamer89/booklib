@@ -147,14 +147,28 @@ export default {
             showScrollToTop.value = window.scrollY > 400;
         };
 
+        const debounceAction = (timerRef: any, action: () => void, delay: number) => {
+            clearTimeout(timerRef.value);
+            timerRef.value = setTimeout(action, delay);
+        };
+
+        const timerRefs = {
+            scroll: scrollDebounceTimer,
+            resize: resizeDebounceTimer
+        };
+
         const handleScroll = () => {
-            clearTimeout(scrollDebounceTimer);
-            scrollDebounceTimer = setTimeout(onScroll, 100);
+            debounceAction({ value: scrollDebounceTimer }, () => {
+                scrollDebounceTimer = null;
+                onScroll();
+            }, 100);
         };
 
         const handleResize = () => {
-            clearTimeout(resizeDebounceTimer);
-            resizeDebounceTimer = setTimeout(onResize, 100);
+            debounceAction({ value: resizeDebounceTimer }, () => {
+                resizeDebounceTimer = null;
+                onResize();
+            }, 100);
         };
 
         const handleKeyDown = (event) => {

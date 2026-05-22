@@ -104,7 +104,7 @@ export default {
                 <input type="hidden" name="csrf_token" :value="csrfToken">
                 <input type="hidden" name="cover_url" v-model="bookData.cover_url">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    
+
                     <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="sm:col-span-2">
                             <label for="title" class="block text-sm font-medium text-slate-600 dark:text-slate-300">Title *</label>
@@ -155,7 +155,7 @@ export default {
                             <input type="file" name="cover" id="cover-upload" @change="handleFileChange" accept="image/*" class="hidden"/>
                     </div>
                 </div>
-                
+
                 <div class="mt-8 flex flex-col-reverse sm:flex-row justify-between items-center gap-4 border-t border-slate-200 dark:border-slate-700 pt-6">
                     <button type="button" @click="openGoogleSearch" class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors font-semibold">
                         <Search class="w-5 h-5" />

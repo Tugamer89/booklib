@@ -20,10 +20,10 @@ export default {
                                 <X class="w-6 h-6" />
                             </button>
                         </div>
-                        
+
                         <input type="hidden" name="book_id" :value="book.id">
                         <input type="hidden" name="csrf_token" :value="csrfToken">
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
                             <div>
                                 <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Title *</label>

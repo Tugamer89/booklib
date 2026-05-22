@@ -24,7 +24,7 @@ export default {
                         <button @click.stop="$emit('edit-book', book)" class="flex items-center justify-center text-indigo-500 hover:text-indigo-700" title="Edit">
                             <Pencil class="w-5 h-5" />
                         </button>
-                        
+
                         <form action="/delete" method="post" @submit="confirmDelete" @click.stop class="flex items-center m-0">
                             <input type="hidden" name="book_id" :value="book.id">
                             <input type="hidden" name="csrf_token" :value="csrfToken">

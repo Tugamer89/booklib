@@ -102,14 +102,16 @@ sw.addEventListener("fetch", (event: FetchEvent) => {
     event.respondWith(cacheFirst(request) as Promise<Response>);
 });
 
+const fetchAndCache = async (request: Request) => {
+    const networkResponse = await fetch(request);
+    const cache = await caches.open(CACHE_NAME);
+    cache.put(request, networkResponse.clone());
+    return networkResponse;
+};
+
 const networkFirst = async (request: Request) => {
     try {
-        const networkResponse = await fetch(request);
-
-        const cache = await caches.open(CACHE_NAME);
-        cache.put(request, networkResponse.clone());
-
-        return networkResponse;
+        return await fetchAndCache(request);
     } catch (error) {
         console.warn("[ServiceWorker] Network failed, trying cache for:", request.url, error);
         const cachedResponse = await caches.match(request);
@@ -124,12 +126,7 @@ const cacheFirst = async (request: Request) => {
     }
 
     try {
-        const networkResponse = await fetch(request);
-
-        const cache = await caches.open(CACHE_NAME);
-        cache.put(request, networkResponse.clone());
-
-        return networkResponse;
+        return await fetchAndCache(request);
     } catch (error) {
         console.error("[ServiceWorker] Fetch failed, not in cache:", request.url, error);
     }
