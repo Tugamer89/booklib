@@ -128,23 +128,18 @@ export default {
         const onResize = () => {
             showScrollToTop.value = window.scrollY > 400;
         };
-        const debounceAction = (timerRef, action, delay) => {
-            clearTimeout(timerRef.value);
-            timerRef.value = setTimeout(() => {
-                timerRef.value = null;
-                action();
-            }, delay);
+        const createDebouncedHandler = (action, delay) => {
+            let timer = null;
+            return () => {
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    timer = null;
+                    action();
+                }, delay);
+            };
         };
-        const timerRefs = {
-            scroll: scrollDebounceTimer,
-            resize: resizeDebounceTimer,
-        };
-        const handleScroll = () => {
-            debounceAction(timerRefs, onScroll, 100);
-        };
-        const handleResize = () => {
-            debounceAction(timerRefs, onResize, 100);
-        };
+        const handleScroll = createDebouncedHandler(onScroll, 100);
+        const handleResize = createDebouncedHandler(onResize, 100);
         const handleKeyDown = (event) => {
             if (event.key === "Escape") {
                 if (showGoogleBooksModal.value) {
