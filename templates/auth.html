@@ -65,10 +65,15 @@ endblock %} {% block content %}
                     placeholder="Password"
                     class="input-style pr-10"
                 />
-                <span class="password-toggle-icon" data-target="login-password">
+                <button
+                    type="button"
+                    class="password-toggle-icon"
+                    data-target="login-password"
+                    aria-label="Toggle password visibility"
+                >
                     <i data-lucide="eye-off" class="w-5 h-5 eye-closed"></i>
                     <i data-lucide="eye" class="w-5 h-5 eye-open hidden"></i>
-                </span>
+                </button>
             </div>
             <div class="flex items-center justify-between pt-2">
                 <label for="remember-me" class="flex items-center cursor-pointer group">
@@ -138,10 +143,15 @@ endblock %} {% block content %}
                     class="input-style pr-10"
                     disabled
                 />
-                <span class="password-toggle-icon" data-target="register-password">
+                <button
+                    type="button"
+                    class="password-toggle-icon"
+                    data-target="register-password"
+                    aria-label="Toggle password visibility"
+                >
                     <i data-lucide="eye-off" class="w-5 h-5 eye-closed"></i>
                     <i data-lucide="eye" class="w-5 h-5 eye-open hidden"></i>
-                </span>
+                </button>
             </div>
             <div class="flex items-center justify-between pt-2">
                 <div class="flex items-center">

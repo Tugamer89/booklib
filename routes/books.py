@@ -1,7 +1,6 @@
 import os
 import re
 from typing import Annotated
-from urllib.parse import urlparse
 
 from fastapi import (
     APIRouter,
@@ -36,16 +35,6 @@ from utils.file_utils import (
 DEFAULT_COVER_PATH = "static/covers/default.jpg"
 
 router = APIRouter()
-
-
-def is_safe_url(url: str, request_host: str) -> bool:
-    if not url:
-        return False
-    try:
-        parsed_url = urlparse(url)
-        return not parsed_url.netloc or parsed_url.netloc == request_host
-    except Exception:
-        return False
 
 
 @router.get("/", response_class=HTMLResponse)
@@ -209,7 +198,7 @@ async def add_book(
     crud_add_book(db, book)
 
     referer = request.headers.get("referer")
-    if referer and is_safe_url(referer, request.url.netloc):
+    if referer:
         return RedirectResponse(url=referer, status_code=status.HTTP_303_SEE_OTHER)
     return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
@@ -312,7 +301,7 @@ async def edit_book(
     db.commit()
 
     referer = request.headers.get("referer")
-    if referer and is_safe_url(referer, request.url.netloc):
+    if referer:
         return RedirectResponse(url=referer, status_code=status.HTTP_303_SEE_OTHER)
     return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
@@ -340,6 +329,6 @@ async def delete_book(
     crud_delete_book(db, book)
 
     referer = request.headers.get("referer")
-    if referer and is_safe_url(referer, request.url.netloc):
+    if referer:
         return RedirectResponse(url=referer, status_code=status.HTTP_303_SEE_OTHER)
     return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
