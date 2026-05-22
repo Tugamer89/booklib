@@ -149,7 +149,10 @@ export default {
 
         const debounceAction = (timerRef: any, action: () => void, delay: number) => {
             clearTimeout(timerRef.value);
-            timerRef.value = setTimeout(action, delay);
+            timerRef.value = setTimeout(() => {
+                timerRef.value = null;
+                action();
+            }, delay);
         };
 
         const timerRefs = {
@@ -158,17 +161,11 @@ export default {
         };
 
         const handleScroll = () => {
-            debounceAction({ value: scrollDebounceTimer }, () => {
-                scrollDebounceTimer = null;
-                onScroll();
-            }, 100);
+            debounceAction(timerRefs, onScroll, 100);
         };
 
         const handleResize = () => {
-            debounceAction({ value: resizeDebounceTimer }, () => {
-                resizeDebounceTimer = null;
-                onResize();
-            }, 100);
+            debounceAction(timerRefs, onResize, 100);
         };
 
         const handleKeyDown = (event) => {

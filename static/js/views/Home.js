@@ -130,31 +130,20 @@ export default {
         };
         const debounceAction = (timerRef, action, delay) => {
             clearTimeout(timerRef.value);
-            timerRef.value = setTimeout(action, delay);
+            timerRef.value = setTimeout(() => {
+                timerRef.value = null;
+                action();
+            }, delay);
         };
         const timerRefs = {
             scroll: scrollDebounceTimer,
             resize: resizeDebounceTimer,
         };
         const handleScroll = () => {
-            debounceAction(
-                { value: scrollDebounceTimer },
-                () => {
-                    scrollDebounceTimer = null;
-                    onScroll();
-                },
-                100
-            );
+            debounceAction(timerRefs, onScroll, 100);
         };
         const handleResize = () => {
-            debounceAction(
-                { value: resizeDebounceTimer },
-                () => {
-                    resizeDebounceTimer = null;
-                    onResize();
-                },
-                100
-            );
+            debounceAction(timerRefs, onResize, 100);
         };
         const handleKeyDown = (event) => {
             if (event.key === "Escape") {
