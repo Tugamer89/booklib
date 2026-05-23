@@ -27,7 +27,8 @@ export default {
 
                     <div class="flex-grow flex flex-col md:flex-row gap-6 px-6 overflow-y-auto">
                         <div class="w-full md:w-1/3 flex-shrink-0">
-                            <img :src="book.cover_path" :alt="'Cover of ' + book.title" class="w-full h-auto object-contain rounded-lg shadow-md sticky top-0">
+                            <!-- lazy load offscreen images -->
+                            <img :src="book.cover_path" :alt="'Cover of ' + book.title" class="w-full h-auto object-contain rounded-lg shadow-md sticky top-0" loading="lazy">
                         </div>
                         
                         <div class="w-full md:w-2/3 text-sm text-left">
