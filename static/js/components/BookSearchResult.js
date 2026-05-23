@@ -26,7 +26,6 @@ export default {
     },
     template: `
         <div class="flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer" @click="$emit('select', book)">
-            <!-- lazy load offscreen images -->
             <img :src="thumbnail" :alt="title" class="w-16 h-24 object-cover rounded shadow-md flex-shrink-0" loading="lazy">
             <div class="flex-grow overflow-hidden">
                 <h4 class="font-bold truncate">{{ title }}</h4>
