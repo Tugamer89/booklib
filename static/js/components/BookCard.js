@@ -12,7 +12,7 @@ export default {
         <div class="group bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden flex flex-col border border-slate-200 dark:border-slate-700">
             <div @click="$emit('show-details', book)" @keydown.enter.prevent="$emit('show-details', book)" @keydown.space.prevent="$emit('show-details', book)" role="button" tabindex="0" class="relative cursor-pointer overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-inset" aria-label="View book details">
                 <div class="transition-transform duration-300 group-hover:scale-105">
-                    <img :src="book.cover_path" :alt="'Cover of ' + book.title" class="w-full h-64 object-cover defer">
+                    <img :src="book.cover_path" :alt="'Cover of ' + book.title" class="w-full h-64 object-cover" loading="lazy">
                     <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
             </div>

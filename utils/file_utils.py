@@ -1,4 +1,6 @@
+import ipaddress
 import os
+import socket
 from urllib.parse import urlparse
 
 import cloudinary.uploader
@@ -45,7 +47,22 @@ def validate_cover_url(cover_url: str) -> str:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid cover URL")
 
     try:
-        response = requests.head(cover_path, timeout=5)
+        parsed = urlparse(cover_path)
+        hostname = parsed.hostname
+        if not hostname:
+            raise ValueError("No hostname found")
+
+        ip_addr = socket.gethostbyname(hostname)
+        ip = ipaddress.ip_address(ip_addr)
+        if ip.is_private or ip.is_loopback or ip.is_link_local:
+            raise ValueError("Private or loopback IP addresses are not allowed")
+
+        port = parsed.port or (443 if parsed.scheme == "https" else 80)
+        safe_url = f"{parsed.scheme}://{ip_addr}:{port}{parsed.path}"
+        if parsed.query:
+            safe_url += f"?{parsed.query}"
+
+        response = requests.head(safe_url, headers={"Host": hostname}, timeout=5)
         content_type = response.headers.get("Content-Type", "")
     except Exception as e:
         raise HTTPException(

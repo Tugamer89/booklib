@@ -157,7 +157,7 @@ export default {
 
                     <div class="space-y-2">
                             <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Cover Preview</label>
-                            <img :src="coverPreview" class="w-full h-auto object-contain rounded-md border dark:border-slate-600 aspect-[3/4]">
+                            <img :src="coverPreview" class="w-full h-auto object-contain rounded-md border dark:border-slate-600 aspect-[3/4]" loading="lazy">
                             <label for="cover-upload" class="cursor-pointer mt-1 block w-full text-sm text-center text-slate-500 bg-slate-50 dark:bg-slate-700 dark:text-slate-300 border rounded-md p-2 hover:bg-slate-100 dark:hover:bg-slate-600 transition">
                             Upload a file
                             </label>
