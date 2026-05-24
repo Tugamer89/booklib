@@ -8,7 +8,7 @@ class UserSession(Base):
     __tablename__ = "sessions"
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
     token = Column(String, unique=True, nullable=False, index=True)
     expires_at = Column(DateTime(timezone=True), nullable=False)
 
@@ -47,5 +47,5 @@ class Book(Base):
     language = Column(String)
     personal_comment = Column(String)
 
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
     owner = relationship("User", back_populates="books")
