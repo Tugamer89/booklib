@@ -1,4 +1,5 @@
 from db.models import Book
+
 sort_by = "owner"
 sort_column = getattr(Book, sort_by, Book.id)
 print(type(sort_column))
