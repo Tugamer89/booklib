@@ -17,7 +17,7 @@ export default {
                     <form action="/edit" method="post" enctype="multipart/form-data" class="p-6">
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100">Edit Book</h3>
-                            <button @click.prevent="close" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-2xl">
+                            <button @click.prevent="close" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-2xl" aria-label="Close edit form">
                                 <X class="w-6 h-6" />
                             </button>
                         </div>
