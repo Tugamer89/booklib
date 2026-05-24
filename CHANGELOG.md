@@ -2,20 +2,17 @@
 
 ## [1.10.0](https://github.com/Tugamer89/booklib/compare/v1.9.2...v1.10.0) (2026-05-23)
 
-
 ### Features
 
-* **ui:** Enhance BookCard keyboard accessibility and ARIA labels ([#16](https://github.com/Tugamer89/booklib/issues/16)) ([2fed094](https://github.com/Tugamer89/booklib/commit/2fed09442bb84033fa096cce55b7e553ab7e5eb2))
-
+- **ui:** Enhance BookCard keyboard accessibility and ARIA labels ([#16](https://github.com/Tugamer89/booklib/issues/16)) ([2fed094](https://github.com/Tugamer89/booklib/commit/2fed09442bb84033fa096cce55b7e553ab7e5eb2))
 
 ### Bug Fixes
 
-* **security:** [HIGH] resolve SSRF vulnerability in cover URL validation ([#18](https://github.com/Tugamer89/booklib/issues/18)) ([f13bdf6](https://github.com/Tugamer89/booklib/commit/f13bdf61fc1cd1a6b5684601e8995f4c4e1ec674))
-
+- **security:** [HIGH] resolve SSRF vulnerability in cover URL validation ([#18](https://github.com/Tugamer89/booklib/issues/18)) ([f13bdf6](https://github.com/Tugamer89/booklib/commit/f13bdf61fc1cd1a6b5684601e8995f4c4e1ec674))
 
 ### Performance Improvements
 
-* defer offscreen images loading ([#17](https://github.com/Tugamer89/booklib/issues/17)) ([f13cb7d](https://github.com/Tugamer89/booklib/commit/f13cb7d6ecbc22dfe533b320d50a16951f1da45d))
+- defer offscreen images loading ([#17](https://github.com/Tugamer89/booklib/issues/17)) ([f13cb7d](https://github.com/Tugamer89/booklib/commit/f13cb7d6ecbc22dfe533b320d50a16951f1da45d))
 
 ## [1.9.2](https://github.com/Tugamer89/booklib/compare/v1.9.1...v1.9.2) (2026-05-22)
 
