@@ -54,8 +54,9 @@ def validate_cover_url(cover_url: str) -> str:
 
         ip_addr = socket.gethostbyname(hostname)
         ip = ipaddress.ip_address(ip_addr)
-        if ip.is_private or ip.is_loopback or ip.is_link_local:
-            raise ValueError("Private or loopback IP addresses are not allowed")
+        # Security: Prevent SSRF by ensuring only public, global non-multicast IPs are allowed
+        if not ip.is_global or ip.is_multicast:
+            raise ValueError("Private, loopback, or invalid IP addresses are not allowed")
 
         port = parsed.port or (443 if parsed.scheme == "https" else 80)
         safe_url = f"{parsed.scheme}://{ip_addr}:{port}{parsed.path}"
