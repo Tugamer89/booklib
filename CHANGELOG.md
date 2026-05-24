@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.10.1](https://github.com/Tugamer89/booklib/compare/v1.10.0...v1.10.1) (2026-05-24)
+
+
+### Bug Fixes
+
+* **security:** [CRITICAL] resolve SSRF vulnerability in cover validation ([#22](https://github.com/Tugamer89/booklib/issues/22)) ([a55f49a](https://github.com/Tugamer89/booklib/commit/a55f49a5fb800c56b3b238e08ee2926441618058))
+* **ui:** Add aria-label to close buttons in modals ([#21](https://github.com/Tugamer89/booklib/issues/21)) ([2e8fbfb](https://github.com/Tugamer89/booklib/commit/2e8fbfbcfe3410ab01ef093a27af6874df09f999))
+
+
+### Performance Improvements
+
+* Add database index on frequently queried user_id fields ([#20](https://github.com/Tugamer89/booklib/issues/20)) ([9cc8f32](https://github.com/Tugamer89/booklib/commit/9cc8f32c0b81e09129c6f2fc979ef1edeb56109b))
+
 ## [1.10.0](https://github.com/Tugamer89/booklib/compare/v1.9.2...v1.10.0) (2026-05-23)
 
 
