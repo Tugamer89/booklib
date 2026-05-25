@@ -149,7 +149,7 @@ export default {
 
         const handleScroll = () => {
             if (!isScrolling) {
-                window.requestAnimationFrame(() => {
+                globalThis.requestAnimationFrame(() => {
                     onScroll();
                     isScrolling = false;
                 });
@@ -159,7 +159,7 @@ export default {
 
         const handleResize = () => {
             if (!isResizing) {
-                window.requestAnimationFrame(() => {
+                globalThis.requestAnimationFrame(() => {
                     onResize();
                     isResizing = false;
                 });
