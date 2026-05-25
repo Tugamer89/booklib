@@ -129,8 +129,8 @@ export default {
             { deep: true }
         );
 
-        let scrollDebounceTimer = null;
-        let resizeDebounceTimer = null;
+        let isScrolling = false;
+        let isResizing = false;
 
         const onScroll = () => {
             const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
@@ -148,13 +148,23 @@ export default {
         };
 
         const handleScroll = () => {
-            clearTimeout(scrollDebounceTimer);
-            scrollDebounceTimer = setTimeout(onScroll, 100);
+            if (!isScrolling) {
+                window.requestAnimationFrame(() => {
+                    onScroll();
+                    isScrolling = false;
+                });
+                isScrolling = true;
+            }
         };
 
         const handleResize = () => {
-            clearTimeout(resizeDebounceTimer);
-            resizeDebounceTimer = setTimeout(onResize, 100);
+            if (!isResizing) {
+                window.requestAnimationFrame(() => {
+                    onResize();
+                    isResizing = false;
+                });
+                isResizing = true;
+            }
         };
 
         const handleKeyDown = (event) => {
