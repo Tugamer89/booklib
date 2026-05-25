@@ -52,6 +52,10 @@ def validate_cover_url(cover_url: str) -> str:
         if not hostname:
             raise ValueError("No hostname found")
 
+        # Security: Prevent IDOR/Arbitrary File Deletion by blocking direct Cloudinary URLs
+        if "cloudinary.com" in hostname.lower():
+            raise ValueError("Cloudinary URLs are not allowed as custom covers")
+
         ip_addr = socket.gethostbyname(hostname)
         ip = ipaddress.ip_address(ip_addr)
         # Security: Prevent SSRF by ensuring only public, global non-multicast IPs are allowed
