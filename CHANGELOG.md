@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.11.0](https://github.com/Tugamer89/booklib/compare/v1.10.1...v1.11.0) (2026-05-25)
+
+
+### Features
+
+* **ui:** add aria-label to ISBN camera scanner button ([#26](https://github.com/Tugamer89/booklib/issues/26)) ([41f78e4](https://github.com/Tugamer89/booklib/commit/41f78e4b795c995a501949a30e22a1177345569d))
+
+
+### Performance Improvements
+
+* optimize scroll and resize handlers with requestAnimationFrame ([#24](https://github.com/Tugamer89/booklib/issues/24)) ([04899b3](https://github.com/Tugamer89/booklib/commit/04899b378727c63a559376e3215396861522b40b))
+
 ## [1.10.1](https://github.com/Tugamer89/booklib/compare/v1.10.0...v1.10.1) (2026-05-24)
 
 
