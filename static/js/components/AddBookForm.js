@@ -131,7 +131,7 @@ export default {
                             <label for="isbn" class="block text-sm font-medium text-slate-600 dark:text-slate-300">ISBN</label>
                             <div class="flex gap-2 mt-1">
                                 <input :value="bookData.isbn" @input="onIsbnInput" type="text" name="isbn" id="isbn" class="input-style flex-grow">
-                                <button type="button" @click="startIsbnScanner" class="px-3 py-2 rounded-md text-white transition-colors" :class="isScanning ? 'bg-red-500 hover:bg-red-600' : 'bg-teal-500 hover:bg-teal-600'" title="Scan ISBN">
+                                <button type="button" @click="startIsbnScanner" class="px-3 py-2 rounded-md text-white transition-colors" :class="isScanning ? 'bg-red-500 hover:bg-red-600' : 'bg-teal-500 hover:bg-teal-600'" title="Scan ISBN" aria-label="Scan ISBN with camera">
                                     <Camera class="w-5 h-5" />
                                 </button>
                             </div>
