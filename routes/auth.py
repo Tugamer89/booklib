@@ -92,7 +92,11 @@ def _handle_register(
     if not created_user:
         return None, "Error creating user. Please try again."
 
-    base_url = str(request.base_url).rstrip("/")
+    base_url = (
+        settings.app_base_url.rstrip("/")
+        if settings.app_base_url
+        else str(request.base_url).rstrip("/")
+    )
     email_sent = send_verification_email(
         created_user.email, created_user.username, verification_token, base_url
     )
@@ -262,7 +266,11 @@ async def handle_forgot_password(
         if not set_password_reset_token(db, user, token):
             logger.error(f"Failed to save reset token to DB for {user.email}")
         else:
-            base_url = str(request.base_url).rstrip("/")
+            base_url = (
+                settings.app_base_url.rstrip("/")
+                if settings.app_base_url
+                else str(request.base_url).rstrip("/")
+            )
             email_sent = send_password_reset_email(user.email, user.username, token, base_url)
             if not email_sent:
                 logger.warning(f"Failed attempt to send reset email for {user.email}.")
