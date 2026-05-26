@@ -25,7 +25,7 @@ export default {
         return { thumbnail, title, authors, publisher, isbn };
     },
     template: `
-        <div class="flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer" @click="$emit('select', book)">
+        <div class="flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500" @click="$emit('select', book)" @keydown.enter.prevent="$emit('select', book)" @keydown.space.prevent="$emit('select', book)" role="button" tabindex="0" :aria-label="'Select ' + title">
             <img :src="thumbnail" :alt="title" class="w-16 h-24 object-cover rounded shadow-md flex-shrink-0" loading="lazy">
             <div class="flex-grow overflow-hidden">
                 <h4 class="font-bold truncate">{{ title }}</h4>
@@ -33,7 +33,7 @@ export default {
                 <p class="text-xs text-slate-500 truncate">{{ publisher }}</p>
                 <p v-if="isbn" class="text-xs text-slate-500">ISBN: {{ isbn }}</p>
             </div>
-            <button class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition flex-shrink-0">Select</button>
+            <span class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition flex-shrink-0">Select</span>
         </div>
     `,
 };
