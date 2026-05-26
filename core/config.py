@@ -38,6 +38,8 @@ class Settings(BaseSettings):
     BREVO_EMAIL_FROM_ADDRESS: str = os.getenv("BREVO_EMAIL_FROM_ADDRESS", "noreply@example.com")
     BREVO_EMAIL_FROM_NAME: str = os.getenv("BREVO_EMAIL_FROM_NAME", "BookLib")
 
+    app_base_url: str = os.getenv("APP_BASE_URL", "")
+
     DEBUG: bool = os.getenv("DEBUG", "false").lower() == "true"
     admin_users_env: str = Field(default=os.getenv("ADMIN_USERS", ""), repr=False)
     admin_users: set[str] = set()
