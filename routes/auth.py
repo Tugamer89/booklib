@@ -6,6 +6,7 @@ from fastapi_csrf_protect import CsrfProtect
 from sqlalchemy.orm import Session
 
 from core.auth import create_session, get_authenticated_user
+from core.config import settings
 from core.email import send_password_reset_email, send_verification_email
 from core.security import (
     generate_password_reset_token,
