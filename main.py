@@ -2,6 +2,7 @@ import os
 
 import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi_csrf_protect import CsrfProtect
 from securecookies import SecureCookiesMiddleware
@@ -30,6 +31,9 @@ app.add_middleware(
     same_site="lax",
     https_only=not settings.DEBUG,
 )
+
+# Middleware per la compressione GZip
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Middleware per gestire il "remember me"
 app.add_middleware(PreventSessionOverwriteMiddleware)
