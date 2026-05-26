@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.12.0](https://github.com/Tugamer89/booklib/compare/v1.11.0...v1.12.0) (2026-05-26)
+
+
+### Features
+
+* **ui:** improve keyboard accessibility of book search results ([#28](https://github.com/Tugamer89/booklib/issues/28)) ([52be488](https://github.com/Tugamer89/booklib/commit/52be4881e991591d7bf1233026f5aef4f8e06e87))
+
+
+### Bug Fixes
+
+* **security:** [HIGH] resolve host header injection vulnerability ([#30](https://github.com/Tugamer89/booklib/issues/30)) ([31eecf9](https://github.com/Tugamer89/booklib/commit/31eecf9f313aa79b9552406178566b7b3e0e7eb2))
+
+
+### Performance Improvements
+
+* add gzip compression middleware to reduce payload size ([#29](https://github.com/Tugamer89/booklib/issues/29)) ([0476a1d](https://github.com/Tugamer89/booklib/commit/0476a1d9d73e93ab653899401b6f7667da49013b))
+
 ## [1.11.0](https://github.com/Tugamer89/booklib/compare/v1.10.1...v1.11.0) (2026-05-25)
 
 
