@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.1](https://github.com/Tugamer89/booklib/compare/v1.12.0...v1.12.1) (2026-05-27)
+
+
+### Performance Improvements
+
+* optimize get_authenticated_user query with joinedload ([#32](https://github.com/Tugamer89/booklib/issues/32)) ([a08ef4f](https://github.com/Tugamer89/booklib/commit/a08ef4f7b05cd65dc9b341bf8af455fe30470c05))
+
 ## [1.12.0](https://github.com/Tugamer89/booklib/compare/v1.11.0...v1.12.0) (2026-05-26)
 
 
