@@ -2,10 +2,9 @@ import secrets
 from datetime import UTC, datetime, timedelta
 
 from fastapi import Depends, HTTPException, Request, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from core.config import settings
-from db.crud import get_user_by_id
 from db.database import get_db
 from db.models import User, UserSession
 
@@ -48,8 +47,11 @@ def get_authenticated_user(request: Request, db: Session = Depends(get_db)) -> U
     if not user_id or not session_token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
 
+    # Use joinedload to fetch session and associated user in a single database query,
+    # preventing N+1 query overhead during authentication checks.
     db_session = (
         db.query(UserSession)
+        .options(joinedload(UserSession.user))
         .filter(UserSession.user_id == user_id, UserSession.token == session_token)
         .first()
     )
@@ -64,7 +66,7 @@ def get_authenticated_user(request: Request, db: Session = Depends(get_db)) -> U
         db.commit()
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Session expired")
 
-    user = get_user_by_id(db, user_id)
+    user = db_session.user
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
 
