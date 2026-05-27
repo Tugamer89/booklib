@@ -3,6 +3,7 @@ import os
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi_csrf_protect import CsrfProtect
 from securecookies import SecureCookiesMiddleware
@@ -37,6 +38,12 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Middleware per gestire il "remember me"
 app.add_middleware(PreventSessionOverwriteMiddleware)
+
+# Middleware to prevent Host Header Injection
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=[h.strip() for h in settings.allowed_hosts.split(",") if h.strip()],
+)
 
 # Middleware per cookie sicuri
 app.add_middleware(

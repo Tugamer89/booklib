@@ -41,6 +41,7 @@ class Settings(BaseSettings):
     app_base_url: str = os.getenv("APP_BASE_URL", "")
 
     DEBUG: bool = os.getenv("DEBUG", "false").lower() == "true"
+    allowed_hosts: str = os.getenv("ALLOWED_HOSTS", "localhost, 127.0.0.1, 0.0.0.0, testserver")
     admin_users_env: str = Field(default=os.getenv("ADMIN_USERS", ""), repr=False)
     admin_users: set[str] = set()
     keepalive_url: str = os.getenv("KEEPALIVE_URL", "")
