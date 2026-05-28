@@ -1,6 +1,7 @@
 import os
 import re
 from typing import Annotated
+from urllib.parse import urlparse
 
 from fastapi import (
     APIRouter,
@@ -199,6 +200,10 @@ async def add_book(
 
     referer = request.headers.get("referer")
     if referer:
+        parsed_referer = urlparse(referer)
+        # Security: Prevent Open Redirect
+        if parsed_referer.netloc and parsed_referer.netloc != request.url.netloc:
+            referer = "/"
         return RedirectResponse(url=referer, status_code=status.HTTP_303_SEE_OTHER)
     return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
@@ -302,6 +307,10 @@ async def edit_book(
 
     referer = request.headers.get("referer")
     if referer:
+        parsed_referer = urlparse(referer)
+        # Security: Prevent Open Redirect
+        if parsed_referer.netloc and parsed_referer.netloc != request.url.netloc:
+            referer = "/"
         return RedirectResponse(url=referer, status_code=status.HTTP_303_SEE_OTHER)
     return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
@@ -330,5 +339,9 @@ async def delete_book(
 
     referer = request.headers.get("referer")
     if referer:
+        parsed_referer = urlparse(referer)
+        # Security: Prevent Open Redirect
+        if parsed_referer.netloc and parsed_referer.netloc != request.url.netloc:
+            referer = "/"
         return RedirectResponse(url=referer, status_code=status.HTTP_303_SEE_OTHER)
     return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
