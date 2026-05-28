@@ -14,7 +14,7 @@ from core.middleware import PreventSessionOverwriteMiddleware
 from routes import admin, auth, books, debug, errors, extras
 from utils.starter import lifespan
 
-app = FastAPI(lifespan=lifespan, title="BookLib", version="1.12.1")  # x-release-please-version
+app = FastAPI(lifespan=lifespan, title="BookLib", version="1.12.2")  # x-release-please-version
 
 
 @CsrfProtect.load_config

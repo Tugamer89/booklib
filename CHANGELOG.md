@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.12.2](https://github.com/Tugamer89/booklib/compare/v1.12.1...v1.12.2) (2026-05-28)
+
+
+### Bug Fixes
+
+* **security:** resolve open redirect vulnerability ([#35](https://github.com/Tugamer89/booklib/issues/35)) ([0342091](https://github.com/Tugamer89/booklib/commit/0342091e6c60a23429c80238123be633bfd29152))
+
+
+### Performance Improvements
+
+* optimize books list database query ([#36](https://github.com/Tugamer89/booklib/issues/36)) ([91853f8](https://github.com/Tugamer89/booklib/commit/91853f843cb7188095758c77fd640d14b5a05e35))
+
 ## [1.12.1](https://github.com/Tugamer89/booklib/compare/v1.12.0...v1.12.1) (2026-05-27)
 
 
