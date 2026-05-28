@@ -72,7 +72,18 @@ def books_data(
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
 ):
-    query = db.query(Book).filter(Book.user_id == user.id)
+    query = db.query(
+        Book.id,
+        Book.title,
+        Book.author,
+        Book.isbn,
+        Book.publisher,
+        Book.location,
+        Book.cover_path,
+        Book.description,
+        Book.language,
+        Book.personal_comment,
+    ).filter(Book.user_id == user.id)
 
     # Filters
     if title:
