@@ -1,6 +1,9 @@
 import { ref, onMounted, computed } from "vue";
 import BookSearchResult from "./BookSearchResult.js";
 
+// Global cache for Google Books API responses to reduce redundant network requests across modal opens
+const searchCache = new Map();
+
 export default {
     name: "GoogleBooksModal",
     components: { BookSearchResult },
@@ -49,15 +52,25 @@ export default {
             }
             error.value = null;
 
+            const cacheKey = `${finalQuery}-${startIndex.value}`;
+
             try {
-                const response = await fetch(
-                    `https://www.googleapis.com/books/v1/volumes?q=${finalQuery}&maxResults=20&startIndex=${startIndex.value}`
-                );
-                if (!response.ok) {
-                    const errorMessage = await extractErrorMessage(response);
-                    throw new Error(errorMessage);
+                let data;
+                if (searchCache.has(cacheKey)) {
+                    // Use cached response
+                    data = searchCache.get(cacheKey);
+                } else {
+                    const response = await fetch(
+                        `https://www.googleapis.com/books/v1/volumes?q=${finalQuery}&maxResults=20&startIndex=${startIndex.value}`
+                    );
+                    if (!response.ok) {
+                        const errorMessage = await extractErrorMessage(response);
+                        throw new Error(errorMessage);
+                    }
+                    data = await response.json();
+                    searchCache.set(cacheKey, data);
                 }
-                const data = await response.json();
+
                 totalItems.value = data.totalItems || 0;
                 const newItems = data.items || [];
                 if (loadMore) {
@@ -159,6 +172,10 @@ export default {
 
 async function extractErrorMessage(response) {
     const data = await response.json().catch(() => null);
+
+    if (data?.error?.message?.includes("Quota exceeded")) {
+        return "Google Books API search quota exceeded. Please try again later or add the book manually.";
+    }
 
     return data?.error?.message ? `Search error: ${data.error.message}` : "Search error.";
 }
