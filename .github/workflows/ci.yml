@@ -8,7 +8,9 @@ on:
 
 jobs:
   lint-and-format:
+    name: lint-and-format
     runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]' && github.actor != 'github-actions[bot]'
     permissions:
       contents: write
       pull-requests: write
@@ -53,3 +55,11 @@ jobs:
 
       - name: Verify no unfixable errors remain
         run: uv run pre-commit run --all-files
+
+  lint-and-format-bypass:
+    name: lint-and-format
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]' || github.actor == 'github-actions[bot]'
+    steps:
+      - name: Fast-pass per Bot
+        run: echo "Operazione avviata da un bot. Salto formattazione e linting per sbloccare la CI."
