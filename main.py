@@ -10,7 +10,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from core.config import settings
 from core.csrf import CsrfSettings
-from core.middleware import PreventSessionOverwriteMiddleware
+from core.middleware import PreventSessionOverwriteMiddleware, SecurityHeadersMiddleware
 from routes import admin, auth, books, debug, errors, extras
 from utils.starter import lifespan
 
@@ -44,6 +44,9 @@ app.add_middleware(
     secrets=[settings.csrf_secret_key],
     included_cookies=["session", "fastapi-csrf-token"],
 )
+
+# Middleware for Security Headers
+app.add_middleware(SecurityHeadersMiddleware)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
