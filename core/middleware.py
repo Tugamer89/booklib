@@ -17,7 +17,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "default-src 'self'; "
             "img-src 'self' data: https://res.cloudinary.com http://books.google.com https://books.google.com https://*.googleusercontent.com; "
             "connect-src 'self' https://www.googleapis.com https://cdn.tailwindcss.com https://unpkg.com; "
-            "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://esm.sh; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://unpkg.com https://esm.sh; "
             "style-src 'self' 'unsafe-inline'; "
         )
 
