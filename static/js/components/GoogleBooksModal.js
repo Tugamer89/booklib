@@ -1,6 +1,9 @@
 import { ref, onMounted, computed } from "vue";
 import BookSearchResult from "./BookSearchResult.js";
 
+// Global cache for Google Books API responses to reduce redundant network requests across modal opens
+const searchCache = new Map();
+
 export default {
     name: "GoogleBooksModal",
     components: { BookSearchResult },
@@ -24,20 +27,42 @@ export default {
             return parts.join(", ") || "No search terms entered";
         });
 
-        const search = async (loadMore = false) => {
-            const { title, author, isbn } = props.initialSearchTerms;
-            const queryParts = [];
-            if (title) queryParts.push(`intitle:${encodeURIComponent(title)}`);
-            if (author) queryParts.push(`inauthor:${encodeURIComponent(author)}`);
+        const buildQuery = (terms) => {
+            const { title, author, isbn } = terms;
+            const parts = [];
+            if (title) parts.push(`intitle:${encodeURIComponent(title)}`);
+            if (author) parts.push(`inauthor:${encodeURIComponent(author)}`);
             if (isbn && isbn !== "N/A")
-                queryParts.push(`isbn:${encodeURIComponent(isbn.replaceAll("-", ""))}`);
+                parts.push(`isbn:${encodeURIComponent(isbn.replaceAll("-", ""))}`);
+            return parts.join("+");
+        };
 
-            if (queryParts.length === 0) {
+        const fetchSearchResults = async (query, startIdx) => {
+            const cacheKey = `${query}-${startIdx}`;
+            if (searchCache.has(cacheKey)) {
+                return searchCache.get(cacheKey);
+            }
+
+            const response = await fetch(
+                `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=20&startIndex=${startIdx}`
+            );
+            if (!response.ok) {
+                const errorMessage = await extractErrorMessage(response);
+                throw new Error(errorMessage);
+            }
+            const data = await response.json();
+            searchCache.set(cacheKey, data);
+            return data;
+        };
+
+        const search = async (loadMore = false) => {
+            const finalQuery = buildQuery(props.initialSearchTerms);
+
+            if (!finalQuery) {
                 error.value =
                     "Please enter at least one search term (title, author or ISBN) in the form.";
                 return;
             }
-            const finalQuery = queryParts.join("+");
 
             if (loadMore) {
                 if (isLoadingMore.value || results.value.length >= totalItems.value) return;
@@ -50,14 +75,8 @@ export default {
             error.value = null;
 
             try {
-                const response = await fetch(
-                    `https://www.googleapis.com/books/v1/volumes?q=${finalQuery}&maxResults=20&startIndex=${startIndex.value}`
-                );
-                if (!response.ok) {
-                    const errorMessage = await extractErrorMessage(response);
-                    throw new Error(errorMessage);
-                }
-                const data = await response.json();
+                const data = await fetchSearchResults(finalQuery, startIndex.value);
+
                 totalItems.value = data.totalItems || 0;
                 const newItems = data.items || [];
                 if (loadMore) {
@@ -159,6 +178,10 @@ export default {
 
 async function extractErrorMessage(response) {
     const data = await response.json().catch(() => null);
+
+    if (data?.error?.message?.includes("Quota exceeded")) {
+        return "Google Books API search quota exceeded. Please try again later or add the book manually.";
+    }
 
     return data?.error?.message ? `Search error: ${data.error.message}` : "Search error.";
 }
