@@ -27,20 +27,42 @@ export default {
             return parts.join(", ") || "No search terms entered";
         });
 
-        const search = async (loadMore = false) => {
-            const { title, author, isbn } = props.initialSearchTerms;
-            const queryParts = [];
-            if (title) queryParts.push(`intitle:${encodeURIComponent(title)}`);
-            if (author) queryParts.push(`inauthor:${encodeURIComponent(author)}`);
+        const buildQuery = (terms) => {
+            const { title, author, isbn } = terms;
+            const parts = [];
+            if (title) parts.push(`intitle:${encodeURIComponent(title)}`);
+            if (author) parts.push(`inauthor:${encodeURIComponent(author)}`);
             if (isbn && isbn !== "N/A")
-                queryParts.push(`isbn:${encodeURIComponent(isbn.replaceAll("-", ""))}`);
+                parts.push(`isbn:${encodeURIComponent(isbn.replaceAll("-", ""))}`);
+            return parts.join("+");
+        };
 
-            if (queryParts.length === 0) {
+        const fetchSearchResults = async (query, startIdx) => {
+            const cacheKey = `${query}-${startIdx}`;
+            if (searchCache.has(cacheKey)) {
+                return searchCache.get(cacheKey);
+            }
+
+            const response = await fetch(
+                `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=20&startIndex=${startIdx}`
+            );
+            if (!response.ok) {
+                const errorMessage = await extractErrorMessage(response);
+                throw new Error(errorMessage);
+            }
+            const data = await response.json();
+            searchCache.set(cacheKey, data);
+            return data;
+        };
+
+        const search = async (loadMore = false) => {
+            const finalQuery = buildQuery(props.initialSearchTerms);
+
+            if (!finalQuery) {
                 error.value =
                     "Please enter at least one search term (title, author or ISBN) in the form.";
                 return;
             }
-            const finalQuery = queryParts.join("+");
 
             if (loadMore) {
                 if (isLoadingMore.value || results.value.length >= totalItems.value) return;
@@ -52,24 +74,8 @@ export default {
             }
             error.value = null;
 
-            const cacheKey = `${finalQuery}-${startIndex.value}`;
-
             try {
-                let data;
-                if (searchCache.has(cacheKey)) {
-                    // Use cached response
-                    data = searchCache.get(cacheKey);
-                } else {
-                    const response = await fetch(
-                        `https://www.googleapis.com/books/v1/volumes?q=${finalQuery}&maxResults=20&startIndex=${startIndex.value}`
-                    );
-                    if (!response.ok) {
-                        const errorMessage = await extractErrorMessage(response);
-                        throw new Error(errorMessage);
-                    }
-                    data = await response.json();
-                    searchCache.set(cacheKey, data);
-                }
+                const data = await fetchSearchResults(finalQuery, startIndex.value);
 
                 totalItems.value = data.totalItems || 0;
                 const newItems = data.items || [];
