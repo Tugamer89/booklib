@@ -5,6 +5,26 @@ from starlette.responses import Response
 from core.config import settings
 
 
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next) -> Response:
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+
+        csp = (
+            "default-src 'self'; "
+            "img-src 'self' data: https://res.cloudinary.com http://books.google.com https://books.google.com https://*.googleusercontent.com; "
+            "connect-src 'self' https://www.googleapis.com https://cdn.tailwindcss.com https://unpkg.com https://esm.sh; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://unpkg.com https://esm.sh; "
+            "style-src 'self' 'unsafe-inline'; "
+        )
+
+        response.headers["Content-Security-Policy"] = csp
+        return response
+
+
 class PreventSessionOverwriteMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next) -> Response:
         response = await call_next(request)

@@ -157,11 +157,11 @@ export default {
 
                     <div class="space-y-2">
                             <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Cover Preview</label>
-                            <img :src="coverPreview" class="w-full h-auto object-contain rounded-md border dark:border-slate-600 aspect-[3/4]" loading="lazy">
-                            <label for="cover-upload" class="cursor-pointer mt-1 block w-full text-sm text-center text-slate-500 bg-slate-50 dark:bg-slate-700 dark:text-slate-300 border rounded-md p-2 hover:bg-slate-100 dark:hover:bg-slate-600 transition">
+                            <img :src="coverPreview" alt="Cover preview" class="w-full h-auto object-contain rounded-md border dark:border-slate-600 aspect-[3/4]" loading="lazy">
+                            <input type="file" name="cover" id="cover-upload" @change="handleFileChange" accept="image/*" class="sr-only peer"/>
+                            <label for="cover-upload" class="cursor-pointer mt-1 block w-full text-sm text-center text-slate-500 bg-slate-50 dark:bg-slate-700 dark:text-slate-300 border rounded-md p-2 hover:bg-slate-100 dark:hover:bg-slate-600 transition peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-500 peer-focus-visible:ring-offset-2 dark:peer-focus-visible:ring-offset-slate-800">
                             Upload a file
                             </label>
-                            <input type="file" name="cover" id="cover-upload" @change="handleFileChange" accept="image/*" class="hidden"/>
                     </div>
                 </div>
                 
