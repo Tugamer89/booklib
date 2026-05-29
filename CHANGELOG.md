@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.12.3](https://github.com/Tugamer89/booklib/compare/v1.12.2...v1.12.3) (2026-05-29)
+
+
+### Bug Fixes
+
+* Add lint-and-format-bypass for bot triggers ([#42](https://github.com/Tugamer89/booklib/issues/42)) ([9869a3c](https://github.com/Tugamer89/booklib/commit/9869a3cd820ac1117b97d375a69c4272f9a5eff9))
+* modify CSP to enhance security and resource loading ([#44](https://github.com/Tugamer89/booklib/issues/44)) ([8847d58](https://github.com/Tugamer89/booklib/commit/8847d583d4cdb1c85910a66d01a993399c10724f))
+* **security:** add HTTP security headers middleware ([#38](https://github.com/Tugamer89/booklib/issues/38)) ([0e32826](https://github.com/Tugamer89/booklib/commit/0e32826bd8048ac74bc7eb5332504c81fd2b400e))
+* **ui:** improve keyboard accessibility for cover upload input ([#39](https://github.com/Tugamer89/booklib/issues/39)) ([90f6e90](https://github.com/Tugamer89/booklib/commit/90f6e90160b3c33007fec4abf6a0b8ec371ddcf8))
+* Update Content Security Policy in middleware.py ([#41](https://github.com/Tugamer89/booklib/issues/41)) ([268e960](https://github.com/Tugamer89/booklib/commit/268e96042fe7ec7b668550da22da065c6c25acf8))
+
+
+### Performance Improvements
+
+* Cache Google Books API searches and handle quota errors ([#43](https://github.com/Tugamer89/booklib/issues/43)) ([6f8cfec](https://github.com/Tugamer89/booklib/commit/6f8cfec58f157d063f61228ddc0fba2128f1daba))
+
 ## [1.12.2](https://github.com/Tugamer89/booklib/compare/v1.12.1...v1.12.2) (2026-05-28)
 
 
