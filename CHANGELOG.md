@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.1](https://github.com/Tugamer89/booklib/compare/v1.13.0...v1.13.1) (2026-05-30)
+
+
+### Bug Fixes
+
+* **security:** [HIGH] resolve SSRF and Open Redirect / XSS vulnerabilities ([#48](https://github.com/Tugamer89/booklib/issues/48)) ([f94873d](https://github.com/Tugamer89/booklib/commit/f94873d75687c2496034d3093cd01b210d307149))
+
 ## [1.13.0](https://github.com/Tugamer89/booklib/compare/v1.12.3...v1.13.0) (2026-05-30)
 
 
