@@ -24,16 +24,26 @@ endblock %} {% block content %}
         <span id="msg-message">{{ msg }}</span>
     </div>
 
-    <div class="flex border-b border-slate-200 dark:border-slate-700">
+    <div
+        class="flex border-b border-slate-200 dark:border-slate-700"
+        role="tablist"
+        aria-label="Authentication Options"
+    >
         <button
             id="loginTab"
-            class="flex-1 py-2 text-center font-semibold border-b-2 transition-colors duration-300"
+            role="tab"
+            aria-selected="true"
+            aria-controls="login-form"
+            class="flex-1 py-2 text-center font-semibold border-b-2 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-inset"
         >
             Login
         </button>
         <button
             id="registerTab"
-            class="flex-1 py-2 text-center font-semibold border-b-2 transition-colors duration-300"
+            role="tab"
+            aria-selected="false"
+            aria-controls="register-form"
+            class="flex-1 py-2 text-center font-semibold border-b-2 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-inset"
         >
             Register
         </button>
@@ -43,7 +53,12 @@ endblock %} {% block content %}
         <input type="hidden" name="auth_action" id="authAction" value="login" />
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
 
-        <div id="login-form" class="form-container space-y-4 pt-4">
+        <div
+            id="login-form"
+            role="tabpanel"
+            aria-labelledby="loginTab"
+            class="form-container space-y-4 pt-4"
+        >
             <div>
                 <label for="login-username" class="sr-only">Username or Email</label>
                 <input
@@ -106,7 +121,12 @@ endblock %} {% block content %}
             </div>
         </div>
 
-        <div id="register-form" class="form-container form-inactive space-y-4 pt-4">
+        <div
+            id="register-form"
+            role="tabpanel"
+            aria-labelledby="registerTab"
+            class="form-container form-inactive space-y-4 pt-4"
+        >
             <div>
                 <label for="register-username" class="sr-only">Username</label>
                 <input
@@ -214,9 +234,13 @@ endblock %} {% block content %}
             if (isLogin) {
                 registerForm.classList.add("form-inactive");
                 loginForm.classList.remove("form-inactive");
+                loginTab.setAttribute("aria-selected", "true");
+                registerTab.setAttribute("aria-selected", "false");
             } else {
                 loginForm.classList.add("form-inactive");
                 registerForm.classList.remove("form-inactive");
+                loginTab.setAttribute("aria-selected", "false");
+                registerTab.setAttribute("aria-selected", "true");
             }
 
             for (const input of loginInputs) input.disabled = !isLogin;
