@@ -67,3 +67,21 @@ def hash_password(password: str) -> str:
 
 def verify_password(secret: str, password: str) -> bool:
     return settings.password_hash.verify(secret, password)
+
+
+def get_safe_redirect_url(url: str | None, request_host: str) -> str:
+    """Sanitize the redirect URL to prevent Open Redirects and XSS."""
+    if not url:
+        return "/"
+
+    from urllib.parse import urlparse
+
+    parsed = urlparse(url)
+
+    if parsed.scheme and parsed.scheme not in ("http", "https"):
+        return "/"
+
+    if parsed.netloc and parsed.netloc != request_host:
+        return "/"
+
+    return url
