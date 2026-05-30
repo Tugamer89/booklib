@@ -63,7 +63,11 @@ def validate_cover_url(cover_url: str) -> str:
         if parsed.query:
             safe_url += f"?{parsed.query}"
 
-        response = requests.head(safe_url, headers={"Host": hostname}, timeout=5)
+        response = requests.head(
+            safe_url, headers={"Host": hostname}, timeout=5, allow_redirects=False
+        )
+        if response.is_redirect:
+            raise ValueError("Redirects are not allowed for security reasons")
         content_type = response.headers.get("Content-Type", "")
     except Exception as e:
         raise HTTPException(

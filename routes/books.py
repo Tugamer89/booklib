@@ -1,7 +1,6 @@
 import os
 import re
 from typing import Annotated
-from urllib.parse import urlparse
 
 from fastapi import (
     APIRouter,
@@ -23,6 +22,7 @@ from sqlalchemy.types import BigInteger
 
 from core.auth import get_authenticated_user
 from core.config import settings
+from core.security import get_safe_redirect_url
 from core.templates import templates
 from db.crud import add_book as crud_add_book, delete_book as crud_delete_book
 from db.database import get_db
@@ -210,12 +210,8 @@ async def add_book(
     crud_add_book(db, book)
 
     referer = request.headers.get("referer")
-    if referer:
-        parsed_referer = urlparse(referer)
-        if parsed_referer.netloc and parsed_referer.netloc != request.url.netloc:
-            referer = "/"
-        return RedirectResponse(url=referer, status_code=status.HTTP_303_SEE_OTHER)
-    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    safe_url = get_safe_redirect_url(referer, request.url.netloc)
+    return RedirectResponse(url=safe_url, status_code=status.HTTP_303_SEE_OTHER)
 
 
 def _validate_book_fields(isbn: str, location: str, language: str | None):
@@ -316,12 +312,8 @@ async def edit_book(
     db.commit()
 
     referer = request.headers.get("referer")
-    if referer:
-        parsed_referer = urlparse(referer)
-        if parsed_referer.netloc and parsed_referer.netloc != request.url.netloc:
-            referer = "/"
-        return RedirectResponse(url=referer, status_code=status.HTTP_303_SEE_OTHER)
-    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    safe_url = get_safe_redirect_url(referer, request.url.netloc)
+    return RedirectResponse(url=safe_url, status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.post("/delete", response_class=HTMLResponse)
@@ -347,9 +339,5 @@ async def delete_book(
     crud_delete_book(db, book)
 
     referer = request.headers.get("referer")
-    if referer:
-        parsed_referer = urlparse(referer)
-        if parsed_referer.netloc and parsed_referer.netloc != request.url.netloc:
-            referer = "/"
-        return RedirectResponse(url=referer, status_code=status.HTTP_303_SEE_OTHER)
-    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    safe_url = get_safe_redirect_url(referer, request.url.netloc)
+    return RedirectResponse(url=safe_url, status_code=status.HTTP_303_SEE_OTHER)

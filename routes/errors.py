@@ -7,6 +7,7 @@ from fastapi_csrf_protect.exceptions import CsrfProtectError
 from sqlalchemy.exc import OperationalError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from core.security import get_safe_redirect_url
 from core.templates import templates
 from utils.logger import logger
 
@@ -30,6 +31,9 @@ def http_exception_redirect(request: Request, exc: HTTPException | StarletteHTTP
             content={"detail": exc.detail or "Error"},
         )
 
+    referer = request.headers.get("referer")
+    safe_referer = get_safe_redirect_url(referer, request.url.netloc)
+
     return templates.TemplateResponse(
         request=request,
         name=ERROR_PAGE,
@@ -37,7 +41,7 @@ def http_exception_redirect(request: Request, exc: HTTPException | StarletteHTTP
             "status_code": exc.status_code,
             "title": "Oops! Something went wrong",
             "message": exc.detail,
-            "referer": request.headers.get("referer", "/"),
+            "referer": safe_referer,
         },
         status_code=exc.status_code,
     )
@@ -50,6 +54,7 @@ def validation_exception_handler(request: Request, exc: RequestValidationError):
     )
 
     referer = request.headers.get("referer")
+    safe_referer = get_safe_redirect_url(referer, request.url.netloc)
     return templates.TemplateResponse(
         request=request,
         name=ERROR_PAGE,
@@ -57,7 +62,7 @@ def validation_exception_handler(request: Request, exc: RequestValidationError):
             "status_code": status.HTTP_422_UNPROCESSABLE_ENTITY,
             "title": "Validation error",
             "message": "The provided data is not valid.",
-            "referer": referer,
+            "referer": safe_referer,
         },
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
     )
@@ -70,6 +75,7 @@ def operational_error_handler(request: Request, exc: OperationalError):
     )
 
     referer = request.headers.get("referer")
+    safe_referer = get_safe_redirect_url(referer, request.url.netloc)
     message = "The service is temporarily busy or unavailable. Please try again in a moment."
 
     return templates.TemplateResponse(
@@ -79,7 +85,7 @@ def operational_error_handler(request: Request, exc: OperationalError):
             "status_code": status.HTTP_503_SERVICE_UNAVAILABLE,
             "title": "Service Temporarily Unavailable",
             "message": message,
-            "referer": referer,
+            "referer": safe_referer,
         },
         status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
     )
@@ -97,6 +103,7 @@ def csrf_protect_exception_handler(request: Request, exc: CsrfProtectError):
         )
 
     referer = request.headers.get("referer")
+    safe_referer = get_safe_redirect_url(referer, request.url.netloc)
 
     return templates.TemplateResponse(
         request=request,
@@ -105,7 +112,7 @@ def csrf_protect_exception_handler(request: Request, exc: CsrfProtectError):
             "status_code": status.HTTP_403_FORBIDDEN,
             "title": "Invalid action",
             "message": error_message,
-            "referer": referer or "/",
+            "referer": safe_referer,
         },
         status_code=status.HTTP_403_FORBIDDEN,
     )
@@ -118,6 +125,7 @@ def generic_exception_handler(request: Request, exc: Exception):
     )
 
     referer = request.headers.get("referer")
+    safe_referer = get_safe_redirect_url(referer, request.url.netloc)
     message = "An unexpected error occurred. Please try again later."
 
     return templates.TemplateResponse(
@@ -127,7 +135,7 @@ def generic_exception_handler(request: Request, exc: Exception):
             "status_code": status.HTTP_500_INTERNAL_SERVER_ERROR,
             "title": "Internal error",
             "message": message,
-            "referer": referer,
+            "referer": safe_referer,
         },
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
     )
