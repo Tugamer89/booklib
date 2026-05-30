@@ -12,6 +12,10 @@
                     "path": "static/js/sw.js"
                 },
                 {
+                    "type": "generic",
+                    "path": "uv.lock"
+                },
+                {
                     "type": "toml",
                     "path": "pyproject.toml",
                     "jsonpath": "$.project.version"
