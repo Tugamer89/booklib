@@ -112,7 +112,7 @@ wheels = [
 
 [[package]]
 name = "booklib"
-version = "1.12.3"  # x-release-please-version
+version = "1.13.0"  # x-release-please-version
 source = { virtual = "." }
 dependencies = [
     { name = "apscheduler" },
