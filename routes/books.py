@@ -14,6 +14,7 @@ from fastapi import (
     UploadFile,
     status,
 )
+from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi_csrf_protect import CsrfProtect
 from isbnlib import canonical, is_isbn10, is_isbn13
@@ -188,9 +189,9 @@ async def add_book(
     )
 
     if form_data.cover_url:
-        cover_path = validate_cover_url(form_data.cover_url)
+        cover_path = await run_in_threadpool(validate_cover_url, form_data.cover_url)
     elif form_data.cover and form_data.cover.filename:
-        cover_path = validate_and_save_cover(form_data.cover)
+        cover_path = await run_in_threadpool(validate_and_save_cover, form_data.cover)
     else:
         cover_path = "static/covers/default.jpg"
 
@@ -309,8 +310,8 @@ async def edit_book(
     book.personal_comment = form_data.personal_comment.strip()
 
     if form_data.cover and form_data.cover.filename:
-        new_cover = validate_and_save_cover(form_data.cover)
-        _delete_old_cover(book.cover_path)
+        new_cover = await run_in_threadpool(validate_and_save_cover, form_data.cover)
+        await run_in_threadpool(_delete_old_cover, book.cover_path)
         book.cover_path = new_cover
 
     db.commit()
@@ -339,10 +340,7 @@ async def delete_book(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
 
     if book.cover_path != DEFAULT_COVER_PATH:
-        if book.cover_path.startswith("https://res.cloudinary.com/"):
-            delete_cover_from_cloudinary(book.cover_path)
-        elif os.path.exists(book.cover_path):
-            os.remove(book.cover_path)
+        await run_in_threadpool(_delete_old_cover, book.cover_path)
 
     crud_delete_book(db, book)
 
