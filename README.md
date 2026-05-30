@@ -122,22 +122,22 @@ The app will be available at:
 
 ## 📁 Project Structure
 
-```
+```bash
 .
-├── .github/               # CI/CD Workflows (GitHub Actions, dependabot, release-please)
-├── core/                  # Base configuration, security, middleware, email, templates
-├── db/                    # SQLAlchemy Database logic (models, database.py, crud.py)
-├── routes/                # FastAPI Routers (auth, books, admin, errors)
-├── static/                # Static files (Vue.js JS, Tailwind CSS, Images)
-├── templates/             # Jinja2 HTML Templates (web pages and email templates)
-├── utils/                 # Utility scripts (keepalive, starter, logger, etc.)
-├── main.py                # FastAPI entry point
-├── setup.py               # Interactive script to generate .env and tables
-├── Makefile               # Quick commands (install, format, run)
-├── pyproject.toml         # Package and tool configuration (uv, ruff)
-├── uv.lock                # Python dependency lockfile
-├── .pre-commit-config.yaml# Configuration for commit hooks (linting/format)
-├── .prettierrc            # Prettier formatting rules
+├── .github/                # CI/CD Workflows (GitHub Actions, dependabot, release-please)
+├── core/                   # Base configuration, security, middleware, email, templates
+├── db/                     # SQLAlchemy Database logic (models, database.py, crud.py)
+├── routes/                 # FastAPI Routers (auth, books, admin, errors)
+├── static/                 # Static files (Vue.js JS, Tailwind CSS, Images)
+├── templates/              # Jinja2 HTML Templates (web pages and email templates)
+├── utils/                  # Utility scripts (keepalive, starter, logger, etc.)
+├── main.py                 # FastAPI entry point
+├── setup.py                # Interactive script to generate .env and tables
+├── Makefile                # Quick commands (install, format, run)
+├── pyproject.toml          # Package and tool configuration (uv, ruff)
+├── uv.lock                 # Python dependency lockfile
+├── .pre-commit-config.yaml # Configuration for commit hooks (linting/format)
+├── .prettierrc             # Prettier formatting rules
 └── README.md
 ```
 
