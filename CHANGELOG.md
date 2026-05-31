@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.13.1](https://github.com/Tugamer89/booklib/compare/v1.13.0...v1.13.1) (2026-05-30)
+
+
+### Bug Fixes
+
+* **security:** [HIGH] resolve SSRF and Open Redirect / XSS vulnerabilities ([#48](https://github.com/Tugamer89/booklib/issues/48)) ([f94873d](https://github.com/Tugamer89/booklib/commit/f94873d75687c2496034d3093cd01b210d307149))
+
+## [1.13.0](https://github.com/Tugamer89/booklib/compare/v1.12.3...v1.13.0) (2026-05-30)
+
+
+### Features
+
+* **ui:** improve auth tabs accessibility ([#45](https://github.com/Tugamer89/booklib/issues/45)) ([b81b555](https://github.com/Tugamer89/booklib/commit/b81b5558bf3eb667af1c93276053ef10a0ebd26d))
+
+
+### Bug Fixes
+
+* add missing token parameter for GitHub Actions checkout step ([59630cb](https://github.com/Tugamer89/booklib/commit/59630cb32e590875ff3efc96a820e78e9706a690))
+* update dependencies and version to 1.12.3; enhance security headers and improve README formatting ([03812f5](https://github.com/Tugamer89/booklib/commit/03812f536f2ddbad31f5d30771c7a89a4f393d73))
+
+
+### Performance Improvements
+
+* Offload synchronous blocking image I/O to threadpool ([#47](https://github.com/Tugamer89/booklib/issues/47)) ([28c9e70](https://github.com/Tugamer89/booklib/commit/28c9e705ab24b19a7c1a82fd005d01654c2000da))
+
 ## [1.12.3](https://github.com/Tugamer89/booklib/compare/v1.12.2...v1.12.3) (2026-05-29)
 
 ### Bug Fixes

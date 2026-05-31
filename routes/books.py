@@ -1,7 +1,6 @@
 import os
 import re
 from typing import Annotated
-from urllib.parse import urlparse
 
 from fastapi import (
     APIRouter,
@@ -14,6 +13,7 @@ from fastapi import (
     UploadFile,
     status,
 )
+from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi_csrf_protect import CsrfProtect
 from isbnlib import canonical, is_isbn10, is_isbn13
@@ -23,6 +23,7 @@ from sqlalchemy.types import BigInteger
 
 from core.auth import get_authenticated_user
 from core.config import settings
+from core.security import get_safe_redirect_url
 from core.templates import templates
 from db.crud import add_book as crud_add_book, delete_book as crud_delete_book
 from db.database import get_db
@@ -188,9 +189,9 @@ async def add_book(
     )
 
     if form_data.cover_url:
-        cover_path = validate_cover_url(form_data.cover_url)
+        cover_path = await run_in_threadpool(validate_cover_url, form_data.cover_url)
     elif form_data.cover and form_data.cover.filename:
-        cover_path = validate_and_save_cover(form_data.cover)
+        cover_path = await run_in_threadpool(validate_and_save_cover, form_data.cover)
     else:
         cover_path = "static/covers/default.jpg"
 
@@ -210,12 +211,8 @@ async def add_book(
     crud_add_book(db, book)
 
     referer = request.headers.get("referer")
-    if referer:
-        parsed_referer = urlparse(referer)
-        if parsed_referer.netloc and parsed_referer.netloc != request.url.netloc:
-            referer = "/"
-        return RedirectResponse(url=referer, status_code=status.HTTP_303_SEE_OTHER)
-    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    safe_url = get_safe_redirect_url(referer, request.url.netloc)
+    return RedirectResponse(url=safe_url, status_code=status.HTTP_303_SEE_OTHER)
 
 
 def _validate_book_fields(isbn: str, location: str, language: str | None):
@@ -309,19 +306,15 @@ async def edit_book(
     book.personal_comment = form_data.personal_comment.strip()
 
     if form_data.cover and form_data.cover.filename:
-        new_cover = validate_and_save_cover(form_data.cover)
-        _delete_old_cover(book.cover_path)
+        new_cover = await run_in_threadpool(validate_and_save_cover, form_data.cover)
+        await run_in_threadpool(_delete_old_cover, book.cover_path)
         book.cover_path = new_cover
 
     db.commit()
 
     referer = request.headers.get("referer")
-    if referer:
-        parsed_referer = urlparse(referer)
-        if parsed_referer.netloc and parsed_referer.netloc != request.url.netloc:
-            referer = "/"
-        return RedirectResponse(url=referer, status_code=status.HTTP_303_SEE_OTHER)
-    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    safe_url = get_safe_redirect_url(referer, request.url.netloc)
+    return RedirectResponse(url=safe_url, status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.post("/delete", response_class=HTMLResponse)
@@ -339,17 +332,10 @@ async def delete_book(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
 
     if book.cover_path != DEFAULT_COVER_PATH:
-        if book.cover_path.startswith("https://res.cloudinary.com/"):
-            delete_cover_from_cloudinary(book.cover_path)
-        elif os.path.exists(book.cover_path):
-            os.remove(book.cover_path)
+        await run_in_threadpool(_delete_old_cover, book.cover_path)
 
     crud_delete_book(db, book)
 
     referer = request.headers.get("referer")
-    if referer:
-        parsed_referer = urlparse(referer)
-        if parsed_referer.netloc and parsed_referer.netloc != request.url.netloc:
-            referer = "/"
-        return RedirectResponse(url=referer, status_code=status.HTTP_303_SEE_OTHER)
-    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    safe_url = get_safe_redirect_url(referer, request.url.netloc)
+    return RedirectResponse(url=safe_url, status_code=status.HTTP_303_SEE_OTHER)
