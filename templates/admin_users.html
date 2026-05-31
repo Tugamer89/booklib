@@ -98,56 +98,49 @@
                             {% endif %}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <form
-                                method="post"
-                                action="/admin/users/reset-password"
-                                class="flex items-center gap-2"
-                            >
-                                <input type="hidden" name="user_id" value="{{ user.id }}" />
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
-
-                                <div class="password-container">
+                            <div class="flex items-center gap-3">
+                                <form
+                                    method="post"
+                                    action="/admin/users/reset-password"
+                                    onsubmit="return confirm('Send a password reset email to {{ user.username }}?');"
+                                    class="m-0"
+                                >
+                                    <input type="hidden" name="user_id" value="{{ user.id }}" />
                                     <input
-                                        type="password"
-                                        name="new_password"
-                                        placeholder="New password"
-                                        minlength="8"
-                                        required
-                                        class="input-style !py-1.5 !text-sm !w-40 pr-8"
-                                        id="password-{{ user.id }}"
+                                        type="hidden"
+                                        name="csrf_token"
+                                        value="{{ csrf_token }}"
                                     />
                                     <button
-                                        type="button"
-                                        class="password-toggle-icon"
-                                        data-target="password-{{ user.id }}"
-                                        aria-label="Toggle password visibility"
+                                        type="submit"
+                                        class="px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 whitespace-nowrap shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors"
+                                        aria-label="Send reset link"
                                     >
-                                        <i data-lucide="eye-off" class="w-4 h-4 eye-closed"></i>
-                                        <i data-lucide="eye" class="w-4 h-4 eye-open hidden"></i>
+                                        Send Reset Link
                                     </button>
-                                </div>
-                                <button
-                                    type="submit"
-                                    class="px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 whitespace-nowrap shadow-sm"
+                                </form>
+
+                                <form
+                                    method="post"
+                                    action="/admin/users/delete"
+                                    onsubmit="return confirm('Are you sure you want to delete user {{ user.username }}? This action is irreversible.');"
+                                    class="m-0"
                                 >
-                                    Reset Pass
-                                </button>
-                            </form>
-                            <form
-                                method="post"
-                                action="/admin/users/delete"
-                                onsubmit="return confirm('Are you sure you want to delete user {{ user.username }}? This action is irreversible.');"
-                                class="ml-2"
-                            >
-                                <input type="hidden" name="user_id" value="{{ user.id }}" />
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
-                                <button
-                                    type="submit"
-                                    class="px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded-md hover:bg-red-700 shadow-sm"
-                                >
-                                    Delete
-                                </button>
-                            </form>
+                                    <input type="hidden" name="user_id" value="{{ user.id }}" />
+                                    <input
+                                        type="hidden"
+                                        name="csrf_token"
+                                        value="{{ csrf_token }}"
+                                    />
+                                    <button
+                                        type="submit"
+                                        class="px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded-md hover:bg-red-700 whitespace-nowrap shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors"
+                                        aria-label="Delete user {{ user.username }}"
+                                    >
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}

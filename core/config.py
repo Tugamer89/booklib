@@ -48,6 +48,8 @@ class Settings(BaseSettings):
     keepalive_db: str = os.getenv("KEEPALIVE_DB", "")
     keepalive_db_cron: str = os.getenv("KEEPALIVE_DB_CRON", "0 0 */5 * *")
 
+    google_books_api_key: str = os.getenv("GOOGLE_BOOKS_API_KEY", "")
+
     password_hash: PasswordHash = PasswordHash((BcryptHasher(),))
 
     def __init__(self, **data):
