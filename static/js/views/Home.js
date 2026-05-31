@@ -304,13 +304,23 @@ export default {
             </div>
 
             <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
-                 <h1 class="text-3xl font-bold text-slate-800 dark:text-slate-100">My Library</h1>
-                 <div class="flex items-center gap-2">
-                     <button @click="showFilters = !showFilters" class="bg-slate-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-slate-700 transition-colors">Filter & Sort</button>
-                     <button @click="showAddForm = !showAddForm" class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 transition-colors">
+                <h1 class="text-3xl font-bold text-slate-800 dark:text-slate-100">My Library</h1>
+                <div class="flex items-center gap-2">
+                    <button 
+                        @click="showFilters = !showFilters; if(showFilters) showAddForm = false" 
+                        class="bg-slate-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
+                        :aria-expanded="showFilters"
+                    >
+                        {{ showFilters ? 'Cancel' : 'Filter & Sort' }}
+                    </button>
+                    <button 
+                        @click="showAddForm = !showAddForm; if(showAddForm) showFilters = false" 
+                        class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
+                        :aria-expanded="showAddForm"
+                    >
                         {{ showAddForm ? 'Cancel' : 'Add Book' }}
                     </button>
-                 </div>
+                </div>
             </div>
 
             <transition name="fade">
