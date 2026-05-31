@@ -100,12 +100,24 @@ export default {
             search(false);
         });
 
-        const handleScroll = () => {
+        let isScrolling = false;
+
+        const onScroll = () => {
             const el = resultsContainer.value;
             if (!el) return;
             const isAtBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 150;
             if (isAtBottom && results.value.length < totalItems.value) {
                 search(true);
+            }
+        };
+
+        const handleScroll = () => {
+            if (!isScrolling) {
+                globalThis.requestAnimationFrame(() => {
+                    onScroll();
+                    isScrolling = false;
+                });
+                isScrolling = true;
             }
         };
 
