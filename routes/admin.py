@@ -5,6 +5,7 @@ from fastapi_csrf_protect import CsrfProtect
 from sqlalchemy.orm import Session
 
 from core.auth import admin_required
+from core.limiter import limiter
 from core.security import hash_password
 from core.templates import templates
 from db.crud import logout_all
@@ -38,6 +39,7 @@ def admin_users_list(
 
 
 @router.post("/admin/users/reset-password")
+@limiter.limit("5/minute")
 async def admin_reset_password(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
