@@ -27,11 +27,11 @@ export default {
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
                             <div>
-                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Title *</label>
+                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Title <span class="text-red-500">*</span></label>
                                 <input type="text" name="title" :value="book.title" required class="mt-1 input-style">
                             </div>
                              <div>
-                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Author *</label>
+                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Author <span class="text-red-500">*</span></label>
                                 <input type="text" name="author" :value="book.author" required class="mt-1 input-style">
                             </div>
                              <div>
@@ -43,7 +43,7 @@ export default {
                                 <input type="text" name="publisher" :value="book.publisher" class="mt-1 input-style">
                             </div>
                              <div>
-                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Location *</label>
+                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Location <span class="text-red-500">*</span></label>
                                 <input type="text" name="location" :value="book.location" required class="mt-1 input-style" :pattern="locationPattern" title="E.g.: A5, SHELF10" oninput="this.value = this.value.toUpperCase()">
                             </div>
                              <div>

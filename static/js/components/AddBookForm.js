@@ -116,11 +116,11 @@ export default {
                     
                     <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="sm:col-span-2">
-                            <label for="title" class="block text-sm font-medium text-slate-600 dark:text-slate-300">Title *</label>
+                            <label for="title" class="block text-sm font-medium text-slate-600 dark:text-slate-300">Title <span class="text-red-500">*</span></label>
                             <input v-model="bookData.title" type="text" name="title" id="title" required class="mt-1 input-style">
                         </div>
                         <div>
-                            <label for="author" class="block text-sm font-medium text-slate-600 dark:text-slate-300">Author *</label>
+                            <label for="author" class="block text-sm font-medium text-slate-600 dark:text-slate-300">Author <span class="text-red-500">*</span></label>
                             <input v-model="bookData.author" type="text" name="author" id="author" required class="mt-1 input-style">
                         </div>
                         <div>
@@ -138,7 +138,7 @@ export default {
                             <div id="isbn-scanner-reader" class="mt-2 hidden w-full rounded-md overflow-hidden border dark:border-slate-600"></div>
                         </div>
                         <div>
-                            <label for="location" class="block text-sm font-medium text-slate-600 dark:text-slate-300">Location *</label>
+                            <label for="location" class="block text-sm font-medium text-slate-600 dark:text-slate-300">Location <span class="text-red-500">*</span></label>
                             <input v-model="bookData.location" type="text" name="location" id="location" required class="mt-1 input-style" pattern="[A-Z]+[0-9]+" title="Invalid format. E.g.: A5, SHELF10" oninput="this.value = this.value.toUpperCase()">
                         </div>
                         <div>
