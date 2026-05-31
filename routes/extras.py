@@ -1,13 +1,56 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Response, status
+import httpx
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from core.auth import get_authenticated_user
+from core.config import settings
 from db.database import get_db
+from db.models import User
 
 router = APIRouter()
+
+
+@router.get("/api/search-google-books")
+async def proxy_google_books(
+    q: str,
+    max_results: int = 20,
+    start_index: int = 0,
+    current_user=Annotated[User, Depends(get_authenticated_user)],
+):
+    """
+    Secure backend proxy for Google Books API to hide the API key from clients.
+    """
+    if not settings.google_books_api_key:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Google API Key is not configured on the server.",
+        )
+
+    url = (
+        f"https://www.googleapis.com/books/v1/volumes"
+        f"?q={q}&maxResults={max_results}&startIndex={start_index}"
+        f"&key={settings.google_books_api_key}"
+    )
+
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(url)
+            response.raise_for_status()
+            return response.json()
+        except httpx.HTTPStatusError as e:
+            raise HTTPException(
+                status_code=e.response.status_code,
+                detail="Failed to fetch data from Google Books API.",
+            ) from e
+        except httpx.RequestError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Error communicating with external API.",
+            ) from e
 
 
 @router.head("/keepalive")
