@@ -44,7 +44,7 @@ export default {
             }
 
             const response = await fetch(
-                `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=20&startIndex=${startIdx}`
+                `/api/search-google-books?q=${encodeURIComponent(query)}&max_results=20&start_index=${startIdx}`
             );
             if (!response.ok) {
                 const errorMessage = await extractErrorMessage(response);

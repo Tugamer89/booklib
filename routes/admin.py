@@ -5,11 +5,14 @@ from fastapi_csrf_protect import CsrfProtect
 from sqlalchemy.orm import Session
 
 from core.auth import admin_required
-from core.security import hash_password
+from core.config import settings
+from core.email import send_password_reset_email
+from core.security import generate_password_reset_token
 from core.templates import templates
-from db.crud import logout_all
+from db.crud import set_password_reset_token
 from db.database import get_db
 from db.models import User
+from utils.logger import logger
 
 ADMIN_USERS_PAGE = "admin_users.html"
 
@@ -44,34 +47,29 @@ async def admin_reset_password(
     csrf_protect: Annotated[CsrfProtect, Depends()],
     admin: Annotated[User, Depends(admin_required)],
     user_id: Annotated[int, Form(...)],
-    new_password: Annotated[str, Form(...)],
 ):
     await csrf_protect.validate_csrf(request)
-
-    if len(new_password) < 8:
-        users = db.query(User).order_by(User.id).all()
-        csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-        response = templates.TemplateResponse(
-            request=request,
-            name=ADMIN_USERS_PAGE,
-            context={
-                "users": users,
-                "msg": "",
-                "error": "Password too short",
-                "csrf_token": csrf_token,
-            },
-            status_code=status.HTTP_400_BAD_REQUEST,
-        )
-        csrf_protect.set_csrf_cookie(signed_token, response)
-        return response
 
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
-    user.password = hash_password(new_password)
-    db.commit()
-    logout_all(db, user_id)
+    token = generate_password_reset_token(user.email)
+    if not set_password_reset_token(db, user, token):
+        logger.error(f"Failed to save reset token to DB for {user.email} triggered by admin")
+        msg, error = "", "Failed to generate reset token. Internal error."
+    else:
+        base_url = (
+            settings.app_base_url.rstrip("/")
+            if settings.app_base_url
+            else str(request.base_url).rstrip("/")
+        )
+        email_sent = send_password_reset_email(user.email, user.username, token, base_url)
+
+        if email_sent:
+            msg, error = f"Password reset link sent to {user.email}", ""
+        else:
+            msg, error = "", f"Failed to send email to {user.email}. Check SMTP settings."
 
     users = db.query(User).order_by(User.id).all()
     csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
@@ -80,8 +78,8 @@ async def admin_reset_password(
         name=ADMIN_USERS_PAGE,
         context={
             "users": users,
-            "msg": "Password updated",
-            "error": "",
+            "msg": msg,
+            "error": error,
             "csrf_token": csrf_token,
         },
     )

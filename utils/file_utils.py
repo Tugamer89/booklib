@@ -43,8 +43,14 @@ def validate_and_save_cover(cover):
 def validate_cover_url(cover_url: str) -> str:
     cover_path = cover_url.strip()
 
-    if not cover_path.startswith(("http://", "https://")):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid cover URL")
+    if cover_path.startswith("http://"):
+        cover_path = cover_path.replace("http://", "https://", 1)
+
+    if not cover_path.startswith("https://"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid cover URL scheme. Must be HTTPS.",
+        )
 
     try:
         parsed = urlparse(cover_path)
@@ -54,16 +60,11 @@ def validate_cover_url(cover_url: str) -> str:
 
         ip_addr = socket.gethostbyname(hostname)
         ip = ipaddress.ip_address(ip_addr)
-        # Security: Prevent SSRF by ensuring only public, global non-multicast IPs are allowed
         if not ip.is_global or ip.is_multicast:
             raise ValueError("Private, loopback, or invalid IP addresses are not allowed")
 
-        port = parsed.port or (443 if parsed.scheme == "https" else 80)
-        safe_url = f"{parsed.scheme}://{ip_addr}:{port}{parsed.path}"
-        if parsed.query:
-            safe_url += f"?{parsed.query}"
+        response = requests.head(cover_path, timeout=5, allow_redirects=True)
 
-        response = requests.head(safe_url, headers={"Host": hostname}, timeout=5)
         content_type = response.headers.get("Content-Type", "")
     except Exception as e:
         raise HTTPException(
