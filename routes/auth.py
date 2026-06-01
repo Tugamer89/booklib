@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, status
+from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi_csrf_protect import CsrfProtect
 from sqlalchemy.orm import Session
@@ -72,7 +73,7 @@ def _handle_login(db: Session, username: str, password: str) -> tuple[User | Non
     return user, None
 
 
-def _handle_register(
+async def _handle_register(
     db: Session, username: str, password: str, email: str, request: Request
 ) -> tuple[str | None, str | None]:
     try:
@@ -98,8 +99,13 @@ def _handle_register(
         if settings.app_base_url
         else str(request.base_url).rstrip("/")
     )
-    email_sent = send_verification_email(
-        created_user.email, created_user.username, verification_token, base_url
+    # Offload synchronous blocking I/O operation to prevent blocking the asyncio event loop
+    email_sent = await run_in_threadpool(
+        send_verification_email,
+        created_user.email,
+        created_user.username,
+        verification_token,
+        base_url,
     )
 
     if email_sent:
@@ -138,7 +144,7 @@ async def auth_auction_post(
         if not clean_email:
             error = "Email is required for registration."
         else:
-            msg, error = _handle_register(db, clean_username, password, clean_email, request)
+            msg, error = await _handle_register(db, clean_username, password, clean_email, request)
     else:
         error = "Invalid action"
 
@@ -272,7 +278,10 @@ async def handle_forgot_password(
                 if settings.app_base_url
                 else str(request.base_url).rstrip("/")
             )
-            email_sent = send_password_reset_email(user.email, user.username, token, base_url)
+            # Offload synchronous blocking I/O operation to prevent blocking the asyncio event loop
+            email_sent = await run_in_threadpool(
+                send_password_reset_email, user.email, user.username, token, base_url
+            )
             if not email_sent:
                 logger.warning(f"Failed attempt to send reset email for {user.email}.")
 
