@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from core.auth import create_session, get_authenticated_user
 from core.config import settings
 from core.email import send_password_reset_email, send_verification_email
+from core.limiter import limiter
 from core.security import (
     generate_password_reset_token,
     generate_verification_token,
@@ -114,6 +115,7 @@ def _handle_register(
 
 
 @router.post("/auth")
+@limiter.limit("5/minute")
 async def auth_auction_post(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
@@ -251,6 +253,7 @@ def forgot_password_page(
 
 
 @router.post("/forgot-password")
+@limiter.limit("3/minute")
 async def handle_forgot_password(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
@@ -326,6 +329,7 @@ def reset_password_page(
 
 
 @router.post("/reset-password")
+@limiter.limit("3/minute")
 async def handle_reset_password(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
