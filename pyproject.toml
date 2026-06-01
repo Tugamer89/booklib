@@ -21,6 +21,7 @@ dependencies = [
     'Jinja2',
     'python-multipart',
     'starlette-securecookies',
+    "slowapi>=0.1.9",
 ]
 
 [dependency-groups]

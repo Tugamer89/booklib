@@ -6,15 +6,19 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi_csrf_protect import CsrfProtect
 from securecookies import SecureCookiesMiddleware
+from slowapi.errors import RateLimitExceeded
 from starlette.middleware.sessions import SessionMiddleware
 
 from core.config import settings
 from core.csrf import CsrfSettings
+from core.limiter import _rate_limit_exceeded_handler, limiter
 from core.middleware import PreventSessionOverwriteMiddleware, SecurityHeadersMiddleware
 from routes import admin, auth, books, debug, errors, extras
 from utils.starter import lifespan
 
 app = FastAPI(lifespan=lifespan, title="BookLib", version="1.13.1")  # x-release-please-version
+
+app.state.limiter = limiter
 
 
 @CsrfProtect.load_config
@@ -55,6 +59,7 @@ app.add_exception_handler(errors.StarletteHTTPException, errors.http_exception_r
 app.add_exception_handler(errors.RequestValidationError, errors.validation_exception_handler)
 app.add_exception_handler(errors.OperationalError, errors.operational_error_handler)
 app.add_exception_handler(errors.CsrfProtectError, errors.csrf_protect_exception_handler)
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_exception_handler(Exception, errors.generic_exception_handler)
 
 app.include_router(auth.router)
