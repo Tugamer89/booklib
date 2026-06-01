@@ -17,7 +17,7 @@ export default {
                     <form action="/edit" method="post" enctype="multipart/form-data" class="p-6">
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100">Edit Book</h3>
-                            <button @click.prevent="close" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-2xl" aria-label="Close edit form">
+                            <button @click.prevent="close" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-2xl rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500" aria-label="Close edit form">
                                 <X class="w-6 h-6" />
                             </button>
                         </div>
@@ -65,8 +65,8 @@ export default {
                         </div>
 
                         <div class="flex justify-end space-x-3 mt-6 border-t border-slate-200 dark:border-slate-700 pt-4">
-                            <button type="button" @click="close" class="bg-slate-200 dark:bg-slate-600 px-4 py-2 rounded-md hover:bg-slate-300 dark:hover:bg-slate-500 transition">Cancel</button>
-                            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md shadow hover:bg-indigo-700 transition">Save Changes</button>
+                            <button type="button" @click="close" class="bg-slate-200 dark:bg-slate-600 px-4 py-2 rounded-md hover:bg-slate-300 dark:hover:bg-slate-500 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-800">Cancel</button>
+                            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md shadow hover:bg-indigo-700 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-800">Save Changes</button>
                         </div>
                     </form>
                 </div>

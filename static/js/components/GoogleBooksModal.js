@@ -168,7 +168,7 @@ export default {
                                 <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100">Results for:</h3>
                                 <p class="text-sm text-slate-500 dark:text-slate-400 truncate">{{ formattedQuery }}</p>
                             </div>
-                            <button @click="close" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-2xl" aria-label="Close modal">&times;</button>
+                            <button @click="close" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-2xl rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500" aria-label="Close modal">&times;</button>
                         </div>
                     </div>
                     <div ref="resultsContainer" @scroll="handleScroll" class="overflow-y-auto p-4 flex-grow">
