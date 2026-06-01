@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, status
+from fastapi.concurrency import run_in_threadpool
 from fastapi_csrf_protect import CsrfProtect
 from sqlalchemy.orm import Session
 
@@ -64,7 +65,10 @@ async def admin_reset_password(
             if settings.app_base_url
             else str(request.base_url).rstrip("/")
         )
-        email_sent = send_password_reset_email(user.email, user.username, token, base_url)
+        # Offload synchronous blocking I/O operation to prevent blocking the asyncio event loop
+        email_sent = await run_in_threadpool(
+            send_password_reset_email, user.email, user.username, token, base_url
+        )
 
         if email_sent:
             msg, error = f"Password reset link sent to {user.email}", ""
