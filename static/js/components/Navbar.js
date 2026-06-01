@@ -18,14 +18,14 @@ export default {
               <h1 class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">BookLib</h1>
             </div>
             <div class="flex items-center space-x-4">
-              <a v-if="isAdmin" href="/admin/users" class="text-sm font-medium text-slate-600 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400 transition">
+              <a v-if="isAdmin" href="/admin/users" class="text-sm font-medium text-slate-600 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400 transition rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
                 Admin
               </a>
-              <button @click="toggleTheme" class="p-2 rounded-full text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-700 transition" aria-label="Toggle theme">
+              <button @click="toggleTheme" class="p-2 rounded-full text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-700 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500" aria-label="Toggle theme">
                 <Sun v-if="isDark" class="w-5 h-5 text-yellow-500" />
                 <Moon v-else class="w-5 h-5 text-slate-500" />
               </button>
-              <a href="/logout" class="text-sm font-medium text-slate-600 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400 transition">
+              <a href="/logout" class="text-sm font-medium text-slate-600 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400 transition rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
                 Logout
               </a>
             </div>
