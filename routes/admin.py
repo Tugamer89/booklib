@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from core.auth import admin_required
 from core.config import settings
 from core.email import send_password_reset_email
+from core.limiter import limiter
 from core.security import generate_password_reset_token
 from core.templates import templates
 from db.crud import set_password_reset_token
@@ -42,6 +43,7 @@ def admin_users_list(
 
 
 @router.post("/admin/users/reset-password")
+@limiter.limit("5/minute")
 async def admin_reset_password(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
@@ -92,6 +94,7 @@ async def admin_reset_password(
 
 
 @router.post("/admin/users/delete")
+@limiter.limit("5/minute")
 async def admin_delete_user(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
