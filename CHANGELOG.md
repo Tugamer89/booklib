@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.14.0](https://github.com/Tugamer89/booklib/compare/v1.13.1...v1.14.0) (2026-06-01)
+
+
+### Features
+
+* admin ux and security improvements ([#53](https://github.com/Tugamer89/booklib/issues/53)) ([76ad1a7](https://github.com/Tugamer89/booklib/commit/76ad1a797c8a9ec2b5d702a2f5ac24a988005f90))
+* **ui:** add colored required indicators to form fields ([#50](https://github.com/Tugamer89/booklib/issues/50)) ([38117d7](https://github.com/Tugamer89/booklib/commit/38117d71697da73aa87d29ca37ac89e9d44e7549))
+* **ui:** add focus visible styles for keyboard navigation ([#57](https://github.com/Tugamer89/booklib/issues/57)) ([8f4b0b2](https://github.com/Tugamer89/booklib/commit/8f4b0b2f5b328b8d72a5112de022c374e91ae851))
+
+
+### Bug Fixes
+
+* **security:** [HIGH] resolve missing rate limiting on auth and admin endpoints ([#56](https://github.com/Tugamer89/booklib/issues/56)) ([96d9a03](https://github.com/Tugamer89/booklib/commit/96d9a03da9df8f61ff761425035d0fc2a068d406))
+* **security:** resolve missing rate limiting on auth and admin endpoints ([96d9a03](https://github.com/Tugamer89/booklib/commit/96d9a03da9df8f61ff761425035d0fc2a068d406))
+
+
+### Performance Improvements
+
+* offload synchronous email sending to threadpool ([#55](https://github.com/Tugamer89/booklib/issues/55)) ([7d1cd67](https://github.com/Tugamer89/booklib/commit/7d1cd67fa338a7e8df424cf0d03f412153295a9e))
+* throttle modal scroll events ([#52](https://github.com/Tugamer89/booklib/issues/52)) ([39756e4](https://github.com/Tugamer89/booklib/commit/39756e4cd4262ac7bf6e976f98a30b4375207f05))
+
 ## [1.13.1](https://github.com/Tugamer89/booklib/compare/v1.13.0...v1.13.1) (2026-05-30)
 
 
