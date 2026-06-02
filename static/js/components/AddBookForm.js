@@ -1,6 +1,6 @@
 import { ref, watch } from "vue";
 import { formatISBN, liveFormatISBN } from "../utils/formatters.js";
-import { Camera, Search } from "lucide-vue-next";
+import { Camera, Search, Loader2 } from "lucide-vue-next";
 import GoogleBooksModal from "./GoogleBooksModal.js";
 
 export default {
@@ -13,10 +13,11 @@ export default {
         csrfToken: String,
     },
     emits: ["open-google-search"],
-    components: { GoogleBooksModal, Camera, Search },
+    components: { GoogleBooksModal, Camera, Search, Loader2 },
     setup(props, { emit }) {
         const coverPreview = ref(props.bookData.cover_url || "/static/covers/default.jpg");
         const isScanning = ref(false);
+        const isSubmitting = ref(false);
         const currentFile = ref(null);
         let html5QrCode = null;
 
@@ -108,6 +109,7 @@ export default {
         return {
             coverPreview,
             isScanning,
+            isSubmitting,
             handleFileChange,
             startIsbnScanner,
             openGoogleSearch,
@@ -124,7 +126,7 @@ export default {
                 </button>
             </div>
 
-            <form action="/add" method="post" enctype="multipart/form-data" class="space-y-6">
+            <form action="/add" method="post" enctype="multipart/form-data" class="space-y-6" @submit="isSubmitting = true">
                 <input type="hidden" name="csrf_token" :value="csrfToken">
                 <input type="hidden" name="cover_url" v-model="bookData.cover_url">
                 
@@ -201,8 +203,9 @@ export default {
                 </div>
                 
                 <div class="flex justify-end pt-6 mt-6 border-t border-slate-200 dark:border-slate-700">
-                    <button type="submit" class="w-full sm:w-auto bg-indigo-600 text-white px-8 py-2.5 rounded-lg shadow-md hover:bg-indigo-700 transition-colors font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800">
-                        Save Book
+                    <button type="submit" :disabled="isSubmitting" class="w-full sm:w-auto bg-indigo-600 text-white px-8 py-2.5 rounded-lg shadow-md hover:bg-indigo-700 transition-colors font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                        <Loader2 v-if="isSubmitting" class="w-5 h-5 animate-spin" />
+                        {{ isSubmitting ? 'Saving...' : 'Save Book' }}
                     </button>
                 </div>
             </form>
