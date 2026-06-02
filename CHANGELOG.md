@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.15.0](https://github.com/Tugamer89/booklib/compare/v1.14.0...v1.15.0) (2026-06-02)
+
+
+### Features
+
+* **ui:** add loading state to save book form submission ([#58](https://github.com/Tugamer89/booklib/issues/58)) ([3107e6a](https://github.com/Tugamer89/booklib/commit/3107e6adbd0e863ba30a6dbb4de3f7bc1dedc611))
+
+
+### Bug Fixes
+
+* **security:** [CRITICAL] resolve SSRF vulnerability in cover URL validation ([#59](https://github.com/Tugamer89/booklib/issues/59)) ([39cf6ec](https://github.com/Tugamer89/booklib/commit/39cf6eccf12c69cf286eea1e2e2f65095a4ee250))
+
 ## [1.14.0](https://github.com/Tugamer89/booklib/compare/v1.13.1...v1.14.0) (2026-06-01)
 
 
