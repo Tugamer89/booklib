@@ -63,7 +63,7 @@ def validate_cover_url(cover_url: str) -> str:
         if not ip.is_global or ip.is_multicast:
             raise ValueError("Private, loopback, or invalid IP addresses are not allowed")
 
-        response = requests.head(cover_path, timeout=5, allow_redirects=True)
+        response = requests.head(cover_path, timeout=5, allow_redirects=False)
 
         content_type = response.headers.get("Content-Type", "")
     except Exception as e:
