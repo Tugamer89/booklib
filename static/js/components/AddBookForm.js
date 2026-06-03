@@ -48,11 +48,30 @@ export default {
             }
         };
 
-        const startIsbnScanner = () => {
+        const startIsbnScanner = async () => {
             if (isScanning.value) {
                 stopScanner();
                 return;
             }
+
+            if (!globalThis.Html5Qrcode) {
+                try {
+                    await new Promise((resolve, reject) => {
+                        const script = document.createElement("script");
+                        script.src = "https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js";
+                        script.integrity =
+                            "sha512-r6rDA7W6ZeQhvl8S7yRVQUKVHdexq+GAlNkNNqVC7YyIV+NwqCTJe2hDWCiffTyRNOeGEzRRJ9ifvRm/HCzGYg==";
+                        script.crossOrigin = "anonymous";
+                        script.onload = resolve;
+                        script.onerror = reject;
+                        document.head.appendChild(script);
+                    });
+                } catch (error) {
+                    console.error("Failed to load html5-qrcode library", error);
+                    return;
+                }
+            }
+
             isScanning.value = true;
             const readerElement = document.getElementById("isbn-scanner-reader");
             readerElement.classList.remove("hidden");
