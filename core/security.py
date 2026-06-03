@@ -76,12 +76,7 @@ def get_safe_redirect_url(url: str | None, request_host: str) -> str:
 
     url = url.strip()
 
-    if (
-        url.startswith("//")
-        or url.startswith("\\\\")
-        or url.startswith("/\\")
-        or url.startswith("\\/")
-    ):
+    if url.startswith(("//", "\\\\", "/\\", "\\/")):
         return "/"
 
     from urllib.parse import urlparse
