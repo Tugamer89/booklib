@@ -54,8 +54,7 @@ export default {
                 return;
             }
 
-            // Code splitting: dynamically load html5-qrcode only when scanner is requested
-            if (!window.Html5Qrcode) {
+            if (!globalThis.Html5Qrcode) {
                 try {
                     await new Promise((resolve, reject) => {
                         const script = document.createElement("script");
