@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.16.0](https://github.com/Tugamer89/booklib/compare/v1.15.0...v1.16.0) (2026-06-03)
+
+
+### Features
+
+* **ui:** improve empty state with helpful call-to-action ([#61](https://github.com/Tugamer89/booklib/issues/61)) ([12f77e5](https://github.com/Tugamer89/booklib/commit/12f77e5fd13042f9bf9dcf755900fb550b74a829))
+
+
+### Bug Fixes
+
+* **security:** [HIGH] resolve open redirect vulnerability in redirect URL validation ([#62](https://github.com/Tugamer89/booklib/issues/62)) ([5077321](https://github.com/Tugamer89/booklib/commit/5077321472eafbbcb817f39aef8eef79d81014d2))
+
+
+### Performance Improvements
+
+* lazy load html5-qrcode library ([#63](https://github.com/Tugamer89/booklib/issues/63)) ([b513968](https://github.com/Tugamer89/booklib/commit/b5139686a6a8771033d72901d482cea9bbbe995a))
+
 ## [1.15.0](https://github.com/Tugamer89/booklib/compare/v1.14.0...v1.15.0) (2026-06-02)
 
 
