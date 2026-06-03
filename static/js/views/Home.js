@@ -304,7 +304,7 @@ export default {
             handleBookSelected,
         };
     },
-    template: `
+    template: String.raw`
     <div class="flex flex-col min-h-[100svh]">
         <Navbar :is-admin="isAdmin" :username="username" />
 
@@ -364,7 +364,7 @@ export default {
                 </h3>
                 <p class="text-slate-500 dark:text-slate-400 text-center mb-8 max-w-md">
                     {{ hasActiveFilters
-                        ? 'Try adjusting your search criteria or clearing active filters to find what you\\'re looking for.'
+                        ? 'Try adjusting your search criteria or clearing active filters to find what you\'re looking for.'
                         : 'Get started by adding your first book to your personal collection. You can search by title, author, or even scan an ISBN.'
                     }}
                 </p>
