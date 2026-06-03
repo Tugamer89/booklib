@@ -2,7 +2,7 @@ import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { useBodyScrollLock } from "../utils/useBodyScrollLock.js";
 import { api } from "../services/api.js";
 import { formatISBN } from "../utils/formatters.js";
-import { ChevronUp } from "lucide-vue-next";
+import { ChevronUp, BookMarked } from "lucide-vue-next";
 
 import Navbar from "../components/Navbar.js";
 import BookCard from "../components/BookCard.js";
@@ -22,6 +22,7 @@ export default {
         FilterPanel,
         GoogleBooksModal,
         ChevronUp,
+        BookMarked,
     },
     setup() {
         const books = ref([]);
@@ -37,6 +38,15 @@ export default {
             location: "",
             sort_by: "id",
             sort_order: "asc",
+        });
+
+        const hasActiveFilters = computed(() => {
+            return !!(
+                currentFilters.value.title ||
+                currentFilters.value.author ||
+                currentFilters.value.publisher ||
+                currentFilters.value.location
+            );
         });
 
         const showAddForm = ref(localStorage.getItem("showAddForm") === "true");
@@ -271,6 +281,7 @@ export default {
             isLoading,
             fetchError,
             currentFilters,
+            hasActiveFilters,
             showAddForm,
             showFilters,
             showScrollToTop,
@@ -293,7 +304,7 @@ export default {
             handleBookSelected,
         };
     },
-    template: `
+    template: String.raw`
     <div class="flex flex-col min-h-[100svh]">
         <Navbar :is-admin="isAdmin" :username="username" />
 
@@ -344,8 +355,34 @@ export default {
             <div v-if="isLoading && books.length === 0" class="text-center py-12 text-slate-500 dark:text-slate-400">
                 <p>Loading...</p>
             </div>
-             <div v-else-if="books.length === 0" class="text-center py-12 text-slate-500 dark:text-slate-400">
-                <p>No books found. Try changing the filters or add a new one!</p>
+            <div v-else-if="books.length === 0" class="flex flex-col items-center justify-center py-16 px-4 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 max-w-2xl mx-auto mt-8">
+                <div class="bg-indigo-50 dark:bg-indigo-900/30 p-4 rounded-full mb-6">
+                    <BookMarked class="w-12 h-12 text-indigo-500 dark:text-indigo-400" />
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">
+                    {{ hasActiveFilters ? 'No books match your filters' : 'Your library is empty' }}
+                </h3>
+                <p class="text-slate-500 dark:text-slate-400 text-center mb-8 max-w-md">
+                    {{ hasActiveFilters
+                        ? 'Try adjusting your search criteria or clearing active filters to find what you\'re looking for.'
+                        : 'Get started by adding your first book to your personal collection. You can search by title, author, or even scan an ISBN.'
+                    }}
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button
+                        v-if="hasActiveFilters"
+                        @click="resetFiltersNow"
+                        class="px-6 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
+                    >
+                        Clear filters
+                    </button>
+                    <button
+                        @click="showAddForm = true; showFilters = false; scrollToTop()"
+                        class="px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg shadow-sm hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
+                    >
+                        Add your first book
+                    </button>
+                </div>
             </div>
             <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                 <BookCard
