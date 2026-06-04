@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.1](https://github.com/Tugamer89/booklib/compare/v1.16.0...v1.16.1) (2026-06-04)
+
+
+### Bug Fixes
+
+* **security:** [MEDIUM] restrict sort_by to allowed columns to prevent DoS via unhandled ORM exceptions ([#65](https://github.com/Tugamer89/booklib/issues/65)) ([f813547](https://github.com/Tugamer89/booklib/commit/f8135474e42ca8e750e4d1c90e92febf4db1efdf))
+
 ## [1.16.0](https://github.com/Tugamer89/booklib/compare/v1.15.0...v1.16.0) (2026-06-03)
 
 
