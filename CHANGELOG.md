@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.2](https://github.com/Tugamer89/booklib/compare/v1.16.1...v1.16.2) (2026-06-04)
+
+
+### Performance Improvements
+
+* optimize books-data serialization ([#67](https://github.com/Tugamer89/booklib/issues/67)) ([2aa8d3d](https://github.com/Tugamer89/booklib/commit/2aa8d3df2afdd906184127cec1ed477443eb4cd4))
+
 ## [1.16.1](https://github.com/Tugamer89/booklib/compare/v1.16.0...v1.16.1) (2026-06-04)
 
 
