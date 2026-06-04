@@ -100,6 +100,10 @@ def books_data(
         query = query.filter(Book.location.ilike(f"%{location}%"))
 
     # Dynamic sorting
+    allowed_sort_columns = {"id", "title", "author", "isbn", "publisher", "location", "cover_path"}
+    if sort_by not in allowed_sort_columns:
+        sort_by = "id"
+
     sort_column = getattr(Book, sort_by, Book.id)
     order_criteria = []
 
