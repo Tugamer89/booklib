@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.0](https://github.com/Tugamer89/booklib/compare/v1.16.2...v1.17.0) (2026-06-05)
+
+
+### Features
+
+* **ui:** dynamic aria labels for scanner button ([#69](https://github.com/Tugamer89/booklib/issues/69)) ([c6f0cd6](https://github.com/Tugamer89/booklib/commit/c6f0cd67050c11989f27e6618617bb6dd5696f96))
+
 ## [1.16.2](https://github.com/Tugamer89/booklib/compare/v1.16.1...v1.16.2) (2026-06-04)
 
 
