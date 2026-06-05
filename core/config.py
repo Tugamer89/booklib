@@ -41,6 +41,7 @@ class Settings(BaseSettings):
     app_base_url: str = os.getenv("APP_BASE_URL", "")
 
     DEBUG: bool = os.getenv("DEBUG", "false").lower() == "true"
+    forwarded_allow_ips: str = os.getenv("FORWARDED_ALLOW_IPS", "127.0.0.1")
     admin_users_env: str = Field(default=os.getenv("ADMIN_USERS", ""), repr=False)
     admin_users: set[str] = set()
     keepalive_url: str = os.getenv("KEEPALIVE_URL", "")

@@ -8,6 +8,7 @@ from fastapi_csrf_protect import CsrfProtect
 from securecookies import SecureCookiesMiddleware
 from slowapi.errors import RateLimitExceeded
 from starlette.middleware.sessions import SessionMiddleware
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from core.config import settings
 from core.csrf import CsrfSettings
@@ -16,7 +17,7 @@ from core.middleware import PreventSessionOverwriteMiddleware, SecurityHeadersMi
 from routes import admin, auth, books, debug, errors, extras
 from utils.starter import lifespan
 
-app = FastAPI(lifespan=lifespan, title="BookLib", version="1.16.2")  # x-release-please-version
+app = FastAPI(lifespan=lifespan, title="BookLib", version="1.17.0")  # x-release-please-version
 
 app.state.limiter = limiter
 
@@ -25,6 +26,9 @@ app.state.limiter = limiter
 def get_config():
     return CsrfSettings()
 
+
+# Middleware for handling proxy headers (e.g. from AWS ALB, Nginx) securely
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=settings.forwarded_allow_ips)
 
 # Middleware per sessioni
 app.add_middleware(
