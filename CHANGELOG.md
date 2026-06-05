@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.17.1](https://github.com/Tugamer89/booklib/compare/v1.17.0...v1.17.1) (2026-06-05)
+
+
+### Bug Fixes
+
+* **security:** [HIGH] resolve rate limit bypass via IP spoofing ([#72](https://github.com/Tugamer89/booklib/issues/72)) ([dc910bb](https://github.com/Tugamer89/booklib/commit/dc910bb8de5413d6407d530ad58cc9d14de3e324))
+
+
+### Performance Improvements
+
+* optimize get_user_by_username_or_email to utilize index ([#71](https://github.com/Tugamer89/booklib/issues/71)) ([133a5bc](https://github.com/Tugamer89/booklib/commit/133a5bca32898d45faf647b71fcfaa6f7db252ed))
+
 ## [1.17.0](https://github.com/Tugamer89/booklib/compare/v1.16.2...v1.17.0) (2026-06-05)
 
 
