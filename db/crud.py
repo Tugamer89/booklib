@@ -23,14 +23,12 @@ def get_user_by_email(db: Session, email: str) -> User | None:
 
 def get_user_by_username_or_email(db: Session, identifier: str) -> User | None:
     identifier_lower = identifier.lower()
-    return (
-        db.query(User)
-        .filter(
-            (func.lower(User.username) == identifier_lower)
-            | (func.lower(User.email) == identifier_lower)
-        )
-        .first()
-    )
+
+    user = db.query(User).filter(User.email == identifier_lower).first()
+    if user:
+        return user
+
+    return db.query(User).filter(func.lower(User.username) == identifier_lower).first()
 
 
 def create_user(db: Session, user_data: dict, verification_token: str) -> User | None:
