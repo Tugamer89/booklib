@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.3](https://github.com/Tugamer89/booklib/compare/v1.17.2...v1.17.3) (2026-06-06)
+
+
+### Performance Improvements
+
+* optimize user existence check during registration ([#77](https://github.com/Tugamer89/booklib/issues/77)) ([72503b1](https://github.com/Tugamer89/booklib/commit/72503b1710ae378a5d0d8260b0040b2ef31a4fb9))
+
 ## [1.17.2](https://github.com/Tugamer89/booklib/compare/v1.17.1...v1.17.2) (2026-06-06)
 
 
