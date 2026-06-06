@@ -22,10 +22,10 @@ from core.security import (
 )
 from core.templates import templates
 from db.crud import (
+    check_user_exists,
     create_user,
     get_user_by_email,
     get_user_by_email_and_reset_token,
-    get_user_by_username,
     get_user_by_username_or_email,
     logout_all,
     logout_current,
@@ -83,9 +83,10 @@ async def _handle_register(
     except HTTPException as e:
         return None, e.detail
 
-    if get_user_by_username(db, username):
+    username_exists, email_exists = check_user_exists(db, username, email)
+    if username_exists:
         return None, "Username already in use"
-    if get_user_by_email(db, email):
+    if email_exists:
         return None, "Email already in use"
 
     verification_token = generate_verification_token(email)

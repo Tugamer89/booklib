@@ -1,6 +1,6 @@
 from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 from core.config import settings
@@ -29,6 +29,17 @@ def get_user_by_username_or_email(db: Session, identifier: str) -> User | None:
         return user
 
     return db.query(User).filter(func.lower(User.username) == identifier_lower).first()
+
+
+def check_user_exists(db: Session, username: str, email: str) -> tuple[bool, bool]:
+    """
+    Checks if a user exists with the given username or email in a single query.
+    Returns a tuple of (username_exists, email_exists).
+    """
+    user = db.query(User).filter(or_(User.username == username, User.email == email)).first()
+    if not user:
+        return False, False
+    return user.username == username, user.email == email
 
 
 def create_user(db: Session, user_data: dict, verification_token: str) -> User | None:
