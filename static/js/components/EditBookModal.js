@@ -27,40 +27,40 @@ export default {
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
                             <div>
-                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Title <span class="text-red-500">*</span></label>
-                                <input type="text" name="title" :value="book.title" required class="mt-1 input-style">
+                                <label for="edit-title" class="block text-sm font-medium text-slate-600 dark:text-slate-300">Title <span class="text-red-500" aria-hidden="true">*</span></label>
+                                <input type="text" name="title" id="edit-title" :value="book.title" required class="mt-1 input-style">
                             </div>
                              <div>
-                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Author <span class="text-red-500">*</span></label>
-                                <input type="text" name="author" :value="book.author" required class="mt-1 input-style">
+                                <label for="edit-author" class="block text-sm font-medium text-slate-600 dark:text-slate-300">Author <span class="text-red-500" aria-hidden="true">*</span></label>
+                                <input type="text" name="author" id="edit-author" :value="book.author" required class="mt-1 input-style">
                             </div>
                              <div>
-                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">ISBN</label>
-                                <input type="text" name="isbn" :value="book.isbn" class="mt-1 input-style">
+                                <label for="edit-isbn" class="block text-sm font-medium text-slate-600 dark:text-slate-300">ISBN</label>
+                                <input type="text" name="isbn" id="edit-isbn" :value="book.isbn" class="mt-1 input-style">
                             </div>
                              <div>
-                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Publisher</label>
-                                <input type="text" name="publisher" :value="book.publisher" class="mt-1 input-style">
+                                <label for="edit-publisher" class="block text-sm font-medium text-slate-600 dark:text-slate-300">Publisher</label>
+                                <input type="text" name="publisher" id="edit-publisher" :value="book.publisher" class="mt-1 input-style">
                             </div>
                              <div>
-                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Location <span class="text-red-500">*</span></label>
-                                <input type="text" name="location" :value="book.location" required class="mt-1 input-style" :pattern="locationPattern" title="E.g.: A5, SHELF10" oninput="this.value = this.value.toUpperCase()">
+                                <label for="edit-location" class="block text-sm font-medium text-slate-600 dark:text-slate-300">Location <span class="text-red-500" aria-hidden="true">*</span></label>
+                                <input type="text" name="location" id="edit-location" :value="book.location" required class="mt-1 input-style" :pattern="locationPattern" title="E.g.: A5, SHELF10" oninput="this.value = this.value.toUpperCase()">
                             </div>
                              <div>
-                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Language</label>
-                                <input type="text" name="language" :value="book.language" class="mt-1 input-style">
+                                <label for="edit-language" class="block text-sm font-medium text-slate-600 dark:text-slate-300">Language</label>
+                                <input type="text" name="language" id="edit-language" :value="book.language" class="mt-1 input-style">
                             </div>
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Description</label>
-                                <textarea name="description" rows="2" class="mt-1 input-style">{{ book.description }}</textarea>
+                                <label for="edit-description" class="block text-sm font-medium text-slate-600 dark:text-slate-300">Description</label>
+                                <textarea name="description" id="edit-description" rows="2" class="mt-1 input-style">{{ book.description }}</textarea>
                             </div>
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Personal comment</label>
-                                <textarea name="personal_comment" rows="2" class="mt-1 input-style">{{ book.personal_comment }}</textarea>
+                                <label for="edit-personal-comment" class="block text-sm font-medium text-slate-600 dark:text-slate-300">Personal comment</label>
+                                <textarea name="personal_comment" id="edit-personal-comment" rows="2" class="mt-1 input-style">{{ book.personal_comment }}</textarea>
                             </div>
                              <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">Replace Cover</label>
-                                <input type="file" name="cover" accept="image/*" class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 dark:file:bg-slate-700 file:text-indigo-700 dark:file:text-indigo-300 hover:file:bg-indigo-100 dark:hover:file:bg-slate-600"/>
+                                <label for="edit-cover" class="block text-sm font-medium text-slate-600 dark:text-slate-300">Replace Cover</label>
+                                <input type="file" name="cover" id="edit-cover" accept="image/*" class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 dark:file:bg-slate-700 file:text-indigo-700 dark:file:text-indigo-300 hover:file:bg-indigo-100 dark:hover:file:bg-slate-600"/>
                             </div>
                         </div>
 
