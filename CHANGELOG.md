@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.4](https://github.com/Tugamer89/booklib/compare/v1.17.3...v1.17.4) (2026-06-06)
+
+
+### Bug Fixes
+
+* **ui:** improve accessibility of edit book form labels ([#79](https://github.com/Tugamer89/booklib/issues/79)) ([de5453c](https://github.com/Tugamer89/booklib/commit/de5453cbf6943f82409d63878aaba6717e3cb294))
+
 ## [1.17.3](https://github.com/Tugamer89/booklib/compare/v1.17.2...v1.17.3) (2026-06-06)
 
 
