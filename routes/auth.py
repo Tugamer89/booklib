@@ -26,6 +26,7 @@ from db.crud import (
     create_user,
     get_user_by_email,
     get_user_by_email_and_reset_token,
+    get_user_by_username,
     get_user_by_username_or_email,
     logout_all,
     logout_current,
