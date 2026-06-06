@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.17.2](https://github.com/Tugamer89/booklib/compare/v1.17.1...v1.17.2) (2026-06-06)
+
+
+### Bug Fixes
+
+* Refactored the endpoint to use httpx's params dictionary, which correctly and securely URL-encodes all user input before sending the request. ([60194d0](https://github.com/Tugamer89/booklib/commit/60194d0f87cd66f9193316c91b704d2d56000bf4))
+* **security:** [HIGH] resolve parameter injection in proxy_google_books ([#74](https://github.com/Tugamer89/booklib/issues/74)) ([60194d0](https://github.com/Tugamer89/booklib/commit/60194d0f87cd66f9193316c91b704d2d56000bf4))
+
 ## [1.17.1](https://github.com/Tugamer89/booklib/compare/v1.17.0...v1.17.1) (2026-06-05)
 
 
