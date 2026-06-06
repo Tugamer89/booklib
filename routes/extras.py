@@ -30,15 +30,17 @@ async def proxy_google_books(
             detail="Google API Key is not configured on the server.",
         )
 
-    url = (
-        f"https://www.googleapis.com/books/v1/volumes"
-        f"?q={q}&maxResults={max_results}&startIndex={start_index}"
-        f"&key={settings.google_books_api_key}"
-    )
+    url = "https://www.googleapis.com/books/v1/volumes"
+    params = {
+        "q": q,
+        "maxResults": max_results,
+        "startIndex": start_index,
+        "key": settings.google_books_api_key,
+    }
 
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.get(url)
+            response = await client.get(url, params=params)
             response.raise_for_status()
             return response.json()
         except httpx.HTTPStatusError as e:

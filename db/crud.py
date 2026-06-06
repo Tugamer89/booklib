@@ -35,7 +35,6 @@ def check_user_exists(db: Session, username: str, email: str) -> tuple[bool, boo
     """
     Checks if a user exists with the given username or email in a single query.
     Returns a tuple of (username_exists, email_exists).
-    Performance: Reduces DB queries by 50% during registration by using OR instead of two sequential queries.
     """
     user = db.query(User).filter(or_(User.username == username, User.email == email)).first()
     if not user:
