@@ -321,6 +321,7 @@ export default {
                         @click="showFilters = !showFilters; if(showFilters) showAddForm = false" 
                         class="bg-slate-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
                         :aria-expanded="showFilters"
+                        aria-controls="filter-panel"
                     >
                         {{ showFilters ? 'Cancel' : 'Filter & Sort' }}
                     </button>
@@ -328,6 +329,7 @@ export default {
                         @click="showAddForm = !showAddForm; if(showAddForm) showFilters = false" 
                         class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
                         :aria-expanded="showAddForm"
+                        aria-controls="add-book-form-component"
                     >
                         {{ showAddForm ? 'Cancel' : 'Add Book' }}
                     </button>
@@ -340,6 +342,7 @@ export default {
                     v-model="currentFilters"
                     @apply-now="applyFiltersNow"
                     @reset-now="resetFiltersNow"
+                    id="filter-panel"
                 />
             </transition>
             <transition name="fade">
