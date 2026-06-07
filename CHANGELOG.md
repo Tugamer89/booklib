@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.0](https://github.com/Tugamer89/booklib/compare/v1.17.4...v1.18.0) (2026-06-07)
+
+
+### Features
+
+* **ui:** add aria-controls to toggle buttons ([#81](https://github.com/Tugamer89/booklib/issues/81)) ([e70fb27](https://github.com/Tugamer89/booklib/commit/e70fb272d1802470f2686716457b83652ccf21e6))
+
 ## [1.17.4](https://github.com/Tugamer89/booklib/compare/v1.17.3...v1.17.4) (2026-06-06)
 
 

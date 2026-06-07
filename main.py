@@ -17,7 +17,7 @@ from core.middleware import PreventSessionOverwriteMiddleware, SecurityHeadersMi
 from routes import admin, auth, books, debug, errors, extras
 from utils.starter import lifespan
 
-app = FastAPI(lifespan=lifespan, title="BookLib", version="1.17.4")  # x-release-please-version
+app = FastAPI(lifespan=lifespan, title="BookLib", version="1.18.0")  # x-release-please-version
 
 app.state.limiter = limiter
 

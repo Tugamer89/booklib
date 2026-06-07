@@ -1,6 +1,6 @@
 [project]
 name = "booklib"
-version = "1.17.4"
+version = "1.18.0"
 requires-python = ">=3.13"
 dependencies = [
     "fastapi",
