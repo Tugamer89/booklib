@@ -83,10 +83,14 @@ def get_safe_redirect_url(url: str | None, request_host: str) -> str:
 
     parsed = urlparse(url)
 
-    if parsed.scheme and parsed.scheme not in ("http", "https"):
-        return "/"
-
-    if parsed.netloc and parsed.netloc != request_host:
-        return "/"
+    if parsed.netloc:
+        if parsed.scheme not in ("http", "https"):
+            return "/"
+        if parsed.netloc != request_host:
+            return "/"
+    else:
+        # Ensure that if there's no netloc, it's a true relative path starting with /
+        if not url.startswith("/"):
+            return "/"
 
     return url
