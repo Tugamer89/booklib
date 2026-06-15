@@ -86,6 +86,9 @@ def get_safe_redirect_url(url: str | None, request_host: str) -> str:
     if parsed.scheme and parsed.scheme not in ("http", "https"):
         return "/"
 
+    if parsed.scheme and not parsed.netloc:
+        return "/"
+
     if parsed.netloc and parsed.netloc != request_host:
         return "/"
 
