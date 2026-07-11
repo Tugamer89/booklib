@@ -2,7 +2,7 @@ import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { useBodyScrollLock } from "../utils/useBodyScrollLock.js";
 import { api } from "../services/api.js";
 import { formatISBN } from "../utils/formatters.js";
-import { ChevronUp, BookMarked } from "lucide-vue-next";
+import { ChevronUp, BookMarked, Loader2 } from "lucide-vue-next";
 
 import Navbar from "../components/Navbar.js";
 import BookCard from "../components/BookCard.js";
@@ -23,6 +23,7 @@ export default {
         GoogleBooksModal,
         ChevronUp,
         BookMarked,
+        Loader2,
     },
     setup() {
         const books = ref([]);
@@ -355,8 +356,9 @@ export default {
                 />
             </transition>
 
-            <div v-if="isLoading && books.length === 0" class="text-center py-12 text-slate-500 dark:text-slate-400">
-                <p>Loading...</p>
+            <div v-if="isLoading && books.length === 0" class="flex flex-col items-center justify-center py-12 text-slate-500 dark:text-slate-400">
+                <Loader2 class="w-8 h-8 animate-spin mb-4 text-indigo-500" />
+                <p>Loading your library...</p>
             </div>
             <div v-else-if="books.length === 0" class="flex flex-col items-center justify-center py-16 px-4 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 max-w-2xl mx-auto mt-8">
                 <div class="bg-indigo-50 dark:bg-indigo-900/30 p-4 rounded-full mb-6">
@@ -397,7 +399,8 @@ export default {
                     :csrf-token="csrfToken"
                 />
             </div>
-             <div v-if="isLoading && books.length > 0" class="text-center py-8 text-slate-500 dark:text-slate-400">
+             <div v-if="isLoading && books.length > 0" class="flex flex-col items-center justify-center py-8 text-slate-500 dark:text-slate-400">
+                <Loader2 class="w-6 h-6 animate-spin mb-2 text-indigo-500" />
                 <p>Loading more books...</p>
             </div>
         </main>
