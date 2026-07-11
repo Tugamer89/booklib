@@ -24,7 +24,6 @@ def get_user_by_email(db: Session, email: str) -> User | None:
 def get_user_by_username_or_email(db: Session, identifier: str) -> User | None:
     identifier_lower = identifier.lower()
 
-    # Optimize DB hits by checking both username and email in a single query
     return (
         db.query(User)
         .filter(or_(User.email == identifier_lower, func.lower(User.username) == identifier_lower))
