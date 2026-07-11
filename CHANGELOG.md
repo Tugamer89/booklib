@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.19.0](https://github.com/Tugamer89/booklib/compare/v1.18.0...v1.19.0) (2026-07-11)
+
+
+### Features
+
+* **ui:** add loading spinner to library fetching states ([#92](https://github.com/Tugamer89/booklib/issues/92)) ([6e3bc6b](https://github.com/Tugamer89/booklib/commit/6e3bc6b4558f0b6721284964d4538a67751dcfdd))
+* **ui:** improve password toggle accessibility and tooltips ([#84](https://github.com/Tugamer89/booklib/issues/84)) ([98443a1](https://github.com/Tugamer89/booklib/commit/98443a120d9ee11a203ad3d9e16e708db36ef7a0))
+
+
+### Bug Fixes
+
+* **security:** [CRITICAL] resolve open redirect vulnerability ([#88](https://github.com/Tugamer89/booklib/issues/88)) ([cb54ea6](https://github.com/Tugamer89/booklib/commit/cb54ea63c697be80421f8f87d2b39893ae6bd38c))
+
+
+### Performance Improvements
+
+* optimize login query to reduce database hits ([#83](https://github.com/Tugamer89/booklib/issues/83)) ([22fe136](https://github.com/Tugamer89/booklib/commit/22fe1364f4efb9f708f37ac54abe2de8e6b905cd))
+
 ## [1.18.0](https://github.com/Tugamer89/booklib/compare/v1.17.4...v1.18.0) (2026-06-07)
 
 
