@@ -29,7 +29,12 @@ def create_env_file():
 
     # PostgreSQL Database Configuration
     DB_USER = os.getenv("DB_USER", "bookuser")
-    DB_PASSWORD = os.getenv("DB_PASSWORD", "password")  # Make sure to use a strong password
+    DB_PASSWORD = os.getenv("DB_PASSWORD")
+    if not DB_PASSWORD:
+        print("Error: DB_PASSWORD environment variable is required.")
+        print("Please run the script with: DB_PASSWORD='your_password' python setup.py")
+        exit(1)
+
     DB_HOST = os.getenv("DB_HOST", "localhost")
     DB_PORT = os.getenv("DB_PORT", "5432")
     DB_NAME = os.getenv("DB_NAME", "booklib")
