@@ -27,5 +27,5 @@ async def get_db():
             retries += 1
             await asyncio.sleep(settings.db_retry_delay_seconds)
         finally:
-            if 'db' in locals():
+            if "db" in locals():
                 await run_in_threadpool(db.close)
