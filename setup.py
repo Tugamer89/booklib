@@ -23,8 +23,9 @@ def create_env_file():
 
     print(f"Creating {ENV_FILE} file...")
 
-    # --- CONFIGURATION TO EDIT ---
-    # Modify these variables with your values before running the script.
+    # --- CONFIGURATION ---
+    # Set these via environment variables before running the script.
+    # Otherwise, default placeholders will be used.
 
     # PostgreSQL Database Configuration
     DB_USER = os.getenv("DB_USER", "bookuser")
@@ -43,14 +44,15 @@ def create_env_file():
     CLOUDINARY_API_KEY = os.getenv("CLOUDINARY_API_KEY", "your_api_key")
     CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET", "your_api_secret")
 
-    # Application administrators (list of strings, comma separated)
-    admin_env = os.getenv("ADMIN_USERS_LIST", "admin,admin2")
-    ADMIN_USERS_LIST = [u.strip() for u in admin_env.split(",")]
+    # Application administrators (comma-separated string in env var)
+    admin_env = os.getenv("ADMIN_USERS", "admin,admin2")
+    ADMIN_USERS_LIST = [u.strip() for u in admin_env.split(",") if u.strip()]
 
     # Keepalive (optional, leave empty string "" to disable)
+    # Example: 'https://my-app.onrender.com/'
     KEEPALIVE_URL = os.getenv("KEEPALIVE_URL", "")
     KEEPALIVE_CRON = os.getenv("KEEPALIVE_CRON", "*/10 * * * *")
-    KEEPALIVE_DB = os.getenv("KEEPALIVE_DB", "")
+    KEEPALIVE_DB = os.getenv("KEEPALIVE_DB", "")  # E.g. 'test' (any name to enable DB keepalive)
     KEEPALIVE_DB_CRON = os.getenv("KEEPALIVE_DB_CRON", "0 0 */5 * *")
 
     # --- END OF CONFIGURATION ---
