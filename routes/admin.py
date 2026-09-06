@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, status
 from fastapi.concurrency import run_in_threadpool
+from fastapi.responses import RedirectResponse
 from fastapi_csrf_protect import CsrfProtect
 from sqlalchemy.orm import Session
 
@@ -128,17 +129,6 @@ async def admin_delete_user(
     db.delete(user)
     db.commit()
 
-    users = db.query(User).order_by(User.id).all()
-    csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-    response = templates.TemplateResponse(
-        request=request,
-        name=ADMIN_USERS_PAGE,
-        context={
-            "users": users,
-            "msg": "User deleted",
-            "error": "",
-            "csrf_token": csrf_token,
-        },
+    return RedirectResponse(
+        url="/admin/users?msg=User+deleted", status_code=status.HTTP_303_SEE_OTHER
     )
-    csrf_protect.set_csrf_cookie(signed_token, response)
-    return response
