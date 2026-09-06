@@ -1,15 +1,14 @@
 import { ref, onMounted, computed } from "vue";
 import BookSearchResult from "./BookSearchResult.js";
 
-// Global cache for Google Books API responses to reduce redundant network requests across modal opens
-const searchCache = new Map();
-
 export default {
     name: "GoogleBooksModal",
     components: { BookSearchResult },
     props: ["isVisible", "initialSearchTerms"],
     emits: ["close", "book-selected"],
     setup(props, { emit }) {
+        // Cache for Google Books API responses to reduce redundant network requests
+        const searchCache = new Map();
         const results = ref([]);
         const isLoading = ref(false);
         const isLoadingMore = ref(false);
