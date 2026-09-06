@@ -1,7 +1,9 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import OperationalError
 
-router = APIRouter()
+from core.auth import admin_required
+
+router = APIRouter(dependencies=[Depends(admin_required)])
 
 
 @router.get("/test-401")
