@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.19.1](https://github.com/Tugamer89/booklib/compare/v1.19.0...v1.19.1) (2026-09-06)
+
+
+### Bug Fixes
+
+* **security:** prevent IP spoofing bypass in rate limiter ([#108](https://github.com/Tugamer89/booklib/issues/108)) ([947d513](https://github.com/Tugamer89/booklib/commit/947d5136769565f5ddd9f3dfd32f22b1566735b5))
+* **security:** remove hardcoded database password and enforce environment variables ([#101](https://github.com/Tugamer89/booklib/issues/101)) ([3316209](https://github.com/Tugamer89/booklib/commit/331620916865005badc0a577a6d0bc2bae83f4da))
+* **server:** require admin authentication for debug endpoints ([#100](https://github.com/Tugamer89/booklib/issues/100)) ([48d1deb](https://github.com/Tugamer89/booklib/commit/48d1debcf12feeb0868f9621bd608d7f91ea2794))
+* **setup:** use environment variables for setup script configuration ([#104](https://github.com/Tugamer89/booklib/issues/104)) ([6d773d3](https://github.com/Tugamer89/booklib/commit/6d773d3c6a533154639e78eb152ebcfcf717f3b4))
+
+
+### Performance Improvements
+
+* **admin:** eliminate redundant users query on deletion ([#102](https://github.com/Tugamer89/booklib/issues/102)) ([62f5926](https://github.com/Tugamer89/booklib/commit/62f5926fa262f36a6a41f813be7041ff5e215a7e))
+* **admin:** replace redundant user queries with redirects ([#103](https://github.com/Tugamer89/booklib/issues/103)) ([edc101a](https://github.com/Tugamer89/booklib/commit/edc101ae0579db81d678d0c1b721f3eb67c460cf))
+* **database:** make db connection retry asynchronous ([#107](https://github.com/Tugamer89/booklib/issues/107)) ([c4b4efb](https://github.com/Tugamer89/booklib/commit/c4b4efb2558e154a67122db837d3d80161a3b9dc))
+
 ## [1.19.0](https://github.com/Tugamer89/booklib/compare/v1.18.0...v1.19.0) (2026-07-11)
 
 
