@@ -1,7 +1,9 @@
+import urllib.parse
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, status
 from fastapi.concurrency import run_in_threadpool
+from fastapi.responses import RedirectResponse
 from fastapi_csrf_protect import CsrfProtect
 from sqlalchemy.orm import Session
 
@@ -77,20 +79,15 @@ async def admin_reset_password(
         else:
             msg, error = "", f"Failed to send email to {user.email}. Check SMTP settings."
 
-    users = db.query(User).order_by(User.id).all()
-    csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-    response = templates.TemplateResponse(
-        request=request,
-        name=ADMIN_USERS_PAGE,
-        context={
-            "users": users,
-            "msg": msg,
-            "error": error,
-            "csrf_token": csrf_token,
-        },
-    )
-    csrf_protect.set_csrf_cookie(signed_token, response)
-    return response
+    url = request.url_for("admin_users_list")
+    query_params = {}
+    if msg:
+        query_params["msg"] = msg
+    if error:
+        query_params["error"] = error
+    query = urllib.parse.urlencode(query_params)
+    redirect_url = f"{url}?{query}" if query else str(url)
+    return RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.post("/admin/users/delete")
@@ -109,36 +106,13 @@ async def admin_delete_user(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     if user_id == admin.id:
-        users = db.query(User).order_by(User.id).all()
-        csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-        response = templates.TemplateResponse(
-            request=request,
-            name=ADMIN_USERS_PAGE,
-            context={
-                "users": users,
-                "msg": "",
-                "error": "You cannot delete yourself.",
-                "csrf_token": csrf_token,
-            },
-            status_code=status.HTTP_400_BAD_REQUEST,
-        )
-        csrf_protect.set_csrf_cookie(signed_token, response)
-        return response
+        url = request.url_for("admin_users_list")
+        query = urllib.parse.urlencode({"error": "You cannot delete yourself."})
+        return RedirectResponse(url=f"{url}?{query}", status_code=status.HTTP_303_SEE_OTHER)
 
     db.delete(user)
     db.commit()
 
-    users = db.query(User).order_by(User.id).all()
-    csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-    response = templates.TemplateResponse(
-        request=request,
-        name=ADMIN_USERS_PAGE,
-        context={
-            "users": users,
-            "msg": "User deleted",
-            "error": "",
-            "csrf_token": csrf_token,
-        },
-    )
-    csrf_protect.set_csrf_cookie(signed_token, response)
-    return response
+    url = request.url_for("admin_users_list")
+    query = urllib.parse.urlencode({"msg": "User deleted"})
+    return RedirectResponse(url=f"{url}?{query}", status_code=status.HTTP_303_SEE_OTHER)
