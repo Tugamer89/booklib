@@ -59,6 +59,50 @@ def read_books_page(
     return response
 
 
+def _apply_book_filters(query, title, author, isbn, publisher, location):
+    if title:
+        query = query.filter(Book.title.ilike(f"%{title}%"))
+    if author:
+        query = query.filter(Book.author.ilike(f"%{author}%"))
+    if isbn:
+        isbn_clean = isbn.replace("-", "").strip()
+        query = query.filter(Book.isbn.ilike(f"%{isbn_clean}%"))
+    if publisher:
+        query = query.filter(Book.publisher.ilike(f"%{publisher}%"))
+    if location:
+        query = query.filter(Book.location.ilike(f"%{location}%"))
+    return query
+
+
+def _apply_book_sorting(query, sort_by, sort_order):
+    allowed_sort_columns = {"id", "title", "author", "isbn", "publisher", "location", "cover_path"}
+    if sort_by not in allowed_sort_columns:
+        sort_by = "id"
+
+    sort_column = getattr(Book, sort_by, Book.id)
+    order_criteria = []
+
+    if sort_by == "isbn":
+        isbn_clean_col = case(
+            ((Book.isbn == "N/A") | (Book.isbn == ""), null()),
+            else_=func.regexp_replace(Book.isbn, r"X$", ""),
+        )
+        numeric_isbn = cast(isbn_clean_col, BigInteger)
+        order_criteria.append(numeric_isbn)
+    elif sort_column.property.columns[0].type.python_type is str:
+        order_criteria.append(func.lower(sort_column))
+    else:
+        order_criteria.append(sort_column)
+
+    if sort_order == "desc":
+        order_criteria = [desc(c) for c in order_criteria]
+    else:
+        order_criteria = [asc(c) for c in order_criteria]
+
+    order_criteria.append(asc(Book.id))
+    return query.order_by(*order_criteria)
+
+
 @router.get("/books-data")
 def books_data(
     user: Annotated[User, Depends(get_authenticated_user)],
@@ -86,47 +130,11 @@ def books_data(
         Book.personal_comment,
     ).filter(Book.user_id == user.id)
 
-    # Filters
-    if title:
-        query = query.filter(Book.title.ilike(f"%{title}%"))
-    if author:
-        query = query.filter(Book.author.ilike(f"%{author}%"))
-    if isbn:
-        isbn_clean = isbn.replace("-", "").strip()
-        query = query.filter(Book.isbn.ilike(f"%{isbn_clean}%"))
-    if publisher:
-        query = query.filter(Book.publisher.ilike(f"%{publisher}%"))
-    if location:
-        query = query.filter(Book.location.ilike(f"%{location}%"))
+    query = _apply_book_filters(query, title, author, isbn, publisher, location)
 
-    # Dynamic sorting
-    allowed_sort_columns = {"id", "title", "author", "isbn", "publisher", "location", "cover_path"}
-    if sort_by not in allowed_sort_columns:
-        sort_by = "id"
+    query = _apply_book_sorting(query, sort_by, sort_order)
 
-    sort_column = getattr(Book, sort_by, Book.id)
-    order_criteria = []
-
-    if sort_by == "isbn":
-        isbn_clean_col = case(
-            ((Book.isbn == "N/A") | (Book.isbn == ""), null()),
-            else_=func.regexp_replace(Book.isbn, r"X$", ""),
-        )
-        numeric_isbn = cast(isbn_clean_col, BigInteger)
-        order_criteria.append(numeric_isbn)
-    elif sort_column.property.columns[0].type.python_type is str:
-        order_criteria.append(func.lower(sort_column))
-    else:
-        order_criteria.append(sort_column)
-
-    if sort_order == "desc":
-        order_criteria = [desc(c) for c in order_criteria]
-    else:
-        order_criteria = [asc(c) for c in order_criteria]
-
-    order_criteria.append(asc(Book.id))
-
-    books = query.order_by(*order_criteria).offset(offset).limit(limit + 1).all()
+    books = query.offset(offset).limit(limit + 1).all()
     has_more = len(books) > limit
     books = books[:limit]
 

@@ -90,12 +90,12 @@ GRANT ALL PRIVILEGES ON DATABASE booklib TO bookuser;
 
 ### 5️⃣ Configure and initialise the project
 
-Open `setup.py` and modify the variables in the `# --- CONFIGURATION TO EDIT ---` section with your details (DB credentials, Cloudinary API keys, Brevo keys for emails, etc.).
+The `setup.py` script relies on environment variables for configuration. At a minimum, you must provide your database password (`DB_PASSWORD`). You can also configure other variables like `DB_USER`, `DB_NAME`, `CLOUDINARY_API_KEY`, etc.
 
-Run the `setup.py` script via `uv`. This will create the `.env` file with the secret keys and set up the database tables:
+Run the `setup.py` script via `uv` with the required environment variables. This will create the `.env` file with the secret keys and set up the database tables:
 
 ```bash
-uv run python setup.py
+DB_PASSWORD='your_password' uv run python setup.py
 ```
 
 ---
