@@ -1,5 +1,6 @@
-import time
+import asyncio
 
+from fastapi.concurrency import run_in_threadpool
 from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import declarative_base, sessionmaker
@@ -13,17 +14,18 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 
-def get_db():
+async def get_db():
     retries = 0
     while True:
         try:
-            db = SessionLocal()
+            db = await run_in_threadpool(SessionLocal)
             yield db
             break
         except OperationalError as e:
             if retries >= settings.db_max_retries:
                 raise e
             retries += 1
-            time.sleep(settings.db_retry_delay_seconds)
+            await asyncio.sleep(settings.db_retry_delay_seconds)
         finally:
-            db.close()
+            if 'db' in locals():
+                await run_in_threadpool(db.close)
