@@ -113,6 +113,6 @@ async def admin_delete_user(
     db.delete(user)
     db.commit()
 
-    url = request.url_for("admin_users_list")
-    query = urllib.parse.urlencode({"msg": "User deleted"})
-    return RedirectResponse(url=f"{url}?{query}", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(
+        url="/admin/users?msg=User+deleted", status_code=status.HTTP_303_SEE_OTHER
+    )
