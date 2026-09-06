@@ -23,30 +23,37 @@ def create_env_file():
 
     print(f"Creating {ENV_FILE} file...")
 
-    # --- CONFIGURATION TO EDIT ---
-    # Modify these variables with your values before running the script.
+    # --- CONFIGURATION ---
+    # Set these via environment variables before running the script.
+    # Otherwise, default placeholders will be used.
 
     # PostgreSQL Database Configuration
-    DB_USER = "bookuser"
-    DB_PASSWORD = "password"  # Make sure to use a strong password
-    DB_HOST = "localhost"
-    DB_PORT = "5432"
-    DB_NAME = "booklib"
+    DB_USER = os.getenv("DB_USER", "bookuser")
+    DB_PASSWORD = os.getenv("DB_PASSWORD")
+    if not DB_PASSWORD:
+        print("Error: DB_PASSWORD environment variable is required.")
+        print("Please run the script with: DB_PASSWORD='your_password' python setup.py")
+        exit(1)
+
+    DB_HOST = os.getenv("DB_HOST", "localhost")
+    DB_PORT = os.getenv("DB_PORT", "5432")
+    DB_NAME = os.getenv("DB_NAME", "booklib")
 
     # Cloudinary Configuration (for cover images)
-    CLOUDINARY_CLOUD_NAME = "your_cloud_name"
-    CLOUDINARY_API_KEY = "your_api_key"
-    CLOUDINARY_API_SECRET = "your_api_secret"
+    CLOUDINARY_CLOUD_NAME = os.getenv("CLOUDINARY_CLOUD_NAME", "your_cloud_name")
+    CLOUDINARY_API_KEY = os.getenv("CLOUDINARY_API_KEY", "your_api_key")
+    CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET", "your_api_secret")
 
-    # Application administrators (list of strings)
-    ADMIN_USERS_LIST = ["admin", "admin2"]
+    # Application administrators (comma-separated string in env var)
+    admin_env = os.getenv("ADMIN_USERS", "admin,admin2")
+    ADMIN_USERS_LIST = [u.strip() for u in admin_env.split(",") if u.strip()]
 
     # Keepalive (optional, leave empty string "" to disable)
     # Example: 'https://my-app.onrender.com/'
-    KEEPALIVE_URL = ""
-    KEEPALIVE_CRON = "*/10 * * * *"
-    KEEPALIVE_DB = ""  # E.g. 'test' (any name to enable DB keepalive)
-    KEEPALIVE_DB_CRON = "0 0 */5 * *"
+    KEEPALIVE_URL = os.getenv("KEEPALIVE_URL", "")
+    KEEPALIVE_CRON = os.getenv("KEEPALIVE_CRON", "*/10 * * * *")
+    KEEPALIVE_DB = os.getenv("KEEPALIVE_DB", "")  # E.g. 'test' (any name to enable DB keepalive)
+    KEEPALIVE_DB_CRON = os.getenv("KEEPALIVE_DB_CRON", "0 0 */5 * *")
 
     # --- END OF CONFIGURATION ---
 
