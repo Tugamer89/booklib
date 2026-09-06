@@ -53,7 +53,6 @@ def create_env_file():
     KEEPALIVE_DB = os.getenv("KEEPALIVE_DB", "")
     KEEPALIVE_DB_CRON = os.getenv("KEEPALIVE_DB_CRON", "0 0 */5 * *")
 
-
     # --- END OF CONFIGURATION ---
 
     # Generate secret keys
