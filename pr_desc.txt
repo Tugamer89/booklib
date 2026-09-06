@@ -1,0 +1,7 @@
+**Vulnerability:** IP Spoofing via `X-Forwarded-For` bypassing rate limiting. The rate limiter used `slowapi.util.get_remote_address`, which relies on `request.client.host`. If `FORWARDED_ALLOW_IPS` is set to `*` to trust all proxies (common when behind load balancers/CDNs), Uvicorn's `ProxyHeadersMiddleware` parses `X-Forwarded-For` and sets `request.client.host` to the leftmost IP. Since attackers can easily spoof the leftmost IP in `X-Forwarded-For`, they can bypass rate limits.
+
+**Risk & Impact:** Attackers can bypass rate limits on endpoints such as login, registration, password resets, or OTP verification by dynamically changing the spoofed `X-Forwarded-For` IP address, potentially leading to brute force attacks or Denial of Service (DoS).
+
+**Remediation:** Implemented a custom `get_client_ip` function for `slowapi.Limiter`. If `FORWARDED_ALLOW_IPS` is `*`, the function securely extracts the IP from `X-Real-IP`, `CF-Connecting-IP`, or the rightmost IP of `X-Forwarded-For` (which is injected by the immediate proxy and cannot be spoofed by the client). Otherwise, it safely falls back to `request.client.host`.
+
+**Verification:** Verified locally by running a temporary test script mocking a FastAPI application and the rate limiter. Confirmed that when passing `X-Forwarded-For` with a spoofed leftmost IP, the rate limiter correctly reads the rightmost proxy-injected IP and enforces the limits, preventing bypasses. Ran the project test suite and linters to verify no regressions were introduced.
